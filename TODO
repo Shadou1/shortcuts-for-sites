@@ -1,0 +1,5 @@
+
+Todo:
+  ☐ Auto update manifest.json when new cites are added
+  ☐ Check if module exists before loading it, if possible
+  ✔ Do not query elements in hotkeys.js if user is on the wrong page @done(22-05-27 10:44)

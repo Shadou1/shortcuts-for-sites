@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "target": "ES2020",
+    "jsx": "preserve",
+    "strictFunctionTypes": true
+  },
+  "typeAcquisition": {
+    "include": ["firefox-webext-browser"]
+  },
+  "exclude": [
+    "node_modules",
+    "**/node_modules/*"
+  ]
+}

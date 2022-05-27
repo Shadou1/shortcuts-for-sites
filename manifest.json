@@ -1,0 +1,20 @@
+{
+
+  "manifest_version": 2,
+  "name": "Hotkeys for keyboard only navigation",
+  "version": "0.1",
+
+  "description": "Keyboard hotkeys for mouse free navigation on popular websites",
+
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["init.js"]
+    },
+    {
+      "matches": ["https://*.youtube.com/*"],
+      "js": ["sites/youtube/hotkeys.js", "sites/youtube/markup.js"]
+    }
+  ]
+
+}

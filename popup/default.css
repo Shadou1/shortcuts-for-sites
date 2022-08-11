@@ -1,0 +1,50 @@
+body {
+  width: 500px;
+  min-height: 400px;
+}
+
+main > h1 {
+  padding-left: 1em;
+}
+
+.hotkeys-container {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.hotkeys-container > div {
+  padding: 0px 8px;
+  /* border: 1px solid; */
+  border-bottom: 1px solid gray;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  justify-items: baseline;
+}
+
+.hotkeys-container > div > p {
+  font-size: medium;
+  white-space: nowrap;
+}
+
+.hotkeys-container > div > p:last-child {
+  flex-basis: 100px;
+}
+
+/* .hotkeys-container > div > p:first-child {
+  flex: 1 0;
+} */
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color: azure;
+    background-color: #202124;
+  }
+
+  .hotkeys-container > div {
+    border-color: azure;
+  }
+
+}

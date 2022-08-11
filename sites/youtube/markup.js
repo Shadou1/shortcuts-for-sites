@@ -1,4 +1,5 @@
 const popup = document.querySelector('ytd-popup-container')
+
 const insertHotkeysInfo = (mutations, observer) => {
 
   const hotkeyDialogSection2 = popup.querySelector('ytd-hotkey-dialog-section-renderer:nth-child(2)')
@@ -8,19 +9,18 @@ const insertHotkeysInfo = (mutations, observer) => {
   subTitle.textContent = 'Settings'
   hotkeyDialogSection2.appendChild(subTitle)
 
-  const optionsDiv = hotkeyDialogSection2.querySelector('#options').cloneNode()
-  hotkeyDialogSection2.appendChild(optionsDiv)
+  const options = hotkeyDialogSection2.querySelector('#options').cloneNode()
+  hotkeyDialogSection2.appendChild(options)
 
-  let option = hotkeyDialogSection2.querySelector('ytd-hotkey-dialog-section-option-renderer').cloneNode(true)
-  optionsDiv.append(option)
-  option.querySelector('#label').textContent = 'Open settings'
-  option.querySelector('#hotkey').textContent = 's'
+  const optionSource = hotkeyDialogSection2.querySelector('ytd-hotkey-dialog-section-option-renderer')
 
-  option = option.cloneNode(true)
-  optionsDiv.append(option)
-  option.querySelector('#label').textContent = 'Open quality settings'
-  option.querySelector('#hotkey').textContent = 'q'
-
+  for (const [hotkey, { description, verbatum }] of Object.entries(keyboardOnlyNavigation.hotkeys)) {
+    const option = optionSource.cloneNode(true)
+    options.append(option)
+    option.querySelector('#label').textContent = description
+    option.querySelector('#hotkey').textContent = verbatum ? `${hotkey} (${verbatum})` : hotkey  
+  }
+  
   observer.disconnect()
 
 }

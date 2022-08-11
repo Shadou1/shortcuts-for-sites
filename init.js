@@ -1,9 +1,57 @@
-var keyboardOnlyNavigation = {}
-keyboardOnlyNavigation.hotkeys = {}
+let isHotkeysAvailable = false
+
+var keyboardOnlyNavigation = {
+  _hotkeys: {},
+  hotkeys: {},
+}
+
+function hotkeysToSerializable(hotkeys) {
+  const hotkeysSerialized = {}
+  Object.entries(hotkeys).forEach(([hotkey, { description, verbatum }]) => {
+    hotkeysSerialized[hotkey] = {
+      description,
+      verbatum
+    }
+  })
+  return hotkeysSerialized
+}
+
+const hotkeysProxyHandler = {
+  set(target, prop, value) {
+
+    if (!isHotkeysAvailable) {
+      browser.runtime.sendMessage({
+        type: 'isHotkeysAvailable',
+        isHotkeysAvailable: true
+      })
+      isHotkeysAvailable = true
+    }
+
+    browser.runtime.sendMessage({
+      type: 'hotkeyAdded',
+      hotkeyInfo: [prop, value[0]],
+    })
+    // browser.runtime.sendNativeMessage(['as', 123])
+
+    return Reflect.set(target, prop, value)
+  }
+}
+keyboardOnlyNavigation.hotkeys = new Proxy(keyboardOnlyNavigation._hotkeys, hotkeysProxyHandler)
+
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  switch (message.type) {
+    case 'getHotkeys':
+      sendResponse({
+        type: 'hotkeys',
+        hotkeys: hotkeysToSerializable(keyboardOnlyNavigation.hotkeys)
+      })
+      break
+  }
+})
 
 let isLastInputEvent = false
-document.addEventListener('input', (ev) => {
-  let = isLastInputEvent = true
+document.addEventListener('input', (_ev) => {
+  isLastInputEvent = true
 })
 
 let lastTimeout = null
@@ -17,8 +65,14 @@ document.addEventListener('keydown', (ev) => {
       isLastInputEvent = false
       return
     }
-  
-    keyboardOnlyNavigation.hotkeys[ev.key]?.(ev)
+
+
+    const hotkeyConf = keyboardOnlyNavigation.hotkeys[ev.key]
+    if (!hotkeyConf) return
+    if (!!hotkeyConf.ctrlKey !== ev.ctrlKey) return
+    if (!!hotkeyConf.altKey !== ev.altKey) return
+
+    hotkeyConf.event(ev)
 
   }, 10)
 

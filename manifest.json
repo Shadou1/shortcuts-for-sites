@@ -1,10 +1,31 @@
 {
 
-  "manifest_version": 2,
+"manifest_version": 2,
   "name": "Hotkeys for keyboard only navigation",
   "version": "0.1",
 
   "description": "Keyboard hotkeys for mouse free navigation on popular websites",
+
+  "icons": {
+    "48": "icons/48.png",
+    "96": "icons/96.png",
+    "128": "icons/128.png"
+  },
+
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": {
+      "16": "icons/16-disabled.png",
+      "32": "icons/32-disabled.png",
+      "64": "icons/64-disabled.png"
+    },
+    "default_popup": "popup/default.html",
+    "default_title": "Hotkeys for sites"
+  },
+
+  "background": {
+    "scripts": ["background.js"]
+  },
 
   "content_scripts": [
     {
@@ -15,6 +36,14 @@
       "matches": ["https://*.youtube.com/*"],
       "js": ["sites/youtube/hotkeys.js", "sites/youtube/markup.js"]
     }
-  ]
+  ],
+  
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Alt+K"
+      }
+    }
+  }
 
 }

@@ -4,17 +4,23 @@ body {
 }
 
 main > h1 {
-  padding-left: 1em;
+  padding-left: 2em;
+  margin-bottom: 0;
 }
 
-.hotkeys-container {
+section {
   padding: 8px;
   display: flex;
   flex-direction: column;
 }
 
+section > h2 {
+  /* margin-top: 0; */
+  padding-left: 1em;
+}
 
-.hotkeys-container > div {
+
+section > div {
   padding: 0px 8px;
   /* border: 1px solid; */
   border-bottom: 1px solid gray;
@@ -24,12 +30,12 @@ main > h1 {
   justify-items: baseline;
 }
 
-.hotkeys-container > div > p {
+section > div > p {
   font-size: medium;
   white-space: nowrap;
 }
 
-.hotkeys-container > div > p:last-child {
+section > div > p:last-child {
   flex-basis: 100px;
 }
 
@@ -43,7 +49,7 @@ main > h1 {
     background-color: #202124;
   }
 
-  .hotkeys-container > div {
+  section > div {
     border-color: azure;
   }
 

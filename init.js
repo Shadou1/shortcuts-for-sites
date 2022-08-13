@@ -7,8 +7,9 @@ var keyboardOnlyNavigation = {
 
 function hotkeysToSerializable(hotkeys) {
   const hotkeysSerialized = {}
-  Object.entries(hotkeys).forEach(([hotkey, { description, verbatum }]) => {
+  Object.entries(hotkeys).forEach(([hotkey, { category, description, verbatum }]) => {
     hotkeysSerialized[hotkey] = {
+      category,
       description,
       verbatum
     }

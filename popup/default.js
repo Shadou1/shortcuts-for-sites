@@ -1,28 +1,40 @@
 const popupHeading = document.querySelector('main > h1')
-const hotkeysContainer = document.querySelector('.hotkeys-container')
+const hotkeysArticle = document.querySelector('article')
 
 function clearPopup() {
   popupHeading.textContent = 'No Available Hotkeys'
-  hotkeysContainer.replaceChildren()
+  hotkeysArticle.replaceChildren()
 }
 
 function clearPopupError() {
   popupHeading.textContent = 'Fetching Hotkeys'
-  hotkeysContainer.replaceChildren()
+  hotkeysArticle.replaceChildren()
 }
 
 function fillPopupWithHotkeys(hotkeys) {
   const newHotkeys = []
-  for (const [hotkey, { description, verbatum }] of Object.entries(hotkeys)) {
+
+  let lastCategory = null
+  let categorySection = null
+  for (const [hotkey, { category, description, verbatum }] of Object.entries(hotkeys)) {
+    if (category !== lastCategory) {
+      lastCategory = category
+      categorySection = document.createElement('section')
+      const categoryHeading = document.createElement('h2')
+      categoryHeading.textContent = category
+      categorySection.appendChild(categoryHeading)
+      newHotkeys.push(categorySection)
+    }
+
     const hotkeyRow = document.createElement('div')
     const hotkeyDescription = document.createElement('p')
     hotkeyDescription.textContent = description
     const hotkeyLetter = document.createElement('p')
     hotkeyLetter.textContent = verbatum ? `${hotkey} (${verbatum})` : hotkey
     hotkeyRow.append(hotkeyDescription, hotkeyLetter)
-    newHotkeys.push(hotkeyRow)
+    categorySection.append(hotkeyRow)
   }
-  hotkeysContainer.replaceChildren(...newHotkeys)
+  hotkeysArticle.replaceChildren(...newHotkeys)
 }
 
 function handleHotkeysResponse(response) {

@@ -7,3 +7,4 @@ Todo:
 
   Youtube:
     ☐ Hotkeys work in all video players (not only on the /watch pages)
+    ☐ Keep reference to queried elements, but also update them when page content/location changes

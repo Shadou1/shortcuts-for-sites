@@ -28,11 +28,10 @@ const hotkeysProxyHandler = {
       isHotkeysAvailable = true
     }
 
-    browser.runtime.sendMessage({
-      type: 'hotkeyAdded',
-      hotkeyInfo: [prop, value[0]],
-    })
-    // browser.runtime.sendNativeMessage(['as', 123])
+    // browser.runtime.sendMessage({
+    //   type: 'hotkeyAdded',
+    //   hotkeyInfo: [prop, value[0]],
+    // })
 
     return Reflect.set(target, prop, value)
   }

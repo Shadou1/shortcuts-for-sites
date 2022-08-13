@@ -8,12 +8,14 @@ function clearPopup() {
 
 function clearPopupError() {
   popupHeading.textContent = 'Fetching Hotkeys'
+  popupHeading.hidden = false
   hotkeysArticle.replaceChildren()
 }
 
 function fillPopupWithHotkeys(hotkeys) {
-  const newHotkeys = []
+  popupHeading.hidden = true
 
+  const newHotkeys = []
   let lastCategory = null
   let categorySection = null
   for (const [hotkey, { category, description, verbatum }] of Object.entries(hotkeys)) {
@@ -34,15 +36,16 @@ function fillPopupWithHotkeys(hotkeys) {
     hotkeyRow.append(hotkeyDescription, hotkeyLetter)
     categorySection.append(hotkeyRow)
   }
+  
   hotkeysArticle.replaceChildren(...newHotkeys)
 }
 
 function handleHotkeysResponse(response) {
   if (!Object.keys(response.hotkeys).length) {
     clearPopup()
+    popupHeading.hidden = false
     return
   }
-  popupHeading.textContent = 'Available Hotkeys'
   fillPopupWithHotkeys(response.hotkeys)
 }
 

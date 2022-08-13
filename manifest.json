@@ -35,6 +35,10 @@
     {
       "matches": ["https://*.youtube.com/*"],
       "js": ["sites/youtube/hotkeys.js", "sites/youtube/markup.js"]
+    },
+    {
+      "matches": ["https://*.twitch.tv/*"],
+      "js": ["sites/twitch/hotkeys.js"]
     }
   ],
   

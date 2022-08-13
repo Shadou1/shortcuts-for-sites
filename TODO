@@ -5,6 +5,14 @@ Todo:
   ✔ Do not query elements in hotkeys.js if user is on the wrong page @done(22-05-27 10:44)
   ☐ Bundle code to be able to use export/import in content scripts
 
+  ☐ Hotkeys with Ctrl, Alt modifiers render correctly in browser action
+
+  ☐ Redraw icons as svg
+
+  ☐ When hotkey navigates to new page, figure out how to query not yet rendered elements (await for element to appear / mutation observer)
+
   Youtube:
     ☐ Hotkeys work in all video players (not only on the /watch pages)
     ☐ Keep reference to queried elements, but also update them when page content/location changes
+    ☐ Volume up/down hotkeys (in addition to standart up/down arrows)
+    ☐ Show progress bar hotkey

@@ -49,6 +49,21 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 })
 
+// Wont work if activeElement is not an input or textarea but still accepts 'input' event
+// document.addEventListener('keydown', (ev) => {
+  
+//   const activeElement = document.activeElement
+//   if (activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) return
+  
+//   const hotkeyConf = keyboardOnlyNavigation.hotkeys[ev.key]
+//   if (!hotkeyConf) return
+//   if (!!hotkeyConf.ctrlKey !== ev.ctrlKey) return
+//   if (!!hotkeyConf.altKey !== ev.altKey) return
+
+//   hotkeyConf.event(ev)
+  
+// })
+
 let isLastInputEvent = false
 document.addEventListener('input', (_ev) => {
   isLastInputEvent = true

@@ -1,14 +1,17 @@
 let settingsButton = null
-let qualityButton = null
+let qualityButton = null // inconsistent
+let chatTextarea = null // inconsistent
 let collapseChatButton = null
-let chatTextarea = null
 
 const hotkeys = {
   's': {
     category: 'Stream',
     description: 'Open settings',
     event: () => {
-      settingsButton = settingsButton || document.querySelector('#channel-player button[data-a-target="player-settings-button"]')
+      if (!settingsButton) {
+        const allButtons = document.querySelectorAll('#channel-player button[data-a-target="player-settings-button"]')
+        settingsButton = allButtons[allButtons.length - 1]
+      }
       settingsButton.click()
       // Quality button is inconsistent?
       // qualityButton = qualityButton || document.querySelector('div[data-a-target="player-settings-menu"] button[data-a-target="player-settings-menu-item-quality"]')
@@ -20,7 +23,10 @@ const hotkeys = {
     category: 'Stream',
     description: 'Open quality settings',
     event: () => {
-      settingsButton = settingsButton || document.querySelector('#channel-player button[data-a-target="player-settings-button"]')
+      if (!settingsButton) {
+        const allButtons = document.querySelectorAll('#channel-player button[data-a-target="player-settings-button"]')
+        settingsButton = allButtons[allButtons.length - 1]
+      }
       settingsButton.click()
       qualityButton = document.querySelector('div[data-a-target="player-settings-menu"] button[data-a-target="player-settings-menu-item-quality"]')
       qualityButton.click()

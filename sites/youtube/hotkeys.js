@@ -11,20 +11,57 @@ function locationStartsWith(...prefixes) {
   return false
 }
 
-// function navigateToFirstVideo(mutations, observer) {
-//   console.log('here1')
-//   const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(4)')
-//   if (!videosTab) return
-//   videosTab.click()
+function locationEndsWith(...postfixes) {
+  for (const postfix of postfixes) {
+    if (window.location.pathname.endsWith(postfix)) return true
+  }
+  return false
+}
 
-//   console.log('here2')
+function navigateToVideos(mutations, observer) {
+  const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(4)')
+  if (!videosTab) return
+  videosTab.click()
 
-//   const firstVideo = document.querySelector('#items ytd-grid-video-renderer #video-title')
-//   if (!firstVideo) return
-//   firstVideo.focus()
+  const content = document.querySelector('#content.ytd-app')
+  const observer2 = new MutationObserver(focusFirstVideo)
+  observer2.observe(content, { childList: true, subtree: true})
 
-//   observer.disconnect()
-// }
+  if (locationEndsWith('/videos')) observer.disconnect()
+}
+
+function navigateToPlaylists(mutations, observer) {
+  const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(6)')
+  if (!playlistsTab) return
+  playlistsTab.click()
+
+  const content = document.querySelector('#content.ytd-app')
+  const observer2 = new MutationObserver(focusFirsPlaylist)
+  observer2.observe(content, { childList: true, subtree: true})
+
+  if (locationEndsWith('/playlists')) observer.disconnect()
+}
+
+function focusFirstVideo(mutations, observer) {
+  if (!locationEndsWith('/videos')) return
+
+  const firstVideo = document.querySelector('#items ytd-grid-video-renderer #video-title')
+  if (!firstVideo) return
+  firstVideo.focus()
+
+  observer.disconnect()
+}
+
+function focusFirsPlaylist(mutations, observer) {
+  if (!locationEndsWith('/playlists')) return
+
+  const firstPlaylist = document.querySelector('#items ytd-grid-playlist-renderer #video-title')
+  if (!firstPlaylist) return
+  firstPlaylist.focus()
+
+  observer.disconnect()
+  
+}
 
 const hotkeys = {
   'o': {
@@ -104,8 +141,19 @@ const hotkeys = {
     }
   },
 
-  'h': {
+  'e': {
     category: 'Video',
+    description: 'Comment',
+    event: () => {
+      if (!locationStartsWith('/watch')) return
+
+      const commentBox = document.querySelector('ytd-comment-simplebox-renderer #placeholder-area')
+      commentBox.click()
+    }
+  },
+
+  'h': {
+    category: 'Channel',
     description: 'Go to channel',
     event: () => {
       if (window.location.pathname !== '/watch') return
@@ -116,7 +164,7 @@ const hotkeys = {
   },
 
   'H': {
-    category: 'Video',
+    category: 'Channel',
     description: 'Go to channel (new tab)',
     verbatum: 'Shift+h',
     event: () => {
@@ -138,18 +186,24 @@ const hotkeys = {
         const channelLink = document.querySelector('a.ytd-video-owner-renderer')
         channelLink.click()
       }
-      
-      // const content = document.querySelector('#content.ytd-app')
-      // const observer = new MutationObserver(navigateToFirstVideo)
-      // observer.observe(content, { childList: true, subtree: true})
 
-      // TODO users will have to press hotkey a couple of times for it to work
-      // because videos tab and first video do not exist at first
+      // TODO refactor
       const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(4)')
-      videosTab.click()
-
-      const firstVideo = document.querySelector('#items ytd-grid-video-renderer #video-title')
-      firstVideo.focus()
+      if (videosTab) {
+        videosTab.click()
+        const firstVideo = document.querySelector('#items ytd-grid-video-renderer #video-title')
+        if (firstVideo && locationEndsWith('/videos')) {
+          firstVideo.focus()
+        } else {
+          const content = document.querySelector('#content.ytd-app')
+          const observer = new MutationObserver(focusFirstVideo)
+          observer.observe(content, { childList: true, subtree: true})
+        }
+      } else {
+        const content = document.querySelector('#content.ytd-app')
+        const observer = new MutationObserver(navigateToVideos)
+        observer.observe(content, { childList: true, subtree: true})
+      }
 
     }
   },
@@ -165,12 +219,22 @@ const hotkeys = {
         channelLink.click()
       }
 
-      // TODO same problem as above
       const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(6)')
-      playlistsTab.click()
-
-      const firstPlaylist = document.querySelector('#items ytd-grid-playlist-renderer #video-title')
-      firstPlaylist.focus()
+      if (playlistsTab) {
+        playlistsTab.click()
+        const firstPlaylist = document.querySelector('#items ytd-grid-playlist-renderer #video-title')
+        if (firstPlaylist && locationEndsWith('/playlists')) {
+          firstPlaylist.focus()
+        } else {
+          const content = document.querySelector('#content.ytd-app')
+          const observer = new MutationObserver(focusFirsPlaylist)
+          observer.observe(content, { childList: true, subtree: true})
+        }
+      } else {
+        const content = document.querySelector('#content.ytd-app')
+        const observer = new MutationObserver(navigateToPlaylists)
+        observer.observe(content, { childList: true, subtree: true})
+      }
 
     }
   }

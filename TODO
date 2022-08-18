@@ -6,6 +6,7 @@ Todo:
   ☐ Bundle code to be able to use export/import in content scripts
 
   ☐ Hotkeys with Ctrl, Alt modifiers render correctly in browser action
+  ☐ Hotkeys with Ctrl, Alt collide with regular keys in object keys
 
   ☐ Redraw icons as svg
 

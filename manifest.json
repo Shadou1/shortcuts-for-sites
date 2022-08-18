@@ -41,6 +41,13 @@
       "js": ["sites/twitch/hotkeys.js"]
     }
   ],
+
+  "web_accessible_resources": [
+    "utils/locationUtils.js",
+    "utils/mutationUtils.js",
+
+    "sites/youtube/utils.js"
+  ],
   
   "commands": {
     "_execute_browser_action": {

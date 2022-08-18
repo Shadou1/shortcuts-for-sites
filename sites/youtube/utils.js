@@ -8,7 +8,7 @@ let whenTargetMutates;
   ({ whenTargetMutates } = await import(browser.runtime.getURL('utils/mutationUtils.js')))
 })()
 
-// Functions can be as both callbacks for MutationObserver and as regular functions
+// Functions can be used as both callbacks for MutationObserver and as regular functions
 
 export function navigateToVideos(mutations, observer) {
   const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(4)')

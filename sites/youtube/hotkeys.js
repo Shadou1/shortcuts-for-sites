@@ -3,9 +3,10 @@ let homeAnchor = null
 let subscriptionsAnchor = null
 let settingsButton = null
 let qualityButton = null
+let moviePlayer = null
 let showMoreSubscriptionsAnchor = null
 
-// TODO use bundler to import these functions
+// TODO use bundler to import these functions with 'import {} from'
 let locationStartsWith, locationEndsWith;
 (async () => {
   ({ locationStartsWith, locationEndsWith } = await import(browser.runtime.getURL('utils/locationUtils.js')))
@@ -16,7 +17,7 @@ let whenTargetMutates;
   ({ whenTargetMutates } = await import(browser.runtime.getURL('utils/mutationUtils.js')))
 })()
 
-let navigateToVideos, 
+let navigateToVideos,
   navigateToPlaylists,
   focusFirstVideo,
   focusFirstPlaylist,
@@ -65,7 +66,7 @@ const hotkeys = {
     }
   },
 
-  'b': {
+  'u': {
     category: 'General',
     description: 'Go to Subscriptions',
     event: () => {
@@ -125,7 +126,7 @@ const hotkeys = {
     event: () => {
       if (!locationStartsWith('/watch')) return
 
-      settingsButton = settingsButton || document.querySelector('#movie_player  .ytp-settings-button')
+      settingsButton = settingsButton || document.querySelector('#movie_player .ytp-settings-button')
       if (settingsButton.getAttribute('aria-expanded') === 'false') {
         settingsButton.click()
         qualityButton = qualityButton || document.querySelector('#movie_player  .ytp-panel-menu .ytp-menuitem:last-child')
@@ -134,6 +135,19 @@ const hotkeys = {
         settingsButton.click()
       }
 
+    }
+  },
+
+  ';': {
+    category: 'Video',
+    description: 'Show progress bar',
+    event: () => {
+      if (!locationStartsWith('/watch')) return
+
+      moviePlayer = moviePlayer || document.querySelector('#movie_player')
+      // TODO refactor
+      moviePlayer.click()
+      moviePlayer.click()
     }
   },
 

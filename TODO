@@ -8,12 +8,16 @@ Todo:
   ☐ Hotkeys with Ctrl, Alt modifiers render correctly in browser action
   ☐ Hotkeys with Ctrl, Alt collide with regular keys in object keys
 
+  ☐ Hotkeys will only work in english keyboard locale
+
   ☐ Redraw icons as svg
 
   ☐ When hotkey navigates to new page, figure out how to query not yet rendered elements (await for element to appear / mutation observer)
+
+  ☐ Write tests?
 
   Youtube:
     ☐ Hotkeys work in all video players (not only on the /watch pages)
     ☐ Keep reference to queried elements, but also update them when page content/location changes
     ☐ Volume up/down hotkeys (in addition to standart up/down arrows)
-    ☐ Show progress bar hotkey
+    ✔ Show progress bar hotkey @done(22-08-18 13:34)

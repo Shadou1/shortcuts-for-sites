@@ -86,10 +86,10 @@ const hotkeys = {
     }
   },
 
-  'B': {
+  'U': {
     category: 'General',
     description: 'Expand and focus subscribed channels',
-    verbatum: 'Shift+b',
+    verbatum: 'Shift+U',
     event: () => {
       guideButton = guideButton || document.querySelector('ytd-masthead #guide-button #button')
       if (guideButton.getAttribute('aria-pressed') === 'false' || guideButton.getAttribute('aria-pressed') === null) guideButton.click()
@@ -153,18 +153,22 @@ const hotkeys = {
 
   'd': {
     category: 'Video',
-    description: 'Show more (less) description',
+    description: 'Scroll to description/video',
     event: () => {
       if (!locationStartsWith('/watch')) return
 
       const infoRenderer = document.querySelector('#info ytd-video-primary-info-renderer, #above-the-fold')
-      infoRenderer.scrollIntoView()
       const showMoreButton = document.querySelector('.ytd-video-secondary-info-renderer tp-yt-paper-button#more, tp-yt-paper-button#expand')
       const showLessButton = document.querySelector('.ytd-video-secondary-info-renderer tp-yt-paper-button#less, tp-yt-paper-button#collapse')
       if (!showMoreButton.hidden) {
+        showMoreButton.focus()
+        infoRenderer.scrollIntoView()
         showMoreButton.click()
       } else {
+        const video = document.querySelector('video')
+        video.focus()
         showLessButton.click()
+        window.scrollTo({ top: 0 })
       }
     }
   },

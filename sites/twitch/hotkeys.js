@@ -46,11 +46,17 @@ const hotkeys = {
 
   'd': {
     category: 'Stream',
-    description: 'Show/focus description',
+    description: 'Scroll to description/video',
     event: () => {
       const streamInformatinoSection = document.querySelector('.channel-info-content section#live-channel-stream-information')
-      streamInformatinoSection.focus()
-      streamInformatinoSection.scrollIntoView()
+      if (document.activeElement !== streamInformatinoSection) {
+        streamInformatinoSection.focus()
+        streamInformatinoSection.scrollIntoView()
+      } else {
+        streamInformatinoSection.blur()
+        const video = document.querySelector('video')
+        video.scrollIntoView()
+      }
     }
   },
 

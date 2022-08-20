@@ -33,6 +33,10 @@
       "js": ["init.js"]
     },
     {
+      "matches": ["https://*.google.com/*"],
+      "js": ["sites/google/hotkeys.js"]
+    },
+    {
       "matches": ["https://*.youtube.com/*"],
       "js": ["sites/youtube/hotkeys.js", "sites/youtube/markup.js"]
     },

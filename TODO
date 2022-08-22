@@ -14,7 +14,7 @@ Todo:
 
   ☐ When hotkey navigates to new page, figure out how to query not yet rendered elements (await for element to appear / mutation observer)
 
-  ☐ Force browser to draw focus outline when hotkey focuses something as if it was tabbed to with 'tab' @critical
+  ☐ Force browser to draw focus outline when hotkey focuses something as if it was tabbed to with 'tab' @critical (can it be done?)
 
   ☐ Write tests?
 
@@ -30,6 +30,10 @@ Todo:
     ✔ Show progress bar hotkey @done(22-08-18 13:34)
   
   Google:
+    ✔ Should work not only on '.com' domains @critical @done(22-08-22 09:32)
     ☐ Make search indexes relative to the current index so that after pressing 'tab' and then pressing a hotkey it tabs to the next search result after currently focused
+    ☐ Scroll height problems (inconsistent at the bottom of the page)
     ☐ Add images hotkeys
     ☐ Add videos hotkeys
+
+    ☐ Since google search pages are not dynamic, maybe don't need to write logic to update searchResults arrays when query changes

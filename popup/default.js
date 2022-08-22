@@ -3,6 +3,7 @@ const hotkeysArticle = document.querySelector('article')
 
 function clearPopup() {
   popupHeading.textContent = 'No Available Hotkeys'
+  popupHeading.hidden = false
   hotkeysArticle.replaceChildren()
 }
 
@@ -43,7 +44,7 @@ function fillPopupWithHotkeys(hotkeys) {
 function handleHotkeysResponse(response) {
   if (!Object.keys(response.hotkeys).length) {
     clearPopup()
-    popupHeading.hidden = false
+    // popupHeading.hidden = false
     return
   }
   fillPopupWithHotkeys(response.hotkeys)
@@ -76,4 +77,5 @@ browser.tabs.query({
     return browser.tabs.sendMessage(tabs[0].id, { type: 'getHotkeys' })
   })
   .then(handleHotkeysResponse)
-  .catch(clearPopupError)
+  // .catch(clearPopupError)
+  .catch(clearPopup)

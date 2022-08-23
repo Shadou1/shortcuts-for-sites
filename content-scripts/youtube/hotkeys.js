@@ -33,7 +33,7 @@ let navigateToVideos,
     goToHome,
     goToSubscriptions,
     focusFirstSubscription
-  } = await import(browser.runtime.getURL('sites/youtube/utils.js')))
+  } = await import(browser.runtime.getURL('utils/youtube.js')))
 })()
 
 const hotkeys = {
@@ -184,10 +184,9 @@ const hotkeys = {
     }
   },
 
-  'E': {
+  'n': {
     category: 'Video',
     description: 'Comment',
-    verbatum: 'Shift+e',
     event: () => {
       if (!locationStartsWith('/watch')) return
 

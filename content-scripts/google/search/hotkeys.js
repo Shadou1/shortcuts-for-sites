@@ -16,18 +16,6 @@ let imageAnchors = document.querySelectorAll('a[href*="tbm=isch"]')
 let videoAnchors = document.querySelectorAll('a[href*="tbm=vid"]')
 let newsAnchors = document.querySelectorAll('a[href*="tbm=nws"]')
 
-// console.log(allResultsAnchor)
-// console.log(imageAnchors)
-// console.log(videoAnchors)
-// console.log(newsAnchors)
-
-// const cssLink = document.createElement('link')
-// cssLink.rel = 'stylesheet'
-// cssLink.type = 'text/css'
-// cssLink.href = browser.runtime.getURL('sites/google/style.css')
-
-// document.head.appendChild(cssLink)
-
 function updateResults() {
   const currentSearchString = window.location.search
   if (currentSearchString !== lastSearchString) {

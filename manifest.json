@@ -3,22 +3,26 @@
   "name": "Hotkeys for keyboard only navigation",
   "version": "0.1",
   "description": "Keyboard hotkeys for mouse free navigation on popular websites",
+
   "icons": {
-    "48": "icons/48.png",
-    "96": "icons/96.png",
-    "128": "icons/128.png"
+    "48": "icons/browser-action-enabled.svg",
+    "96": "icons/browser-action-enabled.svg",
+    "128": "icons/browser-action-enabled.svg"
   },
+  
   "browser_action": {
     "browser_style": true,
     "default_icon": "icons/browser-action-disabled.svg",
-    "default_popup": "popup/default.html",
+    "default_popup": "browser-actions/default/default.html",
     "default_title": "Hotkeys for sites"
   },
+
   "background": {
     "scripts": [
-      "background.js"
+      "background-scripts/background.js"
     ]
   },
+
   "content_scripts": [
     {
       "matches": [
@@ -214,8 +218,8 @@
         "https://www.google.cat/search*"
       ],
       "js": [
-        "init.js",
-        "sites/google/search/hotkeys.js"
+        "content-scripts  /init.js",
+        "content-scripts/google/search/hotkeys.js"
       ]
     },
     {
@@ -412,8 +416,8 @@
         "https://translate.google.cat/*"
       ],
       "js": [
-        "init.js",
-        "sites/google/translate/hotkeys.js"
+        "content-scripts/init.js",
+        "content-scripts/google/translate/hotkeys.js"
       ]
     },
     {
@@ -421,9 +425,9 @@
         "https://*.youtube.com/*"
       ],
       "js": [
-        "init.js",
-        "sites/youtube/hotkeys.js",
-        "sites/youtube/markup.js"
+        "content-scripts/init.js",
+        "content-scripts/youtube/hotkeys.js",
+        "content-scripts/youtube/markup.js"
       ]
     },
     {
@@ -431,8 +435,8 @@
         "https://*.twitch.tv/*"
       ],
       "js": [
-        "init.js",
-        "sites/twitch/hotkeys.js"
+        "content-scripts/init.js",
+        "content-scripts/twitch/hotkeys.js"
       ]
     }
   ],
@@ -440,8 +444,8 @@
   "web_accessible_resources": [
     "utils/locationUtils.js",
     "utils/mutationUtils.js",
-    "sites/youtube/utils.js",
-    "sites/google/style.css"
+
+    "utils/youtube.js"
   ],
 
   "commands": {

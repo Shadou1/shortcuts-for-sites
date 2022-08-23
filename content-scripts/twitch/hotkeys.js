@@ -20,10 +20,9 @@ const hotkeys = {
     category: 'Stream',
     description: 'Open settings',
     event: () => {
-      const allButtons = document.querySelectorAll('#channel-player button[data-a-target="player-settings-button"]')
-      settingsButton = allButtons[allButtons.length - 1]
+      const allSettingsButtons = document.querySelectorAll('#channel-player button[data-a-target="player-settings-button"]')
+      settingsButton = allSettingsButtons[allSettingsButtons.length - 1]
       settingsButton.click()
-      // Quality button is inconsistent?
       // qualityButton = qualityButton || document.querySelector('div[data-a-target="player-settings-menu"] button[data-a-target="player-settings-menu-item-quality"]')
       qualityButton = document.querySelector('div[data-a-target="player-settings-menu"] button[data-a-target="player-settings-menu-item-quality"]')
       qualityButton.focus()
@@ -34,13 +33,22 @@ const hotkeys = {
     category: 'Stream',
     description: 'Open quality settings',
     event: () => {
-      const allButtons = document.querySelectorAll('#channel-player button[data-a-target="player-settings-button"]')
-      settingsButton = allButtons[allButtons.length - 1]
+      const allSettingsButtons = document.querySelectorAll('#channel-player button[data-a-target="player-settings-button"]')
+      settingsButton = allSettingsButtons[allSettingsButtons.length - 1]
       settingsButton.click()
       qualityButton = document.querySelector('div[data-a-target="player-settings-menu"] button[data-a-target="player-settings-menu-item-quality"]')
       qualityButton.click()
       const currentQualityInput = document.querySelector('div[data-a-target="player-settings-menu"] input[checked=""]')
       currentQualityInput.focus()
+    }
+  },
+
+  'o': {
+    category: 'Stream',
+    description: 'Go to stream category',
+    event: () => {
+      const streamGameAnchor = document.querySelector('a[data-a-target="stream-game-link"]')
+      streamGameAnchor.click()
     }
   },
 
@@ -64,9 +72,8 @@ const hotkeys = {
     category: 'Chat',
     description: 'Focus chat box',
     event: () => {
-      // Chat textarea is inconsistent?
       // chatTextarea = chatTextarea || document.querySelector('textarea[data-a-target="chat-input"]')
-      chatTextarea = document.querySelector('textarea[data-a-target="chat-input"]')
+      chatTextarea = document.querySelector('[data-a-target="chat-input"]')
       chatTextarea.focus()
     }
   },

@@ -38,6 +38,8 @@ const hotkeysProxyHandler = {
 }
 keyboardOnlyNavigation.hotkeys = new Proxy(keyboardOnlyNavigation._hotkeys, hotkeysProxyHandler)
 
+
+// Browser action asks for hotkeys for the current page
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.type) {
     case 'getHotkeys':
@@ -49,7 +51,9 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 })
 
-// Wont work if activeElement is not an input or textarea but still accepts 'input' event
+// Handle hotkeys
+
+// Wont work if activeElement is not an input or textarea, but still accepts 'input' event
 // document.addEventListener('keydown', (ev) => {
   
 //   const activeElement = document.activeElement
@@ -84,10 +88,9 @@ document.addEventListener('keydown', (ev) => {
 
     const hotkeyConf = keyboardOnlyNavigation.hotkeys[ev.key]
     if (!hotkeyConf) return
-    if (!!hotkeyConf.ctrlKey !== ev.ctrlKey) return
-    if (!!hotkeyConf.altKey !== ev.altKey) return
-
-    hotkeyConf.event(ev)
+    if (ev.ctrlKey) hotkeyConf?.ctrlEvent(ev)
+    else if (ev.altKey) hotkeyConf?.altEvent(ev)
+    else hotkeyConf.event(ev)
 
   }, 10)
 

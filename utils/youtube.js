@@ -30,6 +30,8 @@ export function navigateToPlaylists(mutations, observer) {
   if (locationEndsWith('/playlists')) observer?.disconnect()
 }
 
+// TODO when navigating from channel video, first video is not focused (tab must be pressed for it to focus)
+// may be because youtube switches anchors somehow when page is fully loaded
 export function focusFirstVideo(mutations, observer) {
   if (!locationEndsWith('/videos', '/subscriptions', '/')) return
 

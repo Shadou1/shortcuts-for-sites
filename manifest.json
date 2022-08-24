@@ -218,7 +218,7 @@
         "https://www.google.cat/search*"
       ],
       "js": [
-        "content-scripts  /init.js",
+        "content-scripts/init.js",
         "content-scripts/google/search/hotkeys.js"
       ]
     },
@@ -445,7 +445,8 @@
     "utils/locationUtils.js",
     "utils/mutationUtils.js",
 
-    "utils/youtube.js"
+    "utils/youtube.js",
+    "utils/twitch.js"
   ],
 
   "commands": {

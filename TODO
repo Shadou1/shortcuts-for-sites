@@ -27,7 +27,8 @@ Todo:
   Youtube:
     ☐ Hotkeys work in all video players (not only on the /watch pages)
     ☐ Keep reference to queried elements, but also update them when page content/location changes
-    ☐ Volume up/down hotkeys (in addition to standart up/down arrows)
+    ☐ Volume up/down hotkeys (in addition to standard up/down arrows)
+    ☐ Fast forward/rewind hotkeys (in addition to standard 'j'/'l' keys)
     ✔ Show progress bar hotkey @done(22-08-18 13:34)
   
   Google:

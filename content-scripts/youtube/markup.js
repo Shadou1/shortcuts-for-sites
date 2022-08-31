@@ -6,7 +6,7 @@ const insertHotkeysInfo = (mutations, observer) => {
   if (!hotkeyDialogSection2) return
 
   const subTitle = hotkeyDialogSection2.querySelector('#sub-title').cloneNode(true)
-  subTitle.textContent = 'Settings'
+  subTitle.textContent = 'Additional hotkeys'
   hotkeyDialogSection2.appendChild(subTitle)
 
   const options = hotkeyDialogSection2.querySelector('#options').cloneNode()

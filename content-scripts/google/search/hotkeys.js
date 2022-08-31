@@ -91,7 +91,7 @@ const hotkeys = {
 
   'n': {
     category: 'Navigation',
-    description: 'Go to videos',
+    description: 'Go to news',
     event: () => {
       if (newsAnchors.length === 0) newsAnchors = document.querySelectorAll('a[href*="tbm=nws"]')
       if (newsAnchors.length === 1) {

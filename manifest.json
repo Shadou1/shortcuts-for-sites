@@ -4,6 +4,12 @@
   "version": "0.1",
   "description": "Keyboard hotkeys for mouse free navigation on popular websites",
 
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "hotkeys-for-sites@shadou1.org"
+    }
+  },  
+
   "icons": {
     "48": "icons/browser-action-enabled.svg",
     "96": "icons/browser-action-enabled.svg",

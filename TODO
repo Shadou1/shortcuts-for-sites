@@ -4,16 +4,17 @@ Todo:
   ✘ Check if module exists before loading it, if possible @cancelled(22-05-29 12:22)
   ✔ Do not query elements in hotkeys.js if user is on the wrong page @done(22-05-27 10:44)
   ☐ Bundle code to be able to use export/import in content scripts
-  ☐ Hotkeys that navigate to a new page should accept an optional 'Ctrl' key to instead open the page in a new tab
+  ✘ Hotkeys that navigate to a new page should accept an optional 'Ctrl' key to instead open the page in a new tab @cancelled(22-08-30 19:14)
 
   ☐ Hotkeys with Ctrl, Alt modifiers render correctly in browser action
-  ☐ Hotkeys with Ctrl, Alt collide with regular keys in object keys
+  ✔ Hotkeys with Ctrl, Alt collide with regular keys in object keys @done(22-08-30 19:14)
+  ☐ Add being able to use hotkeys when active element is accepting input
 
   ☐ Hotkeys will only work in english keyboard locale
 
   ✔ Redraw icons as svg @done(22-08-22 18:46)
 
-  ☐ When hotkey navigates to new page, figure out how to query not yet rendered elements (await for element to appear / mutation observer)
+  ✔ When hotkey navigates to new page, figure out how to query not yet rendered elements (await for element to appear / mutation observer) @done(22-08-30 19:15)
 
   ☐ Force browser to draw focus outline when hotkey focuses something as if it was tabbed to with 'tab' @critical (can it be done?)
 
@@ -26,7 +27,7 @@ Todo:
 
   Youtube:
     ☐ Hotkeys work in all video players (not only on the /watch pages)
-    ☐ Keep reference to queried elements, but also update them when page content/location changes
+    ✘ Keep reference to queried elements, but also update them when page content/location changes @cancelled(22-08-31 16:50)
     ☐ Volume up/down hotkeys (in addition to standard up/down arrows)
     ☐ Fast forward/rewind hotkeys (in addition to standard 'j'/'l' keys)
     ✔ Show progress bar hotkey @done(22-08-18 13:34)
@@ -39,3 +40,6 @@ Todo:
     ☐ Add videos hotkeys
 
     ☐ Since google search pages are not dynamic, maybe don't need to write logic to update searchResults arrays when query changes
+
+  Twitch:
+    ☐ Add predictions hotkeys

@@ -104,7 +104,7 @@ const hotkeys = {
     category: 'Stream',
     description: 'Go to online/offline channel sections',
     event: () => {
-      const channelAnchor = document.querySelector('#live-channel-stream-information a, #offline-channel-main-content a')
+      const channelAnchor = document.querySelector('#live-channel-stream-information a:not([href^="/directory"], [data-a-target="stream-game-link"]), #offline-channel-main-content a')
       channelAnchor.click()
     }
   },
@@ -168,6 +168,9 @@ const hotkeys = {
       }
     }
   },
+
+  // Predictions
+  // button[data-test-selector="community-prediction-highlight-header__action-button"]
 
 }
 

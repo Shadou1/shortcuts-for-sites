@@ -4,7 +4,6 @@ let subscriptionsAnchor = null
 let settingsButton = null
 let qualityButton = null
 let moviePlayer = null
-let showMoreSubscriptionsAnchor = null
 
 // TODO use bundler to import these functions with 'import {} from'
 let locationStartsWith, locationEndsWith;
@@ -23,6 +22,7 @@ let navigateToVideos,
   focusFirstPlaylist,
   goToHome,
   goToSubscriptions,
+  expandAndFocusFirstSubscription,
   focusFirstSubscription;
 (async () => {
   ({
@@ -32,6 +32,7 @@ let navigateToVideos,
     focusFirstPlaylist,
     goToHome,
     goToSubscriptions,
+    expandAndFocusFirstSubscription,
     focusFirstSubscription
   } = await import(browser.runtime.getURL('utils/youtube.js')))
 })()
@@ -88,23 +89,16 @@ const hotkeys = {
 
   'U': {
     category: 'General',
-    description: 'Expand and focus subscribed channels',
+    description: 'Focus subscribed channels',
     verbatum: 'Shift+U',
     event: () => {
       guideButton = guideButton || document.querySelector('ytd-masthead #guide-button #button')
-      if (guideButton.getAttribute('aria-pressed') === 'false' || guideButton.getAttribute('aria-pressed') === null) guideButton.click()
-
-      showMoreSubscriptionsAnchor = showMoreSubscriptionsAnchor || document.querySelector('#sections ytd-guide-section-renderer:nth-child(2) ytd-guide-collapsible-entry-renderer tp-yt-paper-item')
-      const firstChannelItem = document.querySelector('#sections ytd-guide-section-renderer:nth-child(2) tp-yt-paper-item')
-      whenTargetMutates('#content.ytd-app', focusFirstSubscription)
-      if (!showMoreSubscriptionsAnchor && !firstChannelItem) {
-        whenTargetMutates('#content.ytd-app', focusFirstSubscription)
+      if (guideButton.getAttribute('aria-pressed') === 'false' || guideButton.getAttribute('aria-pressed') === null) {
+        guideButton.click()
+        whenTargetMutates('#content.ytd-app', expandAndFocusFirstSubscription)
       } else {
-        // TODO will not focus first channel when not on /subscriptions page, have to press button twice
-        showMoreSubscriptionsAnchor?.click()
-        firstChannelItem.focus()
+        focusFirstSubscription()
       }
-
     }
   },
 
@@ -192,6 +186,28 @@ const hotkeys = {
 
       const commentBox = document.querySelector('ytd-comment-simplebox-renderer #placeholder-area')
       commentBox.click()
+    }
+  },
+
+  '[': {
+    category: 'Playlist',
+    description: 'Focus first video in playlist',
+    event: () => {
+      if (!locationStartsWith('/watch')) return
+
+      const firstPlaylistVideo = document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items a')
+      firstPlaylistVideo.focus()
+    }
+  },
+
+  ']': {
+    category: 'Playlist',
+    description: 'Focus last video in playlist',
+    event: () => {
+      if (!locationStartsWith('/watch')) return
+
+      const firstPlaylistVideo = document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items:last-child a')
+      firstPlaylistVideo.focus()
     }
   },
 

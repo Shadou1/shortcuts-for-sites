@@ -83,12 +83,22 @@ export function goToSubscriptions(mutations, observer) {
   observer?.disconnect()
 }
 
-export function focusFirstSubscription(mutations, observer) {
+export function expandAndFocusFirstSubscription(mutations, observer) {
   const showMoreSubscriptionsAnchor = document.querySelector('#sections ytd-guide-section-renderer:nth-child(2) ytd-guide-collapsible-entry-renderer tp-yt-paper-item')
+  if (!showMoreSubscriptionsAnchor) return
+  showMoreSubscriptionsAnchor.click()
+
+  // TODO using setTimeout is inconsistent, since if it takes more than 200ms to open guide bar it will not focus
+  setTimeout(focusFirstSubscription, 200)
+  // whenTargetMutates(focusFirstSubscription)
+
+  observer.disconnect()
+}
+
+export function focusFirstSubscription(mutations, observer) {
   const firstChannelItem = document.querySelector('#sections ytd-guide-section-renderer:nth-child(2) tp-yt-paper-item')
 
-  if (!showMoreSubscriptionsAnchor && !firstChannelItem) return
-  showMoreSubscriptionsAnchor?.click()
+  if (!firstChannelItem) return
   firstChannelItem.focus()
 
   observer?.disconnect()

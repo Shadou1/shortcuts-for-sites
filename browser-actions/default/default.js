@@ -32,9 +32,12 @@ function fillPopupWithHotkeys(hotkeys) {
     const hotkeyRow = document.createElement('div')
     const hotkeyDescription = document.createElement('p')
     hotkeyDescription.textContent = description
-    const hotkeyLetter = document.createElement('p')
-    hotkeyLetter.textContent = verbatum ? `${hotkey} (${verbatum})` : hotkey
-    hotkeyRow.append(hotkeyDescription, hotkeyLetter)
+    const hotkeyButton = document.createElement('p')
+    const hotkeyKey = document.createElement('span')
+    hotkeyKey.textContent = hotkey
+    hotkeyButton.appendChild(hotkeyKey)
+    if (verbatum) hotkeyButton.append(` (${verbatum})`)
+    hotkeyRow.append(hotkeyDescription, hotkeyButton)
     categorySection.append(hotkeyRow)
   }
   

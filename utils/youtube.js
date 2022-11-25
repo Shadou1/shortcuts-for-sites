@@ -11,6 +11,7 @@ let whenTargetMutates;
 // Functions can be used as both callbacks for MutationObserver and as regular functions
 
 export function navigateToVideos(mutations, observer) {
+  // TODO refactor nth-child(4)
   const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(4)')
   if (!videosTab) return
   videosTab.click()
@@ -21,7 +22,8 @@ export function navigateToVideos(mutations, observer) {
 }
 
 export function navigateToPlaylists(mutations, observer) {
-  const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(6)')
+  // TODO refactor nth-last-child(11)
+  const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-child(11)')
   if (!playlistsTab) return
   playlistsTab.click()
 
@@ -36,10 +38,10 @@ export function focusFirstVideo(mutations, observer) {
   if (!locationEndsWith('/videos', '/subscriptions', '/')) return
 
   let firstVideo
-  if (locationEndsWith('/videos', '/subscriptions')) {
+  if (locationEndsWith('/subscriptions')) {
     firstVideo = document.querySelector('ytd-browse[role="main"] #items ytd-grid-video-renderer #video-title')
   }
-  else if (locationEndsWith('/')) {
+  else if (locationEndsWith('/videos', '/')) {
     firstVideo = document.querySelector('ytd-browse[role="main"] #content #video-title-link')
   }
   if (!firstVideo) return

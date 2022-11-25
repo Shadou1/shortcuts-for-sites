@@ -184,8 +184,22 @@ const hotkeys = {
     event: () => {
       if (!locationStartsWith('/watch')) return
 
-      const commentBox = document.querySelector('ytd-comment-simplebox-renderer #placeholder-area')
-      commentBox.click()
+      let commentBox = document.querySelector('ytd-comment-simplebox-renderer #placeholder-area')
+      if (!commentBox) {
+
+        const infoRenderer = document.querySelector('#info ytd-video-primary-info-renderer, #above-the-fold')
+        infoRenderer.scrollIntoView()
+        whenTargetMutates('#content.ytd-app', (mutations, observer) => {
+          commentBox = document.querySelector('ytd-comment-simplebox-renderer #placeholder-area')
+          if (!commentBox) return
+
+          commentBox.click()
+          observer.disconnect()
+        })
+
+      } else {
+        commentBox.click()
+      }
     }
   },
 
@@ -239,18 +253,19 @@ const hotkeys = {
     category: 'Channel',
     description: 'Go to channel videos',
     event: () => {
-      if (!locationStartsWith('/watch', '/channel', '/c', '/user')) return
+      if (!locationStartsWith('/watch', '/@')) return
 
       if (locationStartsWith('/watch')) {
         const channelLink = document.querySelector('a.ytd-video-owner-renderer')
         channelLink.click()
       }
 
-      // TODO refactor
+      // TODO refactor nth-child(4)
       const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(4)')
       if (videosTab) {
         if (!locationEndsWith('/videos')) videosTab.click()
-        const firstVideo = document.querySelector('ytd-browse[role="main"] #items ytd-grid-video-renderer #video-title')
+        // const firstVideo = document.querySelector('ytd-browse[role="main"] #items ytd-grid-video-renderer #video-title')
+        const firstVideo = document.querySelector('ytd-browse[role="main"] #content #video-title-link')
         if (firstVideo && locationEndsWith('/videos')) {
           firstVideo.focus()
         } else {
@@ -267,14 +282,15 @@ const hotkeys = {
     category: 'Channel',
     description: 'Go to channel playlists',
     event: () => {
-      if (!locationStartsWith('/watch', '/channel', '/c', '/user')) return
+      if (!locationStartsWith('/watch', '/@')) return
 
       if (locationStartsWith('/watch')) {
         const channelLink = document.querySelector('a.ytd-video-owner-renderer')
         channelLink.click()
       }
 
-      const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(6)')
+      // TODO refactor nth-child(11)
+      const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-child(11)')
       if (playlistsTab) {
         if (!locationEndsWith('/playlists')) playlistsTab.click()
         const firstPlaylist = document.querySelector('ytd-browse[role="main"] #items ytd-grid-playlist-renderer #video-title')

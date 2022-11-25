@@ -39,6 +39,26 @@ const hotkeys = {
     }
   },
 
+  'u': {
+    category: 'General',
+    description: 'Focus followed channels',
+    event: () => {
+      // collapseLeftNavButton = collapseLeftNavButton || document.querySelector('button[data-a-target="side-nav-arrow"]')
+      const firstFollowedChannel = document.querySelector('#side-nav .tw-transition-group a[data-test-selector="followed-channel"]')
+      firstFollowedChannel?.focus()
+    }
+  },
+
+  'r': {
+    category: 'General',
+    description: 'Focus recommended channels',
+    event: () => {
+      // collapseLeftNavButton = collapseLeftNavButton || document.querySelector('button[data-a-target="side-nav-arrow"]')
+      const firstRecommendedChannel = document.querySelector('#side-nav .tw-transition-group a[data-test-selector="recommended-channel"]')
+      firstRecommendedChannel?.focus()
+    }
+  },
+
   's': {
     category: 'Stream',
     description: 'Open settings',

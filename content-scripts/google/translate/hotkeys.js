@@ -1,4 +1,4 @@
-const translateFromTextarea = document.querySelector('textarea[aria-label="Source text"]')
+const translateFromTextarea = document.querySelector('textarea.er8xn')
 
 let showDefinitionsDiv, hideDefinitionsDiv
 let showExamplesDiv, hideExamplesDiv

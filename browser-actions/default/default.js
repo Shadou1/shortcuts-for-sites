@@ -7,7 +7,7 @@ function clearPopup() {
   hotkeysArticle.replaceChildren()
 }
 
-function clearPopupError() {
+function clearlPopupError() {
   popupHeading.textContent = 'Fetching Hotkeys'
   popupHeading.hidden = false
   hotkeysArticle.replaceChildren()

@@ -6,15 +6,18 @@ WebExtension that adds hotkeys for easier keyboard navigation on popular website
 
 Navigating websites without touching your mouse can be difficult. Focusing links and other text elements is easy enough with *quick find* and *quick find within link-text only* (<kbd>/</kbd> and <kbd>'</kbd> shortcuts in firefox), but for everything else pressing <kbd>Tab</kbd> every time can become a chore. With this in mind, I implemented a number of hotkeys for different websites which should make navigating them with a keyboard more comfortable.
 
+## Useful tips
+
+- Pressing <kbd>Alt</kbd>+<kbd>k</kbd> will display hotkeys available for the current website.
+- Press <kbd>Tab</kbd> once to force browser to draw focus outline.
+
 ## Popup
+
+![Popup preview](https://user-images.githubusercontent.com/33831256/204445402-21559bcb-7879-4de0-a006-10e476159da7.png)
 
 ## Demonstration
 
-## Useful tips
-
-> Pressing <kbd>Alt</kbd>+<kbd>k</kbd> will display hotkeys available for the current website.
-
-> Press <kbd>Tab</kbd> once to force browser to draw focus outline.
+https://youtu.be/9MR6KKRwTP0
 
 ## Issues
 

@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Hotkeys for keyboard only navigation",
+  "name": "Hotkeys for sites",
   "version": "0.1",
-  "description": "Keyboard hotkeys for mouse free navigation on popular websites",
+  "description": "Hotkeys for easier keyboard navigation on popular websites",
 
   "browser_specific_settings": {
     "gecko": {
@@ -452,7 +452,8 @@
     "utils/mutationUtils.js",
 
     "utils/youtube.js",
-    "utils/twitch.js"
+    "utils/twitch.js",
+    "utils/markdownUtils.js"
   ],
 
   "commands": {

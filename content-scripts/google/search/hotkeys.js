@@ -12,9 +12,9 @@ const nextPageAnchor = document.querySelector('a#pnnext')
 const previousPageAnchor = document.querySelector('a#pnprev')
 
 let allResultsAnchor = document.querySelector('a[href*="source=lmns"]:not([href*="tbm"]), a[href*="source=lnms"]:not([href*="tbm"])')
-let imageAnchors = document.querySelectorAll('a[href*="tbm=isch"]')
-let videoAnchors = document.querySelectorAll('a[href*="tbm=vid"]')
-let newsAnchors = document.querySelectorAll('a[href*="tbm=nws"]')
+let imageAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=isch"]')
+let videoAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=vid"]')
+let newsAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=nws"]')
 
 function updateResults() {
   const currentSearchString = window.location.search
@@ -69,11 +69,9 @@ const hotkeys = {
     category: 'Navigation',
     description: 'Go to images',
     event: () => {
-      if (imageAnchors.length === 0) imageAnchors = document.querySelectorAll('a[href*="tbm=isch"]')
-      if (imageAnchors.length === 1) {
-        imageAnchors[0].click()
-        return
-      }
+      if (!imageAnchor) imageAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=isch"]')
+      if (!imageAnchor.offsetParent) return
+      imageAnchor?.click()
     }
   },
 
@@ -81,11 +79,9 @@ const hotkeys = {
     category: 'Navigation',
     description: 'Go to videos',
     event: () => {
-      if (videoAnchors.length === 0) videoAnchors = document.querySelectorAll('a[href*="tbm=vid"]')
-      if (videoAnchors.length === 1) {
-        videoAnchors[0].click()
-        return
-      }
+      if (!videoAnchor) videoAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=vid"]')
+      if (!videoAnchor.offsetParent) return
+      videoAnchor?.click()
     }
   },
 
@@ -93,11 +89,9 @@ const hotkeys = {
     category: 'Navigation',
     description: 'Go to news',
     event: () => {
-      if (newsAnchors.length === 0) newsAnchors = document.querySelectorAll('a[href*="tbm=nws"]')
-      if (newsAnchors.length === 1) {
-        newsAnchors[0].click()
-        return
-      }
+      if (!newsAnchor) newsAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=nws"]')
+      if (!newsAnchor.offsetParent) return
+      newsAnchor?.click()
     }
   },
 

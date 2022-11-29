@@ -1,6 +1,11 @@
 body {
-  width: 500px;
+  width: 520px;
   min-height: 400px;
+  overflow-x: hidden;
+}
+
+main {
+  width: 500px;
 }
 
 main > h1 {

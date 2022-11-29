@@ -1,8 +1,8 @@
 let settingsButton = null // inconsistent
 let qualityButton = null // inconsistent
 let chatTextarea = null // inconsistent
-let collapseLeftNavButton = null
-let collapseChatButton = null
+let collapseLeftNavButton = null // inconsistent
+let collapseChatButton = null // inconsistent
 
 let locationStartsWith, locationEndsWith;
 (async () => {
@@ -34,7 +34,8 @@ const hotkeys = {
     description: 'Expand/collapse left sidebar',
     verbatum: 'Shift+e',
     event: () => {
-      collapseLeftNavButton = collapseLeftNavButton || document.querySelector('button[data-a-target="side-nav-arrow"]')
+      // collapseLeftNavButton = collapseLeftNavButton || document.querySelector('button[data-a-target="side-nav-arrow"]')
+      collapseLeftNavButton = document.querySelector('button[data-a-target="side-nav-arrow"]')
       collapseLeftNavButton.click()
     }
   },
@@ -111,6 +112,7 @@ const hotkeys = {
       const streamInformatinoSection = document.querySelector('.channel-info-content section#live-channel-stream-information')
       if (document.activeElement !== streamInformatinoSection) {
         streamInformatinoSection.focus()
+        // TODO first time scrolling will work incorrectly
         streamInformatinoSection.scrollIntoView()
       } else {
         streamInformatinoSection.blur()
@@ -143,7 +145,8 @@ const hotkeys = {
     category: 'Chat',
     description: 'Expand/collapse chat',
     event: () => {
-      collapseChatButton = collapseChatButton || document.querySelector('button[data-a-target="right-column__toggle-collapse-btn"]')
+      // collapseChatButton = collapseChatButton || document.querySelector('button[data-a-target="right-column__toggle-collapse-btn"]')
+      collapseChatButton = document.querySelector('button[data-a-target="right-column__toggle-collapse-btn"]')
       collapseChatButton.click()
     }
   },

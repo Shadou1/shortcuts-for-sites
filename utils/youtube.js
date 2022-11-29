@@ -11,9 +11,9 @@ let whenTargetMutates;
 // Functions can be used as both callbacks for MutationObserver and as regular functions
 
 export function navigateToVideos(mutations, observer) {
-  // TODO refactor nth-child(4)
-  const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(4)')
-  if (!videosTab) return
+  // TODO refactor :nth-of-type(2)
+  const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(2)')
+  if (!videosTab?.offsetParent) return
   videosTab.click()
 
   whenTargetMutates('#content.ytd-app', focusFirstVideo)
@@ -22,9 +22,9 @@ export function navigateToVideos(mutations, observer) {
 }
 
 export function navigateToPlaylists(mutations, observer) {
-  // TODO refactor nth-last-child(11)
-  const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-child(11)')
-  if (!playlistsTab) return
+  // TODO refactor :nth-last-of-type(4), this will incorrectly select another tab when channel has a 'store' tab
+  const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(4)')
+  if (!playlistsTab?.offsetParent) return
   playlistsTab.click()
 
   whenTargetMutates('#content.ytd-app', focusFirstPlaylist)
@@ -32,7 +32,7 @@ export function navigateToPlaylists(mutations, observer) {
   if (locationEndsWith('/playlists')) observer?.disconnect()
 }
 
-// TODO when navigating from channel video, first video is not focused (tab must be pressed for it to focus)
+// FIXED? when navigating from channel video, first video is not focused (tab must be pressed for it to focus)
 // may be because youtube switches anchors somehow when page is fully loaded
 export function focusFirstVideo(mutations, observer) {
   if (!locationEndsWith('/videos', '/subscriptions', '/')) return

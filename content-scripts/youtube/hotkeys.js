@@ -90,7 +90,7 @@ const hotkeys = {
   'U': {
     category: 'General',
     description: 'Focus subscribed channels',
-    verbatum: 'Shift+U',
+    verbatum: 'Shift+u',
     event: () => {
       guideButton = guideButton || document.querySelector('ytd-masthead #guide-button #button')
       if (guideButton.getAttribute('aria-pressed') === 'false' || guideButton.getAttribute('aria-pressed') === null) {
@@ -220,7 +220,7 @@ const hotkeys = {
     event: () => {
       if (!locationStartsWith('/watch')) return
 
-      const firstPlaylistVideo = document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items:last-child a')
+      const firstPlaylistVideo = document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items:last-of-type a')
       firstPlaylistVideo.focus()
     }
   },
@@ -244,7 +244,8 @@ const hotkeys = {
       if (!locationStartsWith('/watch')) return
 
       const channelLink = document.querySelector('a.ytd-video-owner-renderer')
-      // TODO figure out why new tab opens with white background
+      // TODO figure out why new tab opens with white background when using window.open
+      // middle clicking on channel link opens new page with user's preferred color scheme
       window.open(channelLink.href, '_blank')
     }
   },
@@ -253,16 +254,16 @@ const hotkeys = {
     category: 'Channel',
     description: 'Go to channel videos',
     event: () => {
-      if (!locationStartsWith('/watch', '/@')) return
+      if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
 
       if (locationStartsWith('/watch')) {
         const channelLink = document.querySelector('a.ytd-video-owner-renderer')
         channelLink.click()
       }
-
-      // TODO refactor nth-child(4)
-      const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-child(4)')
-      if (videosTab) {
+      
+      // TODO refactor :nth-of-type(2)
+      const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(2)')
+      if (videosTab?.offsetParent) {
         if (!locationEndsWith('/videos')) videosTab.click()
         // const firstVideo = document.querySelector('ytd-browse[role="main"] #items ytd-grid-video-renderer #video-title')
         const firstVideo = document.querySelector('ytd-browse[role="main"] #content #video-title-link')
@@ -282,16 +283,16 @@ const hotkeys = {
     category: 'Channel',
     description: 'Go to channel playlists',
     event: () => {
-      if (!locationStartsWith('/watch', '/@')) return
+      if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
 
       if (locationStartsWith('/watch')) {
         const channelLink = document.querySelector('a.ytd-video-owner-renderer')
         channelLink.click()
       }
 
-      // TODO refactor nth-child(11)
-      const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-child(11)')
-      if (playlistsTab) {
+      // TODO refactor :nth-last-of-type(4), this will incorrectly select another tab when channel has a 'store' tab, or doesn't have community tab
+      const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab::nth-last-of-type(4)')
+      if (playlistsTab?.offsetParent) {
         if (!locationEndsWith('/playlists')) playlistsTab.click()
         const firstPlaylist = document.querySelector('ytd-browse[role="main"] #items ytd-grid-playlist-renderer #video-title')
         if (firstPlaylist && locationEndsWith('/playlists')) {

@@ -290,8 +290,8 @@ const hotkeys = {
         channelLink.click()
       }
 
-      // TODO refactor :nth-last-of-type(4), this will incorrectly select another tab when channel has a 'store' tab, or doesn't have community tab
-      const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab::nth-last-of-type(4)')
+      // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab, or doesn't have community tab
+      const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(5)')
       if (playlistsTab?.offsetParent) {
         if (!locationEndsWith('/playlists')) playlistsTab.click()
         const firstPlaylist = document.querySelector('ytd-browse[role="main"] #items ytd-grid-playlist-renderer #video-title')

@@ -8,7 +8,7 @@ Navigating websites without touching your mouse can be difficult. Focusing links
 
 ## Useful tips
 
-- Pressing <kbd>Alt</kbd>+<kbd>k</kbd> will display shortcuts available for the current website.
+- Pressing <kbd>Alt</kbd>+<kbd>k</kbd> will display shortcuts for the current website.
 - Press <kbd>Tab</kbd> once to force browser to draw focus outline.
 - On some websites, pressing <kbd>?</kbd> will display already available shortcuts.
 

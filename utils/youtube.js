@@ -22,8 +22,8 @@ export function navigateToVideos(mutations, observer) {
 }
 
 export function navigateToPlaylists(mutations, observer) {
-  // TODO refactor :nth-last-of-type(4), this will incorrectly select another tab when channel has a 'store' tab
-  const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(4)')
+  // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab
+  const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(5)')
   if (!playlistsTab?.offsetParent) return
   playlistsTab.click()
 

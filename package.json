@@ -1,5 +1,5 @@
 {
-  "name": "hotkeys-for-sites",
+  "name": "shortcuts-for-sites",
   "version": "1.0.0",
   "description": "",
   "main": "''",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Shadou1/hotkeys-for-sites.git"
+    "url": "git+https://github.com/Shadou1/shortcuts-for-sites"
   },
   "author": "Shadou1",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/Shadou1/hotkeys-for-sites/issues"
+    "url": "https://github.com/Shadou1/shortcuts-for-sites/issues"
   },
-  "homepage": "https://github.com/Shadou1/hotkeys-for-sites#readme",
+  "homepage": "https://github.com/Shadou1/shortcuts-for-sites#readme",
   "devDependencies": {
     "@types/firefox-webext-browser": "^94.0.1",
     "eslint": "^8.21.0"

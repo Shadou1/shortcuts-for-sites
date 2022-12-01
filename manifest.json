@@ -1,12 +1,13 @@
 {
   "manifest_version": 2,
-  "name": "Hotkeys for sites",
+  "name": "Keyboard Shortcuts for sites",
   "version": "0.1",
-  "description": "Hotkeys for easier keyboard navigation on popular websites",
+  "description": "Shortcuts for easier keyboard navigation on popular websites",
+  "homepage_url": "https://github.com/Shadou1/shortcuts-for-sites",
 
   "browser_specific_settings": {
     "gecko": {
-      "id": "hotkeys-for-sites@shadou1.org"
+      "id": "shortcuts-for-sites@shadou1.org"
     }
   },  
 
@@ -20,7 +21,7 @@
     "browser_style": true,
     "default_icon": "icons/browser-action-disabled.svg",
     "default_popup": "browser-actions/default/default.html",
-    "default_title": "Hotkeys for sites"
+    "default_title": "Shortcuts for sites"
   },
 
   "background": {

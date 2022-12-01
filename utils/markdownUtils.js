@@ -1,6 +1,6 @@
 export function constructHotkeysMarkdown(hotkeys) {
 
-  let markdown = '| Hotkey | Description |\n| ------ | ----------- |\n'
+  let markdown = '| Shortcut | Description |\n| -------- | ----------- |\n'
   let lastCategory = null
   for (const [hotkey, { category, description, verbatum }] of Object.entries(hotkeys)) {
     if (category !== lastCategory) {

@@ -1,15 +1,16 @@
-# Hotkeys For Sites
+# Shortcuts For Sites
 
-WebExtension that adds hotkeys for easier keyboard navigation on popular websites.
+WebExtension that adds keyboard shortcuts for easier navigation on popular websites.
 
 ## Description
 
-Navigating websites without touching your mouse can be difficult. Focusing links and other text elements is easy enough with *quick find* and *quick find within link-text only* (<kbd>/</kbd> and <kbd>'</kbd> shortcuts in firefox), but for everything else pressing <kbd>Tab</kbd> every time can become a chore. With this in mind, I implemented a number of hotkeys for different websites which should make navigating them with a keyboard more comfortable.
+Navigating websites without touching your mouse can be difficult. Focusing links and other text elements is easy enough with *quick find* and *quick find within link-text only* (<kbd>/</kbd> and <kbd>'</kbd> shortcuts in firefox), but for everything else pressing <kbd>Tab</kbd> every time can become a chore. With this in mind, I implemented a number of shortcuts for different websites which should make navigating them with a keyboard more comfortable.
 
 ## Useful tips
 
-- Pressing <kbd>Alt</kbd>+<kbd>k</kbd> will display hotkeys available for the current website.
+- Pressing <kbd>Alt</kbd>+<kbd>k</kbd> will display shortcuts available for the current website.
 - Press <kbd>Tab</kbd> once to force browser to draw focus outline.
+- On some websites, pressing <kbd>?</kbd> will display already available shortcuts.
 
 ## Popup
 
@@ -22,16 +23,16 @@ https://youtu.be/9MR6KKRwTP0
 ## Issues
 
 - Focus outline won't render on some pages if the user hasn't pressed <kbd>Tab</kbd> at least once while on a page.
-- On Twitch, 'd' hotkey to scroll to stream description will work incorrectly the first time.
-- Hotkeys are not rebindable right now.
+- On Twitch, <kbd>d</kbd> shortcut to scroll to stream description will work incorrectly the first time.
+- Shortcuts are not rebindable right now.
 
-## Full list of available hotkeys
+## Full list of available shortcuts
 
 <details>
 <summary>Google search</summary>
 
-| Hotkey | Description |
-| ------ | ----------- |
+| Shortcut | Description |
+| -------- | ----------- |
 | **Navigation** |
 | <kbd>a</kbd>  | Go to all search results |
 | <kbd>i</kbd>  | Go to images |
@@ -51,8 +52,8 @@ https://youtu.be/9MR6KKRwTP0
 <details>
 <summary>Google translate</summary>
 
-| Hotkey | Description |
-| ------ | ----------- |
+| Shortcut | Description |
+| -------- | ----------- |
 | **General** |
 | <kbd>j</kbd>  | Focus translate-from box |
 | <kbd>d</kbd>  | Show/hide definitions |
@@ -66,8 +67,8 @@ https://youtu.be/9MR6KKRwTP0
 <details>
 <summary>Youtube</summary>
 
-| Hotkey | Description |
-| ------ | ----------- |
+| Shortcut | Description |
+| -------- | ----------- |
 | **General** |
 | <kbd>e</kbd>  | Expand/Collapse guide sidebar |
 | <kbd>o</kbd>  | Go to Home |
@@ -96,8 +97,8 @@ https://youtu.be/9MR6KKRwTP0
 <details>
 <summary>Twitch</summary>
 
-| Hotkey | Description |
-| ------ | ----------- |
+| Shortcut | Description |
+| -------- | ----------- |
 | **General** |
 | <kbd>E</kbd> (<kbd>Shift</kbd>+<kbd>e</kbd>) | Expand/collapse left sidebar |
 | <kbd>u</kbd>  | Focus followed channels |

@@ -73,16 +73,8 @@ document.addEventListener('input', (_ev) => {
   isLastInputEvent = true
 })
 
-// TODO remove in production
-// let constructHotkeysMarkdown;
-// (async () => {
-//   ({ constructHotkeysMarkdown } = await import(browser.runtime.getURL('utils/markdownUtils.js')))
-// })()
-
 let lastTimeout = null
 document.addEventListener('keydown', (ev) => {
-
-  // console.log(constructHotkeysMarkdown(keyboardOnlyNavigation.hotkeys))
 
   clearTimeout(lastTimeout)
   // Execute event listener after a timeout to ensure that it is not firing together with an input event

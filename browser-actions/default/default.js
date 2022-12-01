@@ -2,13 +2,13 @@ const popupHeading = document.querySelector('main > h1')
 const hotkeysArticle = document.querySelector('article')
 
 function clearPopup() {
-  popupHeading.textContent = 'No Available Hotkeys'
+  popupHeading.textContent = 'No Available Shortcuts'
   popupHeading.hidden = false
   hotkeysArticle.replaceChildren()
 }
 
 function clearlPopupError() {
-  popupHeading.textContent = 'Fetching Hotkeys'
+  popupHeading.textContent = 'Fetching Shortcuts'
   popupHeading.hidden = false
   hotkeysArticle.replaceChildren()
 }
@@ -76,7 +76,7 @@ browser.tabs.query({
       }
     })
 
-    popupHeading.textContent = 'Fetching Hotkeys'
+    popupHeading.textContent = 'Fetching Shortcuts'
     return browser.tabs.sendMessage(tabs[0].id, { type: 'getHotkeys' })
   })
   .then(handleHotkeysResponse)

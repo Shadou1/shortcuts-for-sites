@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Keyboard Shortcuts for sites",
+  "name": "Shortcuts for sites",
   "version": "0.1",
-  "description": "Shortcuts for easier keyboard navigation on popular websites",
+  "description": "Keyboard shortcuts for easier navigation on popular websites",
   "homepage_url": "https://github.com/Shadou1/shortcuts-for-sites",
 
   "browser_specific_settings": {

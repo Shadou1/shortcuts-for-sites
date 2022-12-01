@@ -6,6 +6,7 @@ module.exports = {
     'assets/',
     'utils/markdownUtils',
     'TODO',
+    'icons/browser-actions.svg',
     'web-ext-config.js'
   ]
 }

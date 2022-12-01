@@ -14,6 +14,8 @@ export function navigateToVideos(mutations, observer) {
   // TODO refactor :nth-of-type(2)
   const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(2)')
   if (!videosTab?.offsetParent) return
+  const autoplayVideo = document.querySelector('.html5-main-video')
+  autoplayVideo?.pause?.()
   videosTab.click()
 
   whenTargetMutates('#content.ytd-app', focusFirstVideo)
@@ -25,6 +27,8 @@ export function navigateToPlaylists(mutations, observer) {
   // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab
   const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(5)')
   if (!playlistsTab?.offsetParent) return
+  const autoplayVideo = document.querySelector('.html5-main-video')
+  autoplayVideo?.pause?.()
   playlistsTab.click()
 
   whenTargetMutates('#content.ytd-app', focusFirstPlaylist)

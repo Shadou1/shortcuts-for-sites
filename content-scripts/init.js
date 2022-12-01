@@ -88,8 +88,8 @@ document.addEventListener('keydown', (ev) => {
 
     const hotkeyConf = keyboardOnlyNavigation.hotkeys[ev.key]
     if (!hotkeyConf) return
-    if (ev.ctrlKey) hotkeyConf?.ctrlEvent(ev)
-    else if (ev.altKey) hotkeyConf?.altEvent(ev)
+    if (ev.ctrlKey) hotkeyConf.ctrlEvent?.(ev)
+    else if (ev.altKey) hotkeyConf.altEvent?.(ev)
     else hotkeyConf.event(ev)
 
   }, 10)

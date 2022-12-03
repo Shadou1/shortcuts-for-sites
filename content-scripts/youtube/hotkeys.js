@@ -16,9 +16,12 @@ let whenTargetMutates;
   ({ whenTargetMutates } = await import(browser.runtime.getURL('utils/mutationUtils.js')))
 })()
 
-let navigateToVideos,
+let navigateToHome,
+  navigateToVideos,
   navigateToPlaylists,
   focusFirstVideo,
+  focusFirstVideoOn,
+  focusFirstVideoOnQueryType,
   focusFirstPlaylist,
   goToHome,
   goToSubscriptions,
@@ -26,9 +29,12 @@ let navigateToVideos,
   focusFirstSubscription;
 (async () => {
   ({
+    navigateToHome,
     navigateToVideos,
     navigateToPlaylists,
     focusFirstVideo,
+    focusFirstVideoOn,
+    focusFirstVideoOnQueryType,
     focusFirstPlaylist,
     goToHome,
     goToSubscriptions,
@@ -59,7 +65,7 @@ const hotkeys = {
           whenTargetMutates('#content.ytd-app', goToHome)
         } else {
           homeAnchor.click()
-          whenTargetMutates('#content.ytd-app', focusFirstVideo)
+          whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(1))
         }
       } else {
         focusFirstVideo()
@@ -79,7 +85,7 @@ const hotkeys = {
           whenTargetMutates('#content.ytd-app', goToSubscriptions)
         } else {
           subscriptionsAnchor.click()
-          whenTargetMutates('#content.ytd-app', focusFirstVideo)
+          whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(2))
         }
       } else {
         focusFirstVideo()
@@ -226,18 +232,80 @@ const hotkeys = {
   },
 
   'h': {
-    category: 'Channel',
-    description: 'Go to channel',
+    category: 'Channel (works on channel video page)',
+    description: 'Go to channel home',
     event: () => {
-      if (!locationStartsWith('/watch')) return
+      if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
 
-      const channelLink = document.querySelector('a.ytd-video-owner-renderer')
-      channelLink.click()
+      if (locationStartsWith('/watch')) {
+        const channelLink = document.querySelector('a.ytd-video-owner-renderer')
+        channelLink.click()
+        // whenTargetMutates('#content.ytd-app', navigateToHome)
+        whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(3))
+
+      } else {  
+        if (!locationEndsWith('/videos', '/shorts', '/streams', '/playlists', '/community', '/channels', '/about')) {
+          // focusFirstVideo()
+          focusFirstVideoOnQueryType(3)()
+        } else {
+          const homeTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(1)')
+          homeTab.click()
+          whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(3))
+        }
+      }
+    }
+  },
+
+  'v': {
+    category: 'Channel (works on channel video page)',
+    description: 'Go to channel videos',
+    event: () => {
+      if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
+
+      if (locationStartsWith('/watch')) {
+        const channelLink = document.querySelector('a.ytd-video-owner-renderer')
+        channelLink.click()
+        whenTargetMutates('#content.ytd-app', navigateToVideos)
+
+      } else {
+        if (locationEndsWith('/videos')) {
+          focusFirstVideo()
+        } else {
+          // TODO refactor :nth-of-type(2)
+          const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(2)')
+          videosTab.click()
+          whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(1))
+        }
+      }
+    }
+  },
+
+  'p': {
+    category: 'Channel (works on channel video page)',
+    description: 'Go to channel playlists',
+    event: () => {
+      if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
+
+      if (locationStartsWith('/watch')) {
+        const channelLink = document.querySelector('a.ytd-video-owner-renderer')
+        channelLink.click()
+        whenTargetMutates('#content.ytd-app', navigateToPlaylists)
+
+      } else {
+        if (locationEndsWith('/playlists')) {
+          focusFirstPlaylist()
+        } else {
+          // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab, or doesn't have community tab
+          const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(5)')
+          playlistsTab.click()
+          whenTargetMutates('#content.ytd-app', focusFirstPlaylist)
+        }
+      }
     }
   },
 
   'H': {
-    category: 'Channel',
+    category: 'Channel (works on channel video page)',
     description: 'Go to channel (new tab)',
     verbatum: 'Shift+h',
     event: () => {
@@ -249,63 +317,6 @@ const hotkeys = {
       window.open(channelLink.href, '_blank')
     }
   },
-
-  'v': {
-    category: 'Channel',
-    description: 'Go to channel videos',
-    event: () => {
-      if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
-
-      if (locationStartsWith('/watch')) {
-        const channelLink = document.querySelector('a.ytd-video-owner-renderer')
-        channelLink.click()
-      }
-      
-      // TODO refactor :nth-of-type(2)
-      const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(2)')
-      if (videosTab?.offsetParent) {
-        if (!locationEndsWith('/videos')) videosTab.click()
-        // const firstVideo = document.querySelector('ytd-browse[role="main"] #items ytd-grid-video-renderer #video-title')
-        const firstVideo = document.querySelector('ytd-browse[role="main"] #content #video-title-link')
-        if (firstVideo && locationEndsWith('/videos')) {
-          firstVideo.focus()
-        } else {
-          whenTargetMutates('#content.ytd-app', focusFirstVideo)
-        }
-      } else {
-        whenTargetMutates('#content.ytd-app', navigateToVideos)
-      }
-
-    }
-  },
-
-  'p': {
-    category: 'Channel',
-    description: 'Go to channel playlists',
-    event: () => {
-      if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
-
-      if (locationStartsWith('/watch')) {
-        const channelLink = document.querySelector('a.ytd-video-owner-renderer')
-        channelLink.click()
-      }
-
-      // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab, or doesn't have community tab
-      const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(5)')
-      if (playlistsTab?.offsetParent) {
-        if (!locationEndsWith('/playlists')) playlistsTab.click()
-        const firstPlaylist = document.querySelector('ytd-browse[role="main"] #items ytd-grid-playlist-renderer #video-title')
-        if (firstPlaylist && locationEndsWith('/playlists')) {
-          firstPlaylist.focus()
-        } else {
-          whenTargetMutates('#content.ytd-app', focusFirstPlaylist)
-        }
-      } else {
-        whenTargetMutates('#content.ytd-app', navigateToPlaylists)
-      }
-
-    }
-  }
 }
 
 Object.assign(keyboardOnlyNavigation.hotkeys, hotkeys)

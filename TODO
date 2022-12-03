@@ -34,7 +34,7 @@ Todo:
     ☐ Volume up/down hotkeys (in addition to standard up/down arrows)
     ☐ Fast forward/rewind hotkeys (in addition to standard 'j'/'l' keys)
     ✔ Show progress bar hotkey @done(22-08-18 13:34)
-    ☐ When going to channel videos/playlists from /watch page and channel home has an autoplay video, this video will start autoplaying in the background incorrectly (sometimes)
+    ✔ When going to channel videos/playlists from /watch page and channel home has an autoplay video, this video will start autoplaying in the background incorrectly (sometimes) @done(22-12-03 14:23)
 
     Bugs:
       ☐ When channel has a 'store' tab or doesn't have a 'community' tab, 'p' (go to playlists) hotkey will incorrectly select another tab @critical

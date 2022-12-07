@@ -27,7 +27,7 @@ function updateResults() {
       // Populate search results
       searchResultsDivs = document.querySelectorAll('#rcnt > div:first-of-type:not(#center_col), #rcnt > #center_col #rso > div')
       searchRelatedAnchors = []
-      
+
       if (searchResultsDivs.length === 1) {
         // news
         searchResultsAnchors = document.querySelectorAll('#rso > div a')

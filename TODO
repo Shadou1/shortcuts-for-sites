@@ -18,6 +18,10 @@ Todo:
 
   ☐ Force browser to draw focus outline when hotkey focuses something as if it was tabbed to with 'tab' @critical (can it be done?)
 
+  ☐ Mutation observers will stay in background if callback didn't disconnect (happens if it didn't find the queried element) @high
+
+  ☐ Come up with better structure for hotkeys
+
   ☐ Write tests?
 
   Browser Action:
@@ -29,7 +33,7 @@ Todo:
     ☐ Allow user to configure scroll offset (when scrolling to an anchor for example)
 
   Youtube:
-    ☐ Hotkeys work in all video players (not only on the /watch pages)
+    ✔ Hotkeys work in all video players (not only on the /watch pages) @done(22-12-07 13:22)
     ✘ Keep reference to queried elements, but also update them when page content/location changes @cancelled(22-08-31 16:50)
     ☐ Volume up/down hotkeys (in addition to standard up/down arrows)
     ☐ Fast forward/rewind hotkeys (in addition to standard 'j'/'l' keys)
@@ -38,7 +42,7 @@ Todo:
 
     Bugs:
       ☐ When channel has a 'store' tab or doesn't have a 'community' tab, 'p' (go to playlists) hotkey will incorrectly select another tab @critical
-  
+
   Google:
     ✔ Should work not only on '.com' domains @critical @done(22-08-22 09:32)
     ☐ Make search indexes relative to the current index so that after pressing 'tab' and then pressing a hotkey it tabs to the next search result after currently focused

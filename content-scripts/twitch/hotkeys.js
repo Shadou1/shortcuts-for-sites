@@ -1,3 +1,6 @@
+let homeAnchor = null
+let followingAnchor = null
+let browseAnchor = null
 let settingsButton = null // inconsistent
 let qualityButton = null // inconsistent
 let chatTextarea = null // inconsistent
@@ -15,14 +18,20 @@ let whenTargetMutates;
 })()
 
 let focusFirstChannel,
-  navigateToVideos,
   focusFirstVideo,
+  focusFirstVideoOnQueryType,
+  focusFirstCategory,
+  navigateToLiveChannels,
+  navigateToVideos,
   navigateToSchedule;
 (async () => {
   ({
     focusFirstChannel,
-    navigateToVideos,
     focusFirstVideo,
+    focusFirstVideoOnQueryType,
+    focusFirstCategory,
+    navigateToLiveChannels,
+    navigateToVideos,
     navigateToSchedule,
   } = await import(browser.runtime.getURL('utils/twitch.js')))
 })()
@@ -60,6 +69,73 @@ const hotkeys = {
     }
   },
 
+  'o': {
+    category: 'General',
+    description: 'Go to home',
+    event: () => {
+      if (window.location.pathname !== '/') {
+        homeAnchor = homeAnchor || document.querySelector('a[data-a-target="home-link"]')
+        homeAnchor?.click()
+        whenTargetMutates('main', focusFirstVideoOnQueryType('home'))
+      } else {
+        focusFirstVideoOnQueryType('home')()
+      }
+    }
+  },
+
+  'U': {
+    category: 'General',
+    description: 'Go to following',
+    verbatum: 'Shift+u',
+    event: () => {
+      if (!locationEndsWith('/following')) {
+        followingAnchor = followingAnchor || document.querySelector('a[data-a-target="following-link"]')
+        followingAnchor?.click()
+        whenTargetMutates('main', focusFirstVideoOnQueryType('following'))
+      } else {
+        focusFirstVideoOnQueryType('following')()
+      }
+    }
+  },
+
+  'b': {
+    category: 'General',
+    description: 'Browse categories',
+    event: () => {
+      if (locationEndsWith('/directory/all')) {
+        const categoriesAnchor = document.querySelector('a[data-a-target="browse-type-tab-categories"]')
+        categoriesAnchor?.click()
+        // Sometimes it does not mutate and callback will execute wrongly
+        const isFocused = focusFirstCategory()
+        if (!isFocused) whenTargetMutates('main', focusFirstCategory)
+      } else if (!locationEndsWith('/directory')) {
+        browseAnchor = browseAnchor || document.querySelector('a[data-a-target="browse-link"]')
+        browseAnchor?.click()
+        whenTargetMutates('main', focusFirstCategory)
+      } else {
+        focusFirstCategory()
+      }
+    }
+  },
+
+  'B': {
+    category: 'General',
+    description: 'Browse live channels',
+    event: () => {
+      if (!locationEndsWith('/directory/all')) {
+        if (locationEndsWith('/directory')) {
+          navigateToLiveChannels()
+        } else {
+          browseAnchor = browseAnchor || document.querySelector('a[data-a-target="browse-link"]')
+          browseAnchor?.click()
+          whenTargetMutates('main', navigateToLiveChannels)
+        }
+      } else {
+        focusFirstVideoOnQueryType('browse')()
+      }
+    }
+  },
+
   's': {
     category: 'Stream',
     description: 'Open settings',
@@ -87,7 +163,7 @@ const hotkeys = {
     }
   },
 
-  'o': {
+  'C': {
     category: 'Stream',
     description: 'Go to stream category',
     event: () => {
@@ -122,18 +198,9 @@ const hotkeys = {
     }
   },
 
-  'h': {
-    category: 'Stream',
-    description: 'Go to online/offline channel sections',
-    event: () => {
-      const channelAnchor = document.querySelector('#live-channel-stream-information a:not([href^="/directory"], [data-a-target="stream-game-link"]), #offline-channel-main-content a')
-      channelAnchor.click()
-    }
-  },
-
   'c': {
     category: 'Chat',
-    description: 'Focus chat box',
+    description: 'Chat',
     event: () => {
       // chatTextarea = chatTextarea || document.querySelector('textarea[data-a-target="chat-input"]')
       chatTextarea = document.querySelector('[data-a-target="chat-input"]')
@@ -151,6 +218,19 @@ const hotkeys = {
     }
   },
 
+  'h': {
+    category: 'Channel',
+    description: 'Go to online/offline channel sections',
+    event: () => {
+      const offlineSection = document.querySelector('#offline-channel-main-content')
+      const channelAnchor = document.querySelector('#live-channel-stream-information a:not([href^="/directory"], [data-a-target="stream-game-link"]), #offline-channel-main-content a')
+      channelAnchor.click()
+      if (!offlineSection) {
+        whenTargetMutates('main', focusFirstVideoOnQueryType('channel home'))
+      }
+    }
+  },
+
   'v': {
     category: 'Channel',
     description: 'Go to channel videos',
@@ -162,7 +242,7 @@ const hotkeys = {
           firstVideo.focus()
         } else {
           videosAnchor.click()
-          whenTargetMutates('main', focusFirstVideo)
+          whenTargetMutates('main', focusFirstVideoOnQueryType('channel video'))
         }
       } else {
         const channelAnchor = document.querySelector('#live-channel-stream-information a:not([href^="/directory"], .tw-link, [data-test-selector="clips-watch-full-button"]), #offline-channel-main-content a')
@@ -172,9 +252,10 @@ const hotkeys = {
     }
   },
 
-  'b': {
+  'S': {
     category: 'Channel',
     description: 'Go to channel schedule',
+    verbatum: 'Shift+s',
     event: () => {
       const scheduleAnchor = document.querySelector('a[tabname="schedule"]')
       if (scheduleAnchor) {
@@ -191,6 +272,25 @@ const hotkeys = {
       }
     }
   },
+
+  'x': {
+    category: 'Mini player',
+    description: 'Expand mini player',
+    event: () => {
+      const expandPlayerButton = document.querySelector('[data-a-player-state="mini"] .player-overlay-background > div:nth-child(2) button')
+      expandPlayerButton?.click()
+    }
+  },
+
+  'X': {
+    category: 'Mini player',
+    description: 'Close mini player',
+    verbatum: 'Shift+x',
+    event: () => {
+      const closePlayerButton = document.querySelector('[data-a-player-state="mini"] .player-overlay-background > div:first-child button')
+      closePlayerButton?.click()
+    }
+  }
 
   // Predictions
   // button[data-test-selector="community-prediction-highlight-header__action-button"]

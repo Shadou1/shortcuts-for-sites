@@ -2,7 +2,9 @@ let guideButton = null
 let homeAnchor = null
 let subscriptionsAnchor = null
 let settingsButton = null
+let settingsButtonChannel = null
 let qualityButton = null
+let qualityButtonChannel = null
 let moviePlayer = null
 
 // TODO use bundler to import these functions with 'import {} from'
@@ -112,11 +114,14 @@ const hotkeys = {
     category: 'Video',
     description: 'Open settings',
     event: () => {
-      if (!locationStartsWith('/watch')) return
-
-      //#c4-player .ytp-settings-button
-      settingsButton = settingsButton || document.querySelector('#movie_player .ytp-settings-button')
-      settingsButton.click()
+      if (locationStartsWith('/watch')) {
+        settingsButton = settingsButton || document.querySelector('#movie_player .ytp-settings-button')
+        settingsButton?.click()
+      }
+      if (locationStartsWith('/@', '/channel', '/c', '/user')) {
+        settingsButtonChannel = settingsButtonChannel || document.querySelector('#c4-player .ytp-settings-button')
+        settingsButtonChannel?.click()
+      }
     }
   },
 
@@ -124,17 +129,26 @@ const hotkeys = {
     category: 'Video',
     description: 'Open quality settings',
     event: () => {
-      if (!locationStartsWith('/watch')) return
-
-      settingsButton = settingsButton || document.querySelector('#movie_player .ytp-settings-button')
-      if (settingsButton.getAttribute('aria-expanded') === 'false') {
-        settingsButton.click()
-        qualityButton = qualityButton || document.querySelector('#movie_player  .ytp-panel-menu .ytp-menuitem:last-child')
-        qualityButton.click()
-      } else {
-        settingsButton.click()
+      if (locationStartsWith('/watch')) {
+        settingsButton = settingsButton || document.querySelector('#movie_player .ytp-settings-button')
+        if (settingsButton.getAttribute('aria-expanded') === 'false') {
+          settingsButton.click()
+          qualityButton = qualityButton || document.querySelector('#movie_player .ytp-panel-menu .ytp-menuitem:last-child')
+          qualityButton.click()
+        } else {
+          settingsButton.click()
+        }
       }
-
+      if (locationStartsWith('/@', '/channel', '/c', '/user')) {
+        settingsButtonChannel = settingsButtonChannel || document.querySelector('#c4-player .ytp-settings-button')
+        if (settingsButtonChannel.getAttribute('aria-expanded') === 'false') {
+          settingsButtonChannel.click()
+          qualityButtonChannel = qualityButtonChannel || document.querySelector('#c4-player .ytp-panel-menu .ytp-menuitem:last-child')
+          qualityButtonChannel.click()
+        } else {
+          settingsButtonChannel.click()
+        }
+      }
     }
   },
 
@@ -232,7 +246,7 @@ const hotkeys = {
   },
 
   'h': {
-    category: 'Channel (works on channel video page)',
+    category: 'Channel (works on channel or video page)',
     description: 'Go to channel home',
     event: () => {
       if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
@@ -243,7 +257,7 @@ const hotkeys = {
         // whenTargetMutates('#content.ytd-app', navigateToHome)
         whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(3))
 
-      } else {  
+      } else {
         if (!locationEndsWith('/videos', '/shorts', '/streams', '/playlists', '/community', '/channels', '/about')) {
           // focusFirstVideo()
           focusFirstVideoOnQueryType(3)()
@@ -257,7 +271,7 @@ const hotkeys = {
   },
 
   'v': {
-    category: 'Channel (works on channel video page)',
+    category: 'Channel (works on channel or video page)',
     description: 'Go to channel videos',
     event: () => {
       if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
@@ -281,7 +295,7 @@ const hotkeys = {
   },
 
   'p': {
-    category: 'Channel (works on channel video page)',
+    category: 'Channel (works on channel or video page)',
     description: 'Go to channel playlists',
     event: () => {
       if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
@@ -305,7 +319,7 @@ const hotkeys = {
   },
 
   'H': {
-    category: 'Channel (works on channel video page)',
+    category: 'Channel (works on channel or video page)',
     description: 'Go to channel (new tab)',
     verbatum: 'Shift+h',
     event: () => {
@@ -315,6 +329,41 @@ const hotkeys = {
       // TODO figure out why new tab opens with white background when using window.open
       // middle clicking on channel link opens new page with user's preferred color scheme
       window.open(channelLink.href, '_blank')
+    }
+  },
+
+  'E': {
+    category: 'Premiere/Stream',
+    description: 'Hide/Show chat',
+    verbatum: 'Shift+e',
+    event: () => {
+      if (!locationStartsWith('/watch')) return
+
+      const hideChatButton = document.querySelector('ytd-app ytd-live-chat-frame #show-hide-button button')
+      hideChatButton?.click()
+    }
+  },
+
+  'b': {
+    category: 'Premiere/Stream',
+    description: 'Chat',
+    event: () => {
+      if (!locationStartsWith('/watch')) return
+
+      const chatBox = document.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
+      chatBox?.focus()
+    }
+  },
+
+  'S': {
+    category: 'Premiere/Stream',
+    description: 'Skip ahead to live broadcast',
+    verbatum: 'Shift+s',
+    event: () => {
+      if (!locationStartsWith('/watch')) return
+
+      const skipButton = document.querySelector('#movie_player .ytp-left-controls button.ytp-live-badge')
+      skipButton?.click()
     }
   },
 }

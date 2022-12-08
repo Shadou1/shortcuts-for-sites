@@ -16,15 +16,63 @@ let imageAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href
 let videoAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=vid"]')
 let newsAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=nws"]')
 
+let didPageMutate = false
+let whenTargetMutates;
+(async () => {
+  ({ whenTargetMutates } = await import(browser.runtime.getURL('utils/mutationUtils.js')))
+  // Mutates only on images page
+  whenTargetMutates('#islmp[role="main"]', (mutations, observer) => {
+    didPageMutate = true
+  })
+})()
+
+let abortUpdateIndexSearch = []
+let abortUpdateIndexRelated = []
+
+function updateIndexSearch(toIndex) {
+  return function () {
+    searchResultIndex = toIndex
+  }
+}
+
+function updateIndexRelated(toIndex) {
+  return function () {
+    searchRelatedIndex = toIndex
+  }
+}
+
 function updateResults() {
   const currentSearchString = window.location.search
-  if (currentSearchString !== lastSearchString) {
-    lastSearchString = currentSearchString
-    const currentSearchQuery = new URLSearchParams(currentSearchString).get('q')
-    if (currentSearchQuery !== lastSearchQuery) {
-      lastSearchQuery = currentSearchQuery
+  if (currentSearchString === lastSearchString && !didPageMutate) return
+  lastSearchString = currentSearchString
 
-      // Populate search results
+  const urlSearchParams = new URLSearchParams(currentSearchString)
+  const currentSearchQuery = urlSearchParams.get('q')
+  if (currentSearchQuery === lastSearchQuery && !didPageMutate) return
+  lastSearchQuery = currentSearchQuery
+
+  const queryType = urlSearchParams.get('tbm')
+
+  if (!didPageMutate) {
+    searchResultIndex = -1
+    searchRelatedIndex = -1
+  }
+
+  if (didPageMutate) {
+    abortUpdateIndexSearch.forEach((abortController) => abortController.abort())
+    abortUpdateIndexRelated.forEach((abortController) => abortController.abort())
+    abortUpdateIndexSearch = []
+    abortUpdateIndexRelated = []
+  }
+
+  didPageMutate = false
+
+  // Populate search results
+  switch (queryType) {
+    // news, videos, all search
+    case 'nws':
+    case 'vid':
+    case null: {
       searchResultsDivs = document.querySelectorAll('#rcnt > div:first-of-type:not(#center_col), #rcnt > #center_col #rso > div')
       searchRelatedAnchors = []
 
@@ -38,7 +86,6 @@ function updateResults() {
           if (resultAnchor?.offsetParent) searchResultsAnchors.push(resultAnchor)
         }
       }
-      searchResultIndex = -1
 
       // Populate search related
       searchRelatedAnchors = []
@@ -48,11 +95,33 @@ function updateResults() {
           searchRelatedAnchors.push(relatedAnchor)
         }
       })
-
-      searchRelatedIndex = -1
-
+      break
     }
+
+    // image search
+    case 'isch': {
+      // Populate image results
+      searchResultsAnchors = document.querySelectorAll('#islmp[role="main"] a[tabindex="0"]')
+
+      // Populate
+      searchRelatedAnchors = document.querySelectorAll('scrolling-carousel a[href*="tbm=isch"]')
+      break
+    }
+
   }
+
+  searchResultsAnchors.forEach((searchResult, index) => {
+    const abortController = new AbortController()
+    searchResult.addEventListener('focus', updateIndexSearch(index), { signal: abortController.signal })
+    abortUpdateIndexSearch.push(abortController)
+  })
+
+  searchRelatedAnchors.forEach((relatedResult, index) => {
+    const abortController = new AbortController()
+    relatedResult.addEventListener('focus', updateIndexRelated(index), { signal: abortController.signal })
+    abortUpdateIndexRelated.push(abortController)
+  })
+
 }
 
 const hotkeys = {
@@ -97,7 +166,7 @@ const hotkeys = {
 
   'l': {
     category: 'Search',
-    description: 'Focus next search result',
+    description: 'Focus next search result / image',
     event: () => {
       updateResults()
 
@@ -114,7 +183,7 @@ const hotkeys = {
 
   'j': {
     category: 'Search',
-    description: 'Focus previous search result',
+    description: 'Focus previous search result / image',
     event: () => {
       updateResults()
 
@@ -155,6 +224,8 @@ const hotkeys = {
       const currentRelatedAnchor = searchRelatedAnchors[searchRelatedIndex]
       currentRelatedAnchor.focus()
       currentRelatedAnchor.scrollIntoView()
+      const scrollLength = Math.min(350, window.innerHeight / 2)
+      window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : -100)
     }
   },
 

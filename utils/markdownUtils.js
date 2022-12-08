@@ -8,7 +8,7 @@ export function constructHotkeysMarkdown(hotkeys) {
       markdown += `| **${category}** |\n`
     }
     // Amazing
-    markdown += `| <kbd>${hotkey}</kbd> ${verbatum ? `(${verbatum.replace(/[^+]+/g, (substring) => `<kbd>${substring}</kbd>`)})` : ''} | ${description} |\n`
+    markdown += `| <kbd>${hotkey}</kbd> ${verbatum ? `(${verbatum.replace(/[^+]+/g, (substring) => `<kbd>${substring}</kbd>`)})` : ''}| ${description} |\n`
   }
 
   return markdown

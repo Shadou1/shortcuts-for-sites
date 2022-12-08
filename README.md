@@ -29,36 +29,68 @@ https://youtu.be/9MR6KKRwTP0
 ## Full list of available shortcuts
 
 <details>
-<summary>Google search</summary>
+<summary>Google Search</summary>
 
 | Shortcut | Description |
 | -------- | ----------- |
 | **Navigation** |
-| <kbd>a</kbd>  | Go to all search results |
-| <kbd>i</kbd>  | Go to images |
-| <kbd>v</kbd>  | Go to videos |
-| <kbd>n</kbd>  | Go to news |
+| <kbd>a</kbd> | Go to all search results |
+| <kbd>i</kbd> | Go to images |
+| <kbd>v</kbd> | Go to videos |
+| <kbd>n</kbd> | Go to news |
 | **Search** |
-| <kbd>l</kbd>  | Focus next search result |
-| <kbd>j</kbd>  | Focus previous search result |
+| <kbd>l</kbd> | Focus next search result |
+| <kbd>j</kbd> | Focus previous search result |
 | <kbd>L</kbd> (<kbd>Shift</kbd>+<kbd>l</kbd>) | Go to next search page |
 | <kbd>J</kbd> (<kbd>Shift</kbd>+<kbd>j</kbd>) | Go to previous search page |
-| <kbd>o</kbd>  | Focus next related search |
+| <kbd>o</kbd> | Focus next related search |
 
 </details>
 
 <br>
 
 <details>
-<summary>Google translate</summary>
+<summary>Google Translate</summary>
 
 | Shortcut | Description |
 | -------- | ----------- |
 | **General** |
-| <kbd>j</kbd>  | Focus translate-from box |
-| <kbd>d</kbd>  | Show/hide definitions |
-| <kbd>e</kbd>  | Show/hide examples |
-| <kbd>t</kbd>  | Show/hide translations |
+| <kbd>j</kbd> | Focus translate-from box |
+| <kbd>d</kbd> | Show/hide definitions |
+| <kbd>e</kbd> | Show/hide examples |
+| <kbd>t</kbd> | Show/hide translations |
+
+</details>
+
+<br>
+
+<details>
+<summary>Twitch</summary>
+
+| Shortcut | Description |
+| -------- | ----------- |
+| <kbd>E</kbd> (<kbd>Shift</kbd>+<kbd>e</kbd>) | Expand/collapse left sidebar |
+| <kbd>u</kbd> | Focus followed channels |
+| <kbd>r</kbd> | Focus recommended channels |
+| <kbd>o</kbd> | Go to home |
+| <kbd>U</kbd> (<kbd>Shift</kbd>+<kbd>u</kbd>) | Go to following |
+| <kbd>b</kbd> | Browse categories |
+| <kbd>B</kbd> | Browse live channels |
+| **Stream** |
+| <kbd>s</kbd> | Open settings |
+| <kbd>q</kbd> | Open quality settings |
+| <kbd>C</kbd> | Go to stream category |
+| <kbd>d</kbd> | Scroll to description/video |
+| **Chat** |
+| <kbd>c</kbd> | Chat |
+| <kbd>e</kbd> | Expand/collapse chat |
+| **Channel** |
+| <kbd>h</kbd> | Go to online/offline channel sections |
+| <kbd>v</kbd> | Go to channel videos |
+| <kbd>S</kbd> (<kbd>Shift</kbd>+<kbd>s</kbd>) | Go to channel schedule |
+| **Mini player** |
+| <kbd>x</kbd> | Expand mini player |
+| <kbd>X</kbd> (<kbd>Shift</kbd>+<kbd>x</kbd>) | Close mini player |
 
 </details>
 
@@ -70,50 +102,28 @@ https://youtu.be/9MR6KKRwTP0
 | Shortcut | Description |
 | -------- | ----------- |
 | **General** |
-| <kbd>e</kbd>  | Expand/Collapse guide sidebar |
-| <kbd>o</kbd>  | Go to Home |
-| <kbd>u</kbd>  | Go to Subscriptions |
+| <kbd>e</kbd> | Expand/Collapse guide sidebar |
+| <kbd>o</kbd> | Go to Home |
+| <kbd>u</kbd> | Go to Subscriptions |
 | <kbd>U</kbd> (<kbd>Shift</kbd>+<kbd>u</kbd>) | Focus subscribed channels |
 | **Video** |
-| <kbd>s</kbd>  | Open settings |
-| <kbd>q</kbd>  | Open quality settings |
-| <kbd>;</kbd>  | Show progress bar |
-| <kbd>d</kbd>  | Scroll to description/video |
-| <kbd>r</kbd>  | Focus first related video |
-| <kbd>n</kbd>  | Comment |
+| <kbd>s</kbd> | Open settings |
+| <kbd>q</kbd> | Open quality settings |
+| <kbd>;</kbd> | Show progress bar |
+| <kbd>d</kbd> | Scroll to description/video |
+| <kbd>r</kbd> | Focus first related video |
+| <kbd>n</kbd> | Comment |
 | **Playlist** |
-| <kbd>[</kbd>  | Focus first video in playlist |
-| <kbd>]</kbd>  | Focus last video in playlist |
-| **Channel** |
-| <kbd>h</kbd>  | Go to channel |
+| <kbd>[</kbd> | Focus first video in playlist |
+| <kbd>]</kbd> | Focus last video in playlist |
+| **Channel (works on channel or video page)** |
+| <kbd>h</kbd> | Go to channel home |
+| <kbd>v</kbd> | Go to channel videos |
+| <kbd>p</kbd> | Go to channel playlists |
 | <kbd>H</kbd> (<kbd>Shift</kbd>+<kbd>h</kbd>) | Go to channel (new tab) |
-| <kbd>v</kbd>  | Go to channel videos |
-| <kbd>p</kbd>  | Go to channel playlists |
-
-</details>
-
-<br>
-
-<details>
-<summary>Twitch</summary>
-
-| Shortcut | Description |
-| -------- | ----------- |
-| **General** |
-| <kbd>E</kbd> (<kbd>Shift</kbd>+<kbd>e</kbd>) | Expand/collapse left sidebar |
-| <kbd>u</kbd>  | Focus followed channels |
-| <kbd>r</kbd>  | Focus recommended channels |
-| **Stream** |
-| <kbd>s</kbd>  | Open settings |
-| <kbd>q</kbd>  | Open quality settings |
-| <kbd>o</kbd>  | Go to stream category |
-| <kbd>d</kbd>  | Scroll to description/video |
-| <kbd>h</kbd>  | Go to online/offline channel sections |
-| **Chat** |
-| <kbd>c</kbd>  | Focus chat box |
-| <kbd>e</kbd>  | Expand/collapse chat |
-| **Channel** |
-| <kbd>v</kbd>  | Go to channel videos |
-| <kbd>b</kbd>  | Go to channel schedule |
+| **Premiere/Stream** |
+| <kbd>E</kbd> (<kbd>Shift</kbd>+<kbd>e</kbd>) | Hide/Show chat |
+| <kbd>b</kbd> | Chat |
+| <kbd>S</kbd> (<kbd>Shift</kbd>+<kbd>s</kbd>) | Skip ahead to live broadcast |
 
 </details>

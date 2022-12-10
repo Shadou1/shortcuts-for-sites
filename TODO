@@ -26,6 +26,9 @@ Todo:
 
   Browser Action:
     ✔ Browser action width doesn't fit @done(22-11-29 09:02)
+    ☐ Show a hint if site has native shortcuts ('?' key)
+    ☐ Vertical scrollbar displays incorrectly
+    ☐ Numeric shortcuts displayed first before character shortcuts
 
   Options:
     ☐ Extension options page
@@ -59,7 +62,7 @@ Todo:
     ☐ Add predictions and other chat action hotkeys
 
   Reddit:
-    ☐ Add Reddit shortcuts
+    ✔ Add Reddit shortcuts @done(22-12-10 23:55)
 
   Fandom wiki:
     ☐ Add fandom wiki domain level shortcuts (works on any wiki)

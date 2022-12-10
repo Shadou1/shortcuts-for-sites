@@ -445,6 +445,15 @@
         "content-scripts/init.js",
         "content-scripts/twitch/hotkeys.js"
       ]
+    },
+    {
+      "matches": [
+        "https://www.reddit.com/*"
+      ],
+      "js": [
+        "content-scripts/init.js",
+        "content-scripts/reddit/hotkeys.js"
+      ]
     }
   ],
 

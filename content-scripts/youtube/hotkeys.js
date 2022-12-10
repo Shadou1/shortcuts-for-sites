@@ -213,8 +213,8 @@ const hotkeys = {
           commentBox = document.querySelector('ytd-comment-simplebox-renderer #placeholder-area')
           if (!commentBox) return
 
-          commentBox.click()
           observer.disconnect()
+          commentBox.click()
         })
 
       } else {

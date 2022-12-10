@@ -16,7 +16,7 @@ function getDivs() {
     leftDiv = translationDivs[1]
     rightDiv = translationDivs[2]
   }
-  
+
   showDefinitionsDiv = leftDiv.querySelector('div > div > div:nth-child(2) > div[aria-expanded="false"]')
   showExamplesDiv = leftDiv.querySelector('div:nth-child(2) > div > div:nth-child(2) > div[aria-expanded="false"]')
   showTranslationsDiv = rightDiv.querySelector('div > div > div:nth-child(2) > div[aria-expanded="false"]')
@@ -27,7 +27,7 @@ function getDivs() {
 
 }
 
-const hotkeys = {
+const shortcuts = {
 
   'j': {
     category: 'General',
@@ -70,4 +70,4 @@ const hotkeys = {
 
 }
 
-Object.assign(keyboardOnlyNavigation.hotkeys, hotkeys)
+Object.assign(keyboardOnlyNavigation.shortcuts, shortcuts)

@@ -31,7 +31,7 @@ document.body.addEventListener('focusin', (event) => {
   postLink.focus()
 })
 
-const hotkeys = {
+const shortcuts = {
 
   'o': {
     category: 'General',
@@ -198,10 +198,10 @@ const hotkeys = {
 
 }
 
-hotkeys[Symbol.for('categoryOrder')] = [
+shortcuts[Symbol.for('categoryOrder')] = [
   'General',
   'Posts filters',
   'Video'
 ]
 
-Object.assign(keyboardOnlyNavigation.hotkeys, hotkeys)
+Object.assign(keyboardOnlyNavigation.shortcuts, shortcuts)

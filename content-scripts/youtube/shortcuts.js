@@ -45,7 +45,7 @@ let navigateToHome,
   } = await import(browser.runtime.getURL('utils/youtube.js')))
 })()
 
-const hotkeys = {
+const shortcuts = {
   'e': {
     category: 'General',
     description: 'Expand/Collapse guide sidebar',
@@ -368,4 +368,4 @@ const hotkeys = {
   },
 }
 
-Object.assign(keyboardOnlyNavigation.hotkeys, hotkeys)
+Object.assign(keyboardOnlyNavigation.shortcuts, shortcuts)

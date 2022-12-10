@@ -124,7 +124,7 @@ function updateResults() {
 
 }
 
-const hotkeys = {
+const shortcuts = {
 
   'a': {
     category: 'Navigation',
@@ -231,4 +231,4 @@ const hotkeys = {
 
 }
 
-Object.assign(keyboardOnlyNavigation.hotkeys, hotkeys)
+Object.assign(keyboardOnlyNavigation.shortcuts, shortcuts)

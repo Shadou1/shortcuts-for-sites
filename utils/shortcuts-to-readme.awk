@@ -6,7 +6,7 @@ BEGINFILE {
   "<summary>INSERT SITE NAME</summary>\n" \
 }
 
-/const hotkeys/ {
+/const shortcuts/ {
   start = true
   print \
   "| Shortcut | Description |\n" \

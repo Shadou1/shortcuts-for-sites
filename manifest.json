@@ -226,7 +226,7 @@
       ],
       "js": [
         "content-scripts/init.js",
-        "content-scripts/google/search/hotkeys.js"
+        "content-scripts/google/search/shortcuts.js"
       ]
     },
     {
@@ -424,7 +424,7 @@
       ],
       "js": [
         "content-scripts/init.js",
-        "content-scripts/google/translate/hotkeys.js"
+        "content-scripts/google/translate/shortcuts.js"
       ]
     },
     {
@@ -433,7 +433,7 @@
       ],
       "js": [
         "content-scripts/init.js",
-        "content-scripts/youtube/hotkeys.js",
+        "content-scripts/youtube/shortcuts.js",
         "content-scripts/youtube/markup.js"
       ]
     },
@@ -443,7 +443,7 @@
       ],
       "js": [
         "content-scripts/init.js",
-        "content-scripts/twitch/hotkeys.js"
+        "content-scripts/twitch/shortcuts.js"
       ]
     },
     {
@@ -452,7 +452,7 @@
       ],
       "js": [
         "content-scripts/init.js",
-        "content-scripts/reddit/hotkeys.js"
+        "content-scripts/reddit/shortcuts.js"
       ]
     }
   ],

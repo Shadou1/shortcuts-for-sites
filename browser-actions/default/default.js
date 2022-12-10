@@ -1,66 +1,66 @@
 const popupHeading = document.querySelector('main > h1')
-const hotkeysArticle = document.querySelector('article')
+const shortcutsArticle = document.querySelector('article')
 
 function clearPopup() {
   popupHeading.textContent = 'No Available Shortcuts'
   popupHeading.hidden = false
-  hotkeysArticle.replaceChildren()
+  shortcutsArticle.replaceChildren()
 }
 
 function clearlPopupError() {
   popupHeading.textContent = 'Fetching Shortcuts'
   popupHeading.hidden = false
-  hotkeysArticle.replaceChildren()
+  shortcutsArticle.replaceChildren()
 }
 
-function fillPopupWithHotkeys(hotkeys) {
+function fillPopupWithShortcuts(shortcuts) {
   popupHeading.hidden = true
 
-  const newHotkeys = []
+  const newShortcuts = []
   let lastCategory = null
   let categorySection = null
-  for (const [hotkey, { category, description, verbatum }] of Object.entries(hotkeys)) {
+  for (const [shortcut, { category, description, verbatum }] of Object.entries(shortcuts)) {
     if (category !== lastCategory) {
       lastCategory = category
       categorySection = document.createElement('section')
       const categoryHeading = document.createElement('h2')
       categoryHeading.textContent = category
       categorySection.appendChild(categoryHeading)
-      newHotkeys.push(categorySection)
+      newShortcuts.push(categorySection)
     }
 
-    const hotkeyRow = document.createElement('div')
-    const hotkeyDescription = document.createElement('p')
-    hotkeyDescription.textContent = description
-    const hotkeyButton = document.createElement('p')
-    const hotkeyKey = document.createElement('span')
-    hotkeyKey.textContent = hotkey
-    hotkeyButton.appendChild(hotkeyKey)
-    if (verbatum) hotkeyButton.append(` (${verbatum})`)
-    hotkeyRow.append(hotkeyDescription, hotkeyButton)
-    categorySection.append(hotkeyRow)
+    const shortcutRow = document.createElement('div')
+    const shortcutDescription = document.createElement('p')
+    shortcutDescription.textContent = description
+    const shortcutButton = document.createElement('p')
+    const shortcutKey = document.createElement('span')
+    shortcutKey.textContent = shortcut
+    shortcutButton.appendChild(shortcutKey)
+    if (verbatum) shortcutButton.append(` (${verbatum})`)
+    shortcutRow.append(shortcutDescription, shortcutButton)
+    categorySection.append(shortcutRow)
   }
-  
-  hotkeysArticle.replaceChildren(...newHotkeys)
+
+  shortcutsArticle.replaceChildren(...newShortcuts)
 }
 
-function handleHotkeysResponse(response) {
-  if (!Object.keys(response.hotkeys).length) {
+function handleShortcutsResponse(response) {
+  if (!Object.keys(response.shortcuts).length) {
     clearPopup()
     // popupHeading.hidden = false
     return
   }
-  fillPopupWithHotkeys(response.hotkeys)
+  fillPopupWithShortcuts(response.shortcuts)
 }
 
-// query hotkeys on newly activated tabs
+// query shortcuts on newly activated tabs
 browser.tabs.onActivated.addListener((tab) => {
-  browser.tabs.sendMessage(tab.tabId, { type: 'getHotkeys' })
-    .then(handleHotkeysResponse)
+  browser.tabs.sendMessage(tab.tabId, { type: 'getShortcuts' })
+    .then(handleShortcutsResponse)
     .catch(clearPopup)
 })
 
-// query hotkeys for the active tab
+// query shortcuts for the active tab
 browser.tabs.query({
   active: true,
   windowId: browser.windows.WINDOW_ID_CURRENT,
@@ -70,15 +70,15 @@ browser.tabs.query({
     // In case tab is still loading when user opens browser action
     browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
       if (tabs[0].id === tabId && changeInfo.status === 'complete') {
-        browser.tabs.sendMessage(tabs[0].id, { type: 'getHotkeys' })
-          .then(handleHotkeysResponse)
+        browser.tabs.sendMessage(tabs[0].id, { type: 'getShortcuts' })
+          .then(handleShortcutsResponse)
           .catch(clearPopup)
       }
     })
 
     popupHeading.textContent = 'Fetching Shortcuts'
-    return browser.tabs.sendMessage(tabs[0].id, { type: 'getHotkeys' })
+    return browser.tabs.sendMessage(tabs[0].id, { type: 'getShortcuts' })
   })
-  .then(handleHotkeysResponse)
+  .then(handleShortcutsResponse)
   // .catch(clearPopupError)
   .catch(clearPopup)

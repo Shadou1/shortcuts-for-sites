@@ -2,25 +2,25 @@
 Todo:
   ✘ Auto update manifest.json when new sites are added @cancelled(22-08-11 19:25)
   ✘ Check if module exists before loading it, if possible @cancelled(22-05-29 12:22)
-  ✔ Do not query elements in hotkeys.js if user is on the wrong page @done(22-05-27 10:44)
+  ✔ Do not query elements in shortcuts.js if user is on the wrong page @done(22-05-27 10:44)
   ☐ Bundle code to be able to use export/import in content scripts
-  ✘ Hotkeys that navigate to a new page should accept an optional 'Ctrl' key to instead open the page in a new tab @cancelled(22-08-30 19:14)
+  ✘ Shortcuts that navigate to a new page should accept an optional 'Ctrl' key to instead open the page in a new tab @cancelled(22-08-30 19:14)
 
-  ☐ Hotkeys with Ctrl, Alt modifiers render correctly in browser action
-  ✔ Hotkeys with Ctrl, Alt collide with regular keys in object keys @done(22-08-30 19:14)
-  ☐ Add being able to use hotkeys when active element is accepting input
+  ☐ Shortcuts with Ctrl, Alt modifiers render correctly in browser action
+  ✔ Shortcuts with Ctrl, Alt collide with regular keys in object keys @done(22-08-30 19:14)
+  ☐ Add being able to use shortcuts when active element is accepting input
 
-  ☐ Hotkeys will only work in english keyboard locale
+  ☐ Shortcuts will only work in english keyboard locale
 
   ✔ Redraw icons as svg @done(22-08-22 18:46)
 
-  ✔ When hotkey navigates to new page, figure out how to query not yet rendered elements (await for element to appear / mutation observer) @done(22-08-30 19:15)
+  ✔ When shortcut navigates to new page, figure out how to query not yet rendered elements (await for element to appear / mutation observer) @done(22-08-30 19:15)
 
-  ☐ Force browser to draw focus outline when hotkey focuses something as if it was tabbed to with 'tab' @critical (can it be done?)
+  ☐ Force browser to draw focus outline when shortcut focuses something as if it was tabbed to with 'tab' @critical (can it be done?)
 
   ☐ Mutation observers will stay in background if callback didn't disconnect (happens if it didn't find the queried element) @high
 
-  ☐ Come up with better structure for hotkeys
+  ☐ Come up with better structure for shortcuts
 
   ☐ Write tests?
 
@@ -37,29 +37,29 @@ Todo:
 
   Youtube:
     ✘ Keep reference to queried elements, but also update them when page content/location changes @cancelled(22-08-31 16:50)
-    ☐ Volume up/down hotkeys (in addition to standard up/down arrows)
-    ☐ Fast forward/rewind hotkeys (in addition to standard 'j'/'l' keys)
-    ✔ Show progress bar hotkey @done(22-08-18 13:34)
+    ☐ Volume up/down shortcuts (in addition to standard up/down arrows)
+    ☐ Fast forward/rewind shortcuts (in addition to standard 'j'/'l' keys)
+    ✔ Show progress bar shortcut @done(22-08-18 13:34)
     ☐ Add go to next / previous video shortcuts (maybe)
 
-    ✔ Hotkeys work in all video players (not only on the /watch pages) @done(22-12-07 13:22)
+    ✔ Shortcuts work in all video players (not only on the /watch pages) @done(22-12-07 13:22)
     ✔ When going to channel videos/playlists from /watch page and channel home has an autoplay video, this video will start autoplaying in the background incorrectly (sometimes) @done(22-12-03 14:23)
 
     Bugs:
-      ☐ When channel has a 'store' tab or doesn't have a 'community' tab, 'p' (go to playlists) hotkey will incorrectly select another tab @critical
+      ☐ When channel has a 'store' tab or doesn't have a 'community' tab, 'p' (go to playlists) shortcut will incorrectly select another tab @critical
 
   Google:
     ✔ Should work not only on '.com' domains @critical @done(22-08-22 09:32)
-    ✔ Make search indexes relative to the current index so that after pressing 'tab' and then pressing a hotkey it tabs to the next search result after currently focused @done(22-12-09 00:17)
+    ✔ Make search indexes relative to the current index so that after pressing 'tab' and then pressing a shortcut it tabs to the next search result after currently focused @done(22-12-09 00:17)
     ☐ Scroll height problems (inconsistent at the bottom of the page)
-    ✔ Add images hotkeys @done(22-12-09 00:17)
-    ✔ Add videos hotkeys @done(22-12-09 00:17)
+    ✔ Add images shortcuts @done(22-12-09 00:17)
+    ✔ Add videos shortcuts @done(22-12-09 00:17)
 
     ☐ Since google search pages are not dynamic, maybe don't need to write logic to update searchResults arrays when query changes
     ☐ When page mutates, add newely added anchors to the searchResultsAnchors instead of querying all anchors again
 
   Twitch:
-    ☐ Add predictions and other chat action hotkeys
+    ☐ Add predictions and other chat action shortcuts
 
   Reddit:
     ✔ Add Reddit shortcuts @done(22-12-10 23:55)

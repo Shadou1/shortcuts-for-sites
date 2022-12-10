@@ -1,71 +1,71 @@
-let isHotkeysAvailable = false
+let isShortcutsAvailable = false
 
 var keyboardOnlyNavigation = {
-  _hotkeys: {},
-  hotkeys: {},
+  _shortcuts: {},
+  shortcuts: {},
 }
 
-function hotkeysToSerializable(hotkeys) {
-  const hotkeysSerialized = {}
-  Object.entries(hotkeys).forEach(([hotkey, { category, description, verbatum }]) => {
-    hotkeysSerialized[hotkey] = {
+function shortcutsToSerializable(shortcuts) {
+  const shortcutsSerialized = {}
+  Object.entries(shortcuts).forEach(([shortcut, { category, description, verbatum }]) => {
+    shortcutsSerialized[shortcut] = {
       category,
       description,
       verbatum
     }
   })
-  return hotkeysSerialized
+  return shortcutsSerialized
 }
 
-const hotkeysProxyHandler = {
+const shortcutsProxyHandler = {
   set(target, prop, value) {
 
-    if (!isHotkeysAvailable) {
+    if (!isShortcutsAvailable) {
       browser.runtime.sendMessage({
-        type: 'isHotkeysAvailable',
-        isHotkeysAvailable: true
+        type: 'isShortcutsAvailable',
+        isShortcutsAvailable: true
       })
-      isHotkeysAvailable = true
+      isShortcutsAvailable = true
     }
 
     // browser.runtime.sendMessage({
-    //   type: 'hotkeyAdded',
-    //   hotkeyInfo: [prop, value[0]],
+    //   type: 'shortcutAdded',
+    //   shortcutInfo: [prop, value[0]],
     // })
 
     return Reflect.set(target, prop, value)
   }
 }
-keyboardOnlyNavigation.hotkeys = new Proxy(keyboardOnlyNavigation._hotkeys, hotkeysProxyHandler)
+keyboardOnlyNavigation.shortcuts = new Proxy(keyboardOnlyNavigation._shortcuts, shortcutsProxyHandler)
 
 
-// Browser action asks for hotkeys for the current page
+// Browser action asks for shortcuts for the current page
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.type) {
-    case 'getHotkeys':
+    case 'getShortcuts':
       sendResponse({
-        type: 'hotkeys',
-        hotkeys: hotkeysToSerializable(keyboardOnlyNavigation.hotkeys)
+        type: 'shortcuts',
+        shortcuts: shortcutsToSerializable(keyboardOnlyNavigation.shortcuts)
       })
       break
   }
 })
 
-// Handle hotkeys
+// Handle shortcuts
 
 // Wont work if activeElement is not an input or textarea, but still accepts 'input' event
 // document.addEventListener('keydown', (ev) => {
-  
+
 //   const activeElement = document.activeElement
 //   if (activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) return
-  
-//   const hotkeyConf = keyboardOnlyNavigation.hotkeys[ev.key]
-//   if (!hotkeyConf) return
-//   if (!!hotkeyConf.ctrlKey !== ev.ctrlKey) return
-//   if (!!hotkeyConf.altKey !== ev.altKey) return
 
-//   hotkeyConf.event(ev)
-  
+//   const shortcutConf = keyboardOnlyNavigation.shortcuts[ev.key]
+//   if (!shortcutConf) return
+//   if (!!shortcutConf.ctrlKey !== ev.ctrlKey) return
+//   if (!!shortcutConf.altKey !== ev.altKey) return
+
+//   shortcutConf.event(ev)
+
 // })
 
 let isLastInputEvent = false
@@ -86,11 +86,11 @@ document.addEventListener('keydown', (ev) => {
     }
 
 
-    const hotkeyConf = keyboardOnlyNavigation.hotkeys[ev.key]
-    if (!hotkeyConf) return
-    if (ev.ctrlKey) hotkeyConf.ctrlEvent?.(ev)
-    else if (ev.altKey) hotkeyConf.altEvent?.(ev)
-    else hotkeyConf.event(ev)
+    const shortcutConf = keyboardOnlyNavigation.shortcuts[ev.key]
+    if (!shortcutConf) return
+    if (ev.ctrlKey) shortcutConf.ctrlEvent?.(ev)
+    else if (ev.altKey) shortcutConf.altEvent?.(ev)
+    else shortcutConf.event(ev)
 
   }, 10)
 

@@ -36,7 +36,7 @@ let focusFirstChannel,
   } = await import(browser.runtime.getURL('utils/twitch.js')))
 })()
 
-const hotkeys = {
+const shortcuts = {
 
   'E': {
     category: 'General',
@@ -297,4 +297,4 @@ const hotkeys = {
 
 }
 
-Object.assign(keyboardOnlyNavigation.hotkeys, hotkeys)
+Object.assign(keyboardOnlyNavigation.shortcuts, shortcuts)

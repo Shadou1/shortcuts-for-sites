@@ -1,23 +1,23 @@
-export function constructHotkeysMarkdown(hotkeys) {
+export function constructShortcutsMarkdown(shortcuts) {
 
   let markdown = '| Shortcut | Description |\n| -------- | ----------- |\n'
   let lastCategory = null
-  for (const [hotkey, { category, description, verbatum }] of Object.entries(hotkeys)) {
+  for (const [shortcut, { category, description, verbatum }] of Object.entries(shortcuts)) {
     if (category !== lastCategory) {
       lastCategory = category
       markdown += `| **${category}** |\n`
     }
     // Amazing
-    markdown += `| <kbd>${hotkey}</kbd> ${verbatum ? `(${verbatum.replace(/[^+]+/g, (substring) => `<kbd>${substring}</kbd>`)})` : ''}| ${description} |\n`
+    markdown += `| <kbd>${shortcut}</kbd> ${verbatum ? `(${verbatum.replace(/[^+]+/g, (substring) => `<kbd>${substring}</kbd>`)})` : ''}| ${description} |\n`
   }
 
   return markdown
 
 }
 
-// let constructHotkeysMarkdown;
+// let constructShortcutsMarkdown;
 // (async () => {
-//   ({ constructHotkeysMarkdown } = await import(browser.runtime.getURL('utils/markdownUtils.js')))
+//   ({ constructShortcutsMarkdown } = await import(browser.runtime.getURL('utils/markdownUtils.js')))
 // })()
 
-// console.log(constructHotkeysMarkdown(keyboardOnlyNavigation.hotkeys))
+// console.log(constructShortcutsMarkdown(keyboardOnlyNavigation.shortcuts))

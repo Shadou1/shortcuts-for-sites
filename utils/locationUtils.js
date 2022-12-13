@@ -11,3 +11,10 @@ export function locationEndsWith(...postfixes) {
   }
   return false
 }
+
+export function locationMatches(...matches) {
+  for (const match of matches) {
+    if (match.test(window.location.pathname)) return true
+  }
+  return false
+}

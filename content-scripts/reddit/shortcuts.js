@@ -2,7 +2,20 @@ let homeAnchor = null
 let popularAnchor = null
 
 let activePost = null
+
+// Videos on main page
+let activeVideoPlayer = null
 let activeVideo = null
+
+// Video on comments page
+let activeVideoPlayerComments = null
+let activeVideoComments = null
+// let activePlayButton = null
+
+let locationMatches;
+(async () => {
+  ({ locationMatches } = await import(browser.runtime.getURL('utils/locationUtils.js')))
+})()
 
 let currentNavigationTarget = null
 let whenTargetMutates;
@@ -19,8 +32,10 @@ document.body.addEventListener('focusin', (event) => {
   // const activePostImage = activePost.querySelector('.media-element')
   // activePostImage?.scrollIntoView()
 
-  activeVideo = activePost.querySelector('video')
+  activeVideoPlayer = activePost.querySelector('shreddit-player')
   // activeVideo?.scrollIntoView()
+  activeVideo = activeVideoPlayer?.shadowRoot.querySelector('video')
+  // activePlayButton = activeVideoPlayer?.shadowRoot.querySelector('vds-play-button')
 
   // const scrollLength = Math.min(150, window.innerHeight / 2)
   // window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : -100)
@@ -116,14 +131,19 @@ const shortcuts = {
     category: 'Video',
     description: 'Pause/resume',
     event: () => {
-      if (!activeVideo) return
+      if (locationMatches(/^\/r\/.+?\/comments/)) {
+        // TODO if video hasn't started playing, shortcut won't work (.play() will reject)
+        activeVideoPlayerComments = activeVideoPlayerComments || document.querySelector('[data-test-id="post-content"] shreddit-player')
+        activeVideoComments = activeVideoComments || activeVideoPlayerComments?.shadowRoot.querySelector('video')
 
-      if (activeVideo.ended) {
-        const replayVideoButton = activePost.querySelector('button > span.replay-video')
-        replayVideoButton.click()
+        if (activeVideoComments.paused) activeVideoComments.play()
+        else activeVideoComments.pause()
+      } else {
+        if (!activeVideoPlayer) return
+
+        if (activeVideo.paused) activeVideo.play()
+        else activeVideo.pause()
       }
-      else if (activeVideo.paused) activeVideo.play()
-      else activeVideo.pause()
     }
   },
 
@@ -131,7 +151,7 @@ const shortcuts = {
     category: 'Video',
     description: 'Rewind',
     event: () => {
-      if (!activeVideo) return
+      if (!activeVideoPlayer) return
 
       activeVideo.fastSeek(activeVideo.currentTime - 5)
     }
@@ -141,7 +161,7 @@ const shortcuts = {
     category: 'Video',
     description: 'Fast forward',
     event: () => {
-      if (!activeVideo) return
+      if (!activeVideoPlayer) return
 
       activeVideo.fastSeek(activeVideo.currentTime + 5)
     }
@@ -157,12 +177,11 @@ const shortcuts = {
   //   }
   // },
 
-  // TODO on next video or when replaying current video mute/volume settings will reset
   'm': {
     category: 'Video',
     description: 'Mute',
     event: () => {
-      if (!activeVideo) return
+      if (!activeVideoPlayer) return
 
       activeVideo.muted = !activeVideo.muted
     }
@@ -172,12 +191,9 @@ const shortcuts = {
     category: 'Video',
     description: 'Volume up',
     event: () => {
-      if (!activeVideo) return
+      if (!activeVideoPlayer) return
 
       activeVideo.volume = Math.max(0, Math.min(1, activeVideo.volume + 0.05))
-      // const volumeDiv = activeVideo.querySelector('div[style*="height"]')
-      // volumeDiv.style.height = `${postVideo.volume * 100}%`
-      // volumeDiv.click()
     }
   },
 
@@ -185,12 +201,9 @@ const shortcuts = {
     category: 'Video',
     description: 'Volume down',
     event: () => {
-      if (!activeVideo) return
+      if (!activeVideoPlayer) return
 
       activeVideo.volume = Math.max(0, Math.min(1, activeVideo.volume - 0.05))
-      // const volumeDiv = activeVideo.querySelector('div[style*="height"]')
-      // volumeDiv.style.height = `${postVideo.volume * 100}%`
-      // volumeDiv.click()
     }
   },
 

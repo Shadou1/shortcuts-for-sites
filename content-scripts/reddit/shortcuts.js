@@ -1,33 +1,55 @@
 let homeAnchor = null
 let popularAnchor = null
 
+// Main page
 let activePost = null
+let activePostSubredditLink = null
 
-// Videos on main page
 let activeVideoPlayer = null
 let activeVideo = null
 
-// Video on comments page
-let activeVideoPlayerComments = null
-let activeVideoComments = null
-// let activePlayButton = null
+// Comments page
+let commentsPageSubredditLink = null
+let activeVideoPlayerInComments = null
+let activeVideoInComments = null
 
-let locationMatches;
-(async () => {
-  ({ locationMatches } = await import(browser.runtime.getURL('utils/locationUtils.js')))
-})()
+let didCommentsPageChange
 
-let currentNavigationTarget = null
-let whenTargetMutates;
-(async () => {
-  ({ whenTargetMutates } = await import(browser.runtime.getURL('utils/mutationUtils.js')))
-})()
+let pathnameMatches, didPathnameChange
+import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
+  ({ pathnameMatches, didPathnameChange } = result)
+  didCommentsPageChange = didPathnameChange()
+})
 
-// focus post link when post container is focused
+
+function updateVideoInComments() {
+  if (didCommentsPageChange()) {
+    activeVideoPlayerInComments = document.querySelector('[data-test-id="post-content"] shreddit-player')
+    activeVideoInComments = activeVideoPlayerInComments.shadowRoot.querySelector('video')
+  }
+  // Redundantly query again if still null
+  activeVideoPlayerInComments = activeVideoPlayerInComments || document.querySelector('[data-test-id="post-content"] shreddit-player')
+  activeVideoInComments = activeVideoInComments || activeVideoPlayerInComments?.shadowRoot.querySelector('video')
+
+  if (activeVideoPlayerInComments && activeVideoInComments) return true
+  return false
+}
+
+function updateSubredditLinkInComments() {
+  if (didCommentsPageChange()) {
+    commentsPageSubredditLink = document.querySelector('a > span[title]').parentElement
+  }
+  commentsPageSubredditLink = commentsPageSubredditLink || document.querySelector('a > span[title]').parentElement
+  if (commentsPageSubredditLink) return true
+  return false
+}
+
+// Focus post link when post container is focused
 document.body.addEventListener('focusin', (event) => {
   if (event.target.getAttribute('data-testid') !== 'post-container') return
 
   activePost = document.activeElement
+  activePostSubredditLink = activePost.querySelector('a[data-click-id="subreddit"]')
 
   // const activePostImage = activePost.querySelector('.media-element')
   // activePostImage?.scrollIntoView()
@@ -63,6 +85,34 @@ const shortcuts = {
     event: () => {
       popularAnchor = popularAnchor || document.querySelector('header a[href*="popular"]')
       popularAnchor?.click()
+    }
+  },
+
+  'i': {
+    category: 'Post',
+    description: 'Go to post\'s subreddit',
+    event: () => {
+      if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+        if (!updateSubredditLinkInComments()) return
+        commentsPageSubredditLink.click()
+      } else {
+        activePostSubredditLink?.click()
+      }
+    }
+  },
+
+  'I': {
+    category: 'Post',
+    description: 'Go to post\'s subreddit (new tab)',
+    verbatum: 'Shift+i',
+    event: () => {
+      if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+        if (!updateSubredditLinkInComments()) return
+        window.open(commentsPageSubredditLink.href, '_blank')
+      } else {
+        if (!activePostSubredditLink) return
+        window.open(activePostSubredditLink.href, '_blank')
+      }
     }
   },
 
@@ -131,16 +181,21 @@ const shortcuts = {
     category: 'Video',
     description: 'Pause/resume',
     event: () => {
-      if (locationMatches(/^\/r\/.+?\/comments/)) {
-        // TODO if video hasn't started playing, shortcut won't work (.play() will reject)
-        activeVideoPlayerComments = activeVideoPlayerComments || document.querySelector('[data-test-id="post-content"] shreddit-player')
-        activeVideoComments = activeVideoComments || activeVideoPlayerComments?.shadowRoot.querySelector('video')
+      if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+        if (!updateVideoInComments()) return
 
-        if (activeVideoComments.paused) activeVideoComments.play()
-        else activeVideoComments.pause()
+        if (activeVideoInComments.readyState === 0) {
+          const playButton = activeVideoPlayerInComments.shadowRoot.querySelector('vds-play-button icon-play')
+          playButton?.click()
+          activeVideoInComments.addEventListener('canplay', () => activeVideoInComments.play(), { once: true })
+          return
+        }
+
+        if (activeVideoInComments.paused) activeVideoInComments.play()
+        else activeVideoInComments.pause()
+
       } else {
         if (!activeVideoPlayer) return
-
         if (activeVideo.paused) activeVideo.play()
         else activeVideo.pause()
       }
@@ -151,9 +206,13 @@ const shortcuts = {
     category: 'Video',
     description: 'Rewind',
     event: () => {
-      if (!activeVideoPlayer) return
-
-      activeVideo.fastSeek(activeVideo.currentTime - 5)
+      if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+        if (!updateVideoInComments()) return
+        activeVideoInComments.fastSeek(activeVideoInComments.currentTime - 5)
+      } else {
+        if (!activeVideoPlayer) return
+        activeVideo.fastSeek(activeVideo.currentTime - 5)
+      }
     }
   },
 
@@ -161,9 +220,13 @@ const shortcuts = {
     category: 'Video',
     description: 'Fast forward',
     event: () => {
-      if (!activeVideoPlayer) return
-
-      activeVideo.fastSeek(activeVideo.currentTime + 5)
+      if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+        if (!updateVideoInComments()) return
+        activeVideoInComments.fastSeek(activeVideoInComments.currentTime + 5)
+      } else {
+        if (!activeVideoPlayer) return
+        activeVideo.fastSeek(activeVideo.currentTime + 5)
+      }
     }
   },
 
@@ -181,9 +244,13 @@ const shortcuts = {
     category: 'Video',
     description: 'Mute',
     event: () => {
-      if (!activeVideoPlayer) return
-
-      activeVideo.muted = !activeVideo.muted
+      if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+        if (!updateVideoInComments()) return
+        activeVideoInComments.muted = !activeVideoInComments.muted
+      } else {
+        if (!activeVideoPlayer) return
+        activeVideo.muted = !activeVideo.muted
+      }
     }
   },
 
@@ -191,9 +258,13 @@ const shortcuts = {
     category: 'Video',
     description: 'Volume up',
     event: () => {
-      if (!activeVideoPlayer) return
-
-      activeVideo.volume = Math.max(0, Math.min(1, activeVideo.volume + 0.05))
+      if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+        if (!updateVideoInComments()) return
+        activeVideoInComments.volume = Math.max(0, Math.min(1, activeVideoInComments.volume + 0.05))
+      } else {
+        if (!activeVideoPlayer) return
+        activeVideo.volume = Math.max(0, Math.min(1, activeVideo.volume + 0.05))
+      }
     }
   },
 
@@ -201,9 +272,13 @@ const shortcuts = {
     category: 'Video',
     description: 'Volume down',
     event: () => {
-      if (!activeVideoPlayer) return
-
-      activeVideo.volume = Math.max(0, Math.min(1, activeVideo.volume - 0.05))
+      if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+        if (!updateVideoInComments()) return
+        activeVideoInComments.volume = Math.max(0, Math.min(1, activeVideoInComments.volume - 0.05))
+      } else {
+        if (!activeVideoPlayer) return
+        activeVideo.volume = Math.max(0, Math.min(1, activeVideo.volume - 0.05))
+      }
     }
   },
 

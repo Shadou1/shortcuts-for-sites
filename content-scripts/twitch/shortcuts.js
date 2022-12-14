@@ -7,15 +7,15 @@ let chatTextarea = null // inconsistent
 let collapseLeftNavButton = null // inconsistent
 let collapseChatButton = null // inconsistent
 
-let locationStartsWith, locationEndsWith;
-(async () => {
-  ({ locationStartsWith, locationEndsWith } = await import(browser.runtime.getURL('utils/locationUtils.js')))
-})()
+let pathnameStartsWith, pathnameEndsWith
+import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
+  ({ pathnameStartsWith, pathnameEndsWith } = result)
+})
 
-let whenTargetMutates;
-(async () => {
-  ({ whenTargetMutates } = await import(browser.runtime.getURL('utils/mutationUtils.js')))
-})()
+let whenTargetMutates
+import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
+  ({ whenTargetMutates } = result)
+})
 
 let focusFirstChannel,
   focusFirstVideo,
@@ -23,8 +23,8 @@ let focusFirstChannel,
   focusFirstCategory,
   navigateToLiveChannels,
   navigateToVideos,
-  navigateToSchedule;
-(async () => {
+  navigateToSchedule
+import(browser.runtime.getURL('utils/twitch.js')).then((result) => {
   ({
     focusFirstChannel,
     focusFirstVideo,
@@ -33,8 +33,8 @@ let focusFirstChannel,
     navigateToLiveChannels,
     navigateToVideos,
     navigateToSchedule,
-  } = await import(browser.runtime.getURL('utils/twitch.js')))
-})()
+  } = result)
+})
 
 const shortcuts = {
 
@@ -88,7 +88,7 @@ const shortcuts = {
     description: 'Go to following',
     verbatum: 'Shift+u',
     event: () => {
-      if (!locationEndsWith('/following')) {
+      if (!pathnameEndsWith('/following')) {
         followingAnchor = followingAnchor || document.querySelector('a[data-a-target="following-link"]')
         followingAnchor?.click()
         whenTargetMutates('main', focusFirstVideoOnQueryType('following'))
@@ -102,13 +102,13 @@ const shortcuts = {
     category: 'General',
     description: 'Browse categories',
     event: () => {
-      if (locationEndsWith('/directory/all')) {
+      if (pathnameEndsWith('/directory/all')) {
         const categoriesAnchor = document.querySelector('a[data-a-target="browse-type-tab-categories"]')
         categoriesAnchor?.click()
         // Sometimes it does not mutate and callback will execute wrongly
         const isFocused = focusFirstCategory()
         if (!isFocused) whenTargetMutates('main', focusFirstCategory)
-      } else if (!locationEndsWith('/directory')) {
+      } else if (!pathnameEndsWith('/directory')) {
         browseAnchor = browseAnchor || document.querySelector('a[data-a-target="browse-link"]')
         browseAnchor?.click()
         whenTargetMutates('main', focusFirstCategory)
@@ -122,8 +122,8 @@ const shortcuts = {
     category: 'General',
     description: 'Browse live channels',
     event: () => {
-      if (!locationEndsWith('/directory/all')) {
-        if (locationEndsWith('/directory')) {
+      if (!pathnameEndsWith('/directory/all')) {
+        if (pathnameEndsWith('/directory')) {
           navigateToLiveChannels()
         } else {
           browseAnchor = browseAnchor || document.querySelector('a[data-a-target="browse-link"]')
@@ -169,7 +169,7 @@ const shortcuts = {
     event: () => {
       if (window.location.pathname === '/') return
 
-      if (locationStartsWith('/directory')) {
+      if (pathnameStartsWith('/directory')) {
         focusFirstChannel()
         return
       }
@@ -237,7 +237,7 @@ const shortcuts = {
     event: () => {
       const videosAnchor = document.querySelector('a[tabname="videos"]')
       if (videosAnchor) {
-        if (locationEndsWith('/videos')) {
+        if (pathnameEndsWith('/videos')) {
           const firstVideo = document.querySelector('[data-test-selector="preview-card-carousel-child-container"] a')
           firstVideo.focus()
         } else {
@@ -259,7 +259,7 @@ const shortcuts = {
     event: () => {
       const scheduleAnchor = document.querySelector('a[tabname="schedule"]')
       if (scheduleAnchor) {
-        if (locationEndsWith('/schedule')) {
+        if (pathnameEndsWith('/schedule')) {
           scheduleAnchor.focus()
         } else {
           scheduleAnchor.click()

@@ -17,14 +17,14 @@ let videoAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href
 let newsAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=nws"]')
 
 let didPageMutate = false
-let whenTargetMutates;
-(async () => {
-  ({ whenTargetMutates } = await import(browser.runtime.getURL('utils/mutationUtils.js')))
+let whenTargetMutates
+import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
+  ({ whenTargetMutates } = result)
   // Mutates only on images page
   whenTargetMutates('#islmp[role="main"]', (mutations, observer) => {
     didPageMutate = true
   })
-})()
+})
 
 let abortUpdateIndexSearch = []
 let abortUpdateIndexRelated = []
@@ -164,7 +164,7 @@ const shortcuts = {
     }
   },
 
-  'l': {
+  'j': {
     category: 'Search',
     description: 'Focus next search result / image',
     event: () => {
@@ -181,7 +181,7 @@ const shortcuts = {
     }
   },
 
-  'j': {
+  'k': {
     category: 'Search',
     description: 'Focus previous search result / image',
     event: () => {
@@ -196,7 +196,7 @@ const shortcuts = {
     }
   },
 
-  'L': {
+  'J': {
     category: 'Search',
     description: 'Go to next search page',
     verbatum: 'Shift+l',
@@ -205,7 +205,7 @@ const shortcuts = {
     }
   },
 
-  'J': {
+  'K': {
     category: 'Search',
     description: 'Go to previous search page',
     verbatum: 'Shift+j',

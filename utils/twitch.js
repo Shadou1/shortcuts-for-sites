@@ -1,15 +1,15 @@
-let locationStartsWith, locationEndsWith;
-(async () => {
-  ({ locationStartsWith, locationEndsWith } = await import(browser.runtime.getURL('utils/locationUtils.js')))
-})()
+let pathnameStartsWith, pathnameEndsWith
+import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
+  ({ pathnameStartsWith, pathnameEndsWith } = result)
+})
 
-let whenTargetMutates;
-(async () => {
-  ({ whenTargetMutates } = await import(browser.runtime.getURL('utils/mutationUtils.js')))
-})()
+let whenTargetMutates
+import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
+  ({ whenTargetMutates } = result)
+})
 
 export function focusFirstChannel(mutations, observer) {
-  if (!locationStartsWith('/directory')) return
+  if (!pathnameStartsWith('/directory')) return
 
   const channelAnchor = document.querySelector('a[data-a-target="preview-card-channel-link"]')
   if (!channelAnchor) return

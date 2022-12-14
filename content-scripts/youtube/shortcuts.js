@@ -8,15 +8,15 @@ let qualityButtonChannel = null
 let moviePlayer = null
 
 // TODO use bundler to import these functions with 'import {} from'
-let locationStartsWith, locationEndsWith;
-(async () => {
-  ({ locationStartsWith, locationEndsWith } = await import(browser.runtime.getURL('utils/locationUtils.js')))
-})()
+let pathnameStartsWith, pathnameEndsWith
+import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
+  ({ pathnameStartsWith, pathnameEndsWith } = result)
+})
 
-let whenTargetMutates;
-(async () => {
-  ({ whenTargetMutates } = await import(browser.runtime.getURL('utils/mutationUtils.js')))
-})()
+let whenTargetMutates
+import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
+  ({ whenTargetMutates } = result)
+})
 
 let navigateToHome,
   navigateToVideos,
@@ -28,8 +28,8 @@ let navigateToHome,
   goToHome,
   goToSubscriptions,
   expandAndFocusFirstSubscription,
-  focusFirstSubscription;
-(async () => {
+  focusFirstSubscription
+import(browser.runtime.getURL('utils/youtube.js')).then((result) => {
   ({
     navigateToHome,
     navigateToVideos,
@@ -42,8 +42,8 @@ let navigateToHome,
     goToSubscriptions,
     expandAndFocusFirstSubscription,
     focusFirstSubscription
-  } = await import(browser.runtime.getURL('utils/youtube.js')))
-})()
+  } = result)
+})
 
 const shortcuts = {
   'e': {
@@ -79,7 +79,7 @@ const shortcuts = {
     category: 'General',
     description: 'Go to Subscriptions',
     event: () => {
-      if (!locationEndsWith('/subscriptions')) {
+      if (!pathnameEndsWith('/subscriptions')) {
         subscriptionsAnchor = subscriptionsAnchor || document.querySelector('#sections #endpoint[href="/feed/subscriptions"]')
         if (!subscriptionsAnchor) {
           guideButton = guideButton || document.querySelector('ytd-masthead #guide-button #button')
@@ -114,11 +114,11 @@ const shortcuts = {
     category: 'Video',
     description: 'Open settings',
     event: () => {
-      if (locationStartsWith('/watch')) {
+      if (pathnameStartsWith('/watch')) {
         settingsButton = settingsButton || document.querySelector('#movie_player .ytp-settings-button')
         settingsButton?.click()
       }
-      if (locationStartsWith('/@', '/channel', '/c', '/user')) {
+      if (pathnameStartsWith('/@', '/channel', '/c', '/user')) {
         settingsButtonChannel = settingsButtonChannel || document.querySelector('#c4-player .ytp-settings-button')
         settingsButtonChannel?.click()
       }
@@ -129,7 +129,7 @@ const shortcuts = {
     category: 'Video',
     description: 'Open quality settings',
     event: () => {
-      if (locationStartsWith('/watch')) {
+      if (pathnameStartsWith('/watch')) {
         settingsButton = settingsButton || document.querySelector('#movie_player .ytp-settings-button')
         if (settingsButton.getAttribute('aria-expanded') === 'false') {
           settingsButton.click()
@@ -139,7 +139,7 @@ const shortcuts = {
           settingsButton.click()
         }
       }
-      if (locationStartsWith('/@', '/channel', '/c', '/user')) {
+      if (pathnameStartsWith('/@', '/channel', '/c', '/user')) {
         settingsButtonChannel = settingsButtonChannel || document.querySelector('#c4-player .ytp-settings-button')
         if (settingsButtonChannel.getAttribute('aria-expanded') === 'false') {
           settingsButtonChannel.click()
@@ -154,12 +154,13 @@ const shortcuts = {
 
   ';': {
     category: 'Video',
-    description: 'Show progress bar',
+    description: 'Focus video / show progress bar',
     event: () => {
-      if (!locationStartsWith('/watch')) return
+      if (!pathnameStartsWith('/watch')) return
 
       moviePlayer = moviePlayer || document.querySelector('#movie_player')
       // TODO refactor
+      moviePlayer.focus()
       moviePlayer.click()
       moviePlayer.click()
     }
@@ -169,7 +170,7 @@ const shortcuts = {
     category: 'Video',
     description: 'Scroll to description/video',
     event: () => {
-      if (!locationStartsWith('/watch')) return
+      if (!pathnameStartsWith('/watch')) return
 
       const infoRenderer = document.querySelector('#info ytd-video-primary-info-renderer, #above-the-fold')
       const showMoreButton = document.querySelector('.ytd-video-secondary-info-renderer tp-yt-paper-button#more, tp-yt-paper-button#expand')
@@ -191,7 +192,7 @@ const shortcuts = {
     category: 'Video',
     description: 'Focus first related video',
     event: () => {
-      if (!locationStartsWith('/watch')) return
+      if (!pathnameStartsWith('/watch')) return
 
       const relatedLink = document.querySelector('#related a.yt-simple-endpoint.style-scope.ytd-compact-video-renderer')
       relatedLink.focus()
@@ -202,7 +203,7 @@ const shortcuts = {
     category: 'Video',
     description: 'Comment',
     event: () => {
-      if (!locationStartsWith('/watch')) return
+      if (!pathnameStartsWith('/watch')) return
 
       let commentBox = document.querySelector('ytd-comment-simplebox-renderer #placeholder-area')
       if (!commentBox) {
@@ -227,7 +228,7 @@ const shortcuts = {
     category: 'Playlist',
     description: 'Focus first video in playlist',
     event: () => {
-      if (!locationStartsWith('/watch')) return
+      if (!pathnameStartsWith('/watch')) return
 
       const firstPlaylistVideo = document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items a')
       firstPlaylistVideo.focus()
@@ -238,7 +239,7 @@ const shortcuts = {
     category: 'Playlist',
     description: 'Focus last video in playlist',
     event: () => {
-      if (!locationStartsWith('/watch')) return
+      if (!pathnameStartsWith('/watch')) return
 
       const firstPlaylistVideo = document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items:last-of-type a')
       firstPlaylistVideo.focus()
@@ -249,16 +250,16 @@ const shortcuts = {
     category: 'Channel (works on channel or video page)',
     description: 'Go to channel home',
     event: () => {
-      if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
+      if (!pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
 
-      if (locationStartsWith('/watch')) {
+      if (pathnameStartsWith('/watch')) {
         const channelLink = document.querySelector('a.ytd-video-owner-renderer')
         channelLink.click()
         // whenTargetMutates('#content.ytd-app', navigateToHome)
         whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(3))
 
       } else {
-        if (!locationEndsWith('/videos', '/shorts', '/streams', '/playlists', '/community', '/channels', '/about')) {
+        if (!pathnameEndsWith('/videos', '/shorts', '/streams', '/playlists', '/community', '/channels', '/about')) {
           // focusFirstVideo()
           focusFirstVideoOnQueryType(3)()
         } else {
@@ -274,15 +275,15 @@ const shortcuts = {
     category: 'Channel (works on channel or video page)',
     description: 'Go to channel videos',
     event: () => {
-      if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
+      if (!pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
 
-      if (locationStartsWith('/watch')) {
+      if (pathnameStartsWith('/watch')) {
         const channelLink = document.querySelector('a.ytd-video-owner-renderer')
         channelLink.click()
         whenTargetMutates('#content.ytd-app', navigateToVideos)
 
       } else {
-        if (locationEndsWith('/videos')) {
+        if (pathnameEndsWith('/videos')) {
           focusFirstVideo()
         } else {
           // TODO refactor :nth-of-type(2)
@@ -298,15 +299,15 @@ const shortcuts = {
     category: 'Channel (works on channel or video page)',
     description: 'Go to channel playlists',
     event: () => {
-      if (!locationStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
+      if (!pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
 
-      if (locationStartsWith('/watch')) {
+      if (pathnameStartsWith('/watch')) {
         const channelLink = document.querySelector('a.ytd-video-owner-renderer')
         channelLink.click()
         whenTargetMutates('#content.ytd-app', navigateToPlaylists)
 
       } else {
-        if (locationEndsWith('/playlists')) {
+        if (pathnameEndsWith('/playlists')) {
           focusFirstPlaylist()
         } else {
           // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab, or doesn't have community tab
@@ -323,7 +324,7 @@ const shortcuts = {
     description: 'Go to channel (new tab)',
     verbatum: 'Shift+h',
     event: () => {
-      if (!locationStartsWith('/watch')) return
+      if (!pathnameStartsWith('/watch')) return
 
       const channelLink = document.querySelector('a.ytd-video-owner-renderer')
       // TODO figure out why new tab opens with white background when using window.open
@@ -337,7 +338,7 @@ const shortcuts = {
     description: 'Hide/Show chat',
     verbatum: 'Shift+e',
     event: () => {
-      if (!locationStartsWith('/watch')) return
+      if (!pathnameStartsWith('/watch')) return
 
       const hideChatButton = document.querySelector('ytd-app ytd-live-chat-frame #show-hide-button button')
       hideChatButton?.click()
@@ -348,9 +349,10 @@ const shortcuts = {
     category: 'Premiere/Stream',
     description: 'Chat',
     event: () => {
-      if (!locationStartsWith('/watch')) return
+      if (!pathnameStartsWith('/watch')) return
 
-      const chatBox = document.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
+      const chatIframe = document.querySelector('iframe#chatframe')
+      const chatBox = chatIframe.contentDocument.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
       chatBox?.focus()
     }
   },
@@ -360,7 +362,7 @@ const shortcuts = {
     description: 'Skip ahead to live broadcast',
     verbatum: 'Shift+s',
     event: () => {
-      if (!locationStartsWith('/watch')) return
+      if (!pathnameStartsWith('/watch')) return
 
       const skipButton = document.querySelector('#movie_player .ytp-left-controls button.ytp-live-badge')
       skipButton?.click()

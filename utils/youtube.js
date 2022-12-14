@@ -1,12 +1,12 @@
-let locationEndsWith, locationStartsWith;
-(async () => {
-  ({ locationEndsWith, locationStartsWith } = await import(browser.runtime.getURL('utils/locationUtils.js')))
-})()
+let pathnameStartsWith, pathnameEndsWith
+import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
+  ({ pathnameStartsWith, pathnameEndsWith } = result)
+})
 
-let whenTargetMutates;
-(async () => {
-  ({ whenTargetMutates } = await import(browser.runtime.getURL('utils/mutationUtils.js')))
-})()
+let whenTargetMutates
+import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
+  ({ whenTargetMutates } = result)
+})
 
 // Functions can be used as both callbacks for MutationObserver and as regular functions
 
@@ -47,7 +47,7 @@ export function navigateToPlaylists(mutations, observer) {
   // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab
   const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(5)')
   if (!playlistsTab?.offsetParent) return
-  
+
   // If channel has an autoplay video renderer, must wait for it to load or it will incorrectly play in the background
   const autoplayVideoRenderer = document.querySelector('#primary ytd-channel-video-player-renderer')
   if (autoplayVideoRenderer?.offsetParent) {
@@ -73,8 +73,8 @@ export function focusFirstVideo(mutations, observer) {
 
 export function focusFirstVideoOn(endsWith, startsWith) {
   return function (mutations, observer) {
-    if (endsWith && !locationEndsWith(...endsWith)) return
-    if (startsWith && !locationStartsWith(...startsWith)) return
+    if (endsWith && !pathnameEndsWith(...endsWith)) return
+    if (startsWith && !pathnameStartsWith(...startsWith)) return
 
     const firstVideo = document.querySelector('ytd-browse[role="main"] #contents #dismissible #meta a')
     if (!firstVideo?.offsetParent) return
@@ -102,16 +102,16 @@ export function focusFirstVideoOnQueryType(type) {
         firstVideo = document.querySelector('ytd-browse[role="main"] yt-horizontal-list-renderer #items ytd-grid-video-renderer #video-title')
         break
     }
-  
+
     if (!firstVideo) return
-  
+
     observer?.disconnect()
     firstVideo.focus()
   }
 }
 
 export function focusFirstPlaylist(mutations, observer) {
-  if (!locationEndsWith('/playlists')) return
+  if (!pathnameEndsWith('/playlists')) return
 
   const firstPlaylist = document.querySelector('ytd-browse[role="main"] ytd-item-section-renderer:first-of-type #items ytd-grid-playlist-renderer #video-title')
   if (!firstPlaylist) return
@@ -133,8 +133,8 @@ export function goToHome(mutations, observer) {
 }
 
 export function goToSubscriptions(mutations, observer) {
-  if (locationEndsWith('/subscriptions')) return
-  
+  if (pathnameEndsWith('/subscriptions')) return
+
   const subscriptionsAnchor = document.querySelector('#sections #endpoint[href="/feed/subscriptions"]')
   if (!subscriptionsAnchor) return
 

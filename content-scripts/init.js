@@ -1,25 +1,16 @@
 let isShortcutsAvailable = false
 
-var keyboardOnlyNavigation = {
-  _shortcuts: {},
-  shortcuts: {},
+const _shortcutsForSites = {
+  shortcuts: new Map(),
 }
+const shortcutsByKey = new Map()
+let shortcutsSerialized = new Map()
 
 function shortcutsToSerializable(shortcuts) {
-  const shortcutsSerialized = {}
-  Object.entries(shortcuts).forEach(([shortcut, { category, description, verbatum }]) => {
-    shortcutsSerialized[shortcut] = {
-      category,
-      description,
-      verbatum
-    }
-  })
-  return shortcutsSerialized
+  return shortcuts
 }
-
 const shortcutsProxyHandler = {
   set(target, prop, value) {
-
     if (!isShortcutsAvailable) {
       browser.runtime.sendMessage({
         type: 'isShortcutsAvailable',
@@ -28,16 +19,18 @@ const shortcutsProxyHandler = {
       isShortcutsAvailable = true
     }
 
-    // browser.runtime.sendMessage({
-    //   type: 'shortcutAdded',
-    //   shortcutInfo: [prop, value[0]],
-    // })
+    if (prop === 'shortcuts') {
+      for (const [_, shortcut] of value) {
+        shortcutsByKey.set(shortcut['defaultKey'], shortcut)
+      }
+      shortcutsSerialized = shortcutsToSerializable(value)
+    }
 
     return Reflect.set(target, prop, value)
   }
 }
-keyboardOnlyNavigation.shortcuts = new Proxy(keyboardOnlyNavigation._shortcuts, shortcutsProxyHandler)
-
+// Global object
+var shortcutsForSites = new Proxy(_shortcutsForSites, shortcutsProxyHandler)
 
 // Browser action asks for shortcuts for the current page
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -45,28 +38,13 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'getShortcuts':
       sendResponse({
         type: 'shortcuts',
-        shortcuts: shortcutsToSerializable(keyboardOnlyNavigation.shortcuts)
+        shortcuts: shortcutsSerialized
       })
       break
   }
 })
 
 // Handle shortcuts
-
-// Wont work if activeElement is not an input or textarea, but still accepts 'input' event
-// document.addEventListener('keydown', (ev) => {
-
-//   const activeElement = document.activeElement
-//   if (activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) return
-
-//   const shortcutConf = keyboardOnlyNavigation.shortcuts[ev.key]
-//   if (!shortcutConf) return
-//   if (!!shortcutConf.ctrlKey !== ev.ctrlKey) return
-//   if (!!shortcutConf.altKey !== ev.altKey) return
-
-//   shortcutConf.event(ev)
-
-// })
 
 let isLastInputEvent = false
 document.addEventListener('input', (_ev) => {
@@ -85,11 +63,12 @@ document.addEventListener('keydown', (ev) => {
       return
     }
 
-
-    const shortcutConf = keyboardOnlyNavigation.shortcuts[ev.key]
+    const shortcutConf = shortcutsByKey.get(ev.key)
     if (!shortcutConf) return
-    if (ev.ctrlKey) shortcutConf.ctrlEvent?.(ev)
-    else if (ev.altKey) shortcutConf.altEvent?.(ev)
+
+    // if (ev.shiftKey) shortcutConf.eventShift?.(ev)
+    if (ev.ctrlKey) shortcutConf.eventCtrl?.(ev)
+    else if (ev.altKey) shortcutConf.eventAlt?.(ev)
     else shortcutConf.event(ev)
 
   }, 10)

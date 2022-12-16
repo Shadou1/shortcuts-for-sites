@@ -27,47 +27,47 @@ function getDivs() {
 
 }
 
-const shortcuts = {
+export const shortcuts = new Map()
 
-  'j': {
-    category: 'General',
-    description: 'Focus translate-from box',
-    event: () => {
-      translateFromTextarea.focus()
-      window.scrollTo({ top: 0})
-    }
-  },
+shortcuts.set('focusTranslateFromBox', {
+  category: 'General',
+  defaultKey: 'j',
+  description: 'Focus translate-from box',
+  event: () => {
+    translateFromTextarea.focus()
+    window.scrollTo({ top: 0 })
+  }
+})
 
-  'd': {
-    category: 'General',
-    description: 'Show/hide definitions',
-    event: () => {
-      getDivs()
-      if (showDefinitionsDiv.offsetParent) showDefinitionsDiv.click()
-      else hideDefinitionsDiv.click()
-    }
-  },
+shortcuts.set('showDefinitions', {
+  category: 'General',
+  defaultKey: 'd',
+  description: 'Show/hide definitions',
+  event: () => {
+    getDivs()
+    if (showDefinitionsDiv.offsetParent) showDefinitionsDiv.click()
+    else hideDefinitionsDiv.click()
+  }
+})
 
-  'e': {
-    category: 'General',
-    description: 'Show/hide examples',
-    event: () => {
-      getDivs()
-      if (showExamplesDiv.offsetParent) showExamplesDiv.click()
-      else hideExamplesDiv.click()
-    }
-  },
+shortcuts.set('showExamples', {
+  category: 'General',
+  defaultKey: 'e',
+  description: 'Show/hide examples',
+  event: () => {
+    getDivs()
+    if (showExamplesDiv.offsetParent) showExamplesDiv.click()
+    else hideExamplesDiv.click()
+  }
+})
 
-  't': {
-    category: 'General',
-    description: 'Show/hide translations',
-    event: () => {
-      getDivs()
-      if (showTranslationsDiv.offsetParent) showTranslationsDiv.click()
-      else hideTranslationsDiv.click()
-    }
-  },
-
-}
-
-Object.assign(keyboardOnlyNavigation.shortcuts, shortcuts)
+shortcuts.set('showTranslations', {
+  category: 'General',
+  defaultKey: 't',
+  description: 'Show/hide translations',
+  event: () => {
+    getDivs()
+    if (showTranslationsDiv.offsetParent) showTranslationsDiv.click()
+    else hideTranslationsDiv.click()
+  }
+})

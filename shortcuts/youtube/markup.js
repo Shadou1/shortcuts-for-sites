@@ -14,11 +14,11 @@ const insertShortcutsInfo = (mutations, observer) => {
 
   const optionSource = hotkeyDialogSection2.querySelector('ytd-hotkey-dialog-section-option-renderer')
 
-  for (const [hotkey, { description, verbatum }] of Object.entries(keyboardOnlyNavigation.hotkeys)) {
+  for (const [_, { description, defaultKey }] of shortcutsForSites.shortcuts) {
     const option = optionSource.cloneNode(true)
     options.append(option)
     option.querySelector('#label').textContent = description
-    option.querySelector('#hotkey').textContent = verbatum ? `${hotkey} (${verbatum})` : hotkey
+    option.querySelector('#hotkey').textContent = defaultKey
   }
 
   observer.disconnect()

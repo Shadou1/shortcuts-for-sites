@@ -124,111 +124,118 @@ function updateResults() {
 
 }
 
-const shortcuts = {
+export const shortcuts = new Map()
 
-  'a': {
-    category: 'Navigation',
-    description: 'Go to all search results',
-    event: () => {
-      allResultsAnchor?.click()
-    }
-  },
 
-  'i': {
-    category: 'Navigation',
-    description: 'Go to images',
-    event: () => {
-      if (!imageAnchor) imageAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=isch"]')
-      if (!imageAnchor.offsetParent) return
-      imageAnchor?.click()
-    }
-  },
+shortcuts.set('goToAll', {
+  category: 'Navigation',
+  defaultKey: 'a',
+  description: 'Go to all search results',
+  event: () => {
+    allResultsAnchor?.click()
+  }
+})
 
-  'v': {
-    category: 'Navigation',
-    description: 'Go to videos',
-    event: () => {
-      if (!videoAnchor) videoAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=vid"]')
-      if (!videoAnchor.offsetParent) return
-      videoAnchor?.click()
-    }
-  },
+shortcuts.set('goToImages', {
+  category: 'Navigation',
+  defaultKey: 'i',
+  description: 'Go to images',
+  event: () => {
+    if (!imageAnchor) imageAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=isch"]')
+    if (!imageAnchor.offsetParent) return
+    imageAnchor?.click()
+  }
+})
 
-  'n': {
-    category: 'Navigation',
-    description: 'Go to news',
-    event: () => {
-      if (!newsAnchor) newsAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=nws"]')
-      if (!newsAnchor.offsetParent) return
-      newsAnchor?.click()
-    }
-  },
+shortcuts.set('goToVideos', {
+  category: 'Navigation',
+  defaultKey: 'v',
+  description: 'Go to videos',
+  event: () => {
+    if (!videoAnchor) videoAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=vid"]')
+    if (!videoAnchor.offsetParent) return
+    videoAnchor?.click()
+  }
+})
 
-  'j': {
-    category: 'Search',
-    description: 'Focus next search result / image',
-    event: () => {
-      updateResults()
+shortcuts.set('goToNews', {
+  category: 'Navigation',
+  defaultKey: 'n',
+  description: 'Go to news',
+  event: () => {
+    if (!newsAnchor) newsAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=nws"]')
+    if (!newsAnchor.offsetParent) return
+    newsAnchor?.click()
+  }
+})
 
-      searchResultIndex = (searchResultIndex + 1) % searchResultsAnchors.length
-      const currentSearchAnchor = searchResultsAnchors[searchResultIndex]
-      // console.log('before', window.scrollY, document.body.scrollHeight, window.innerHeight, document.body.scrollHeight - window.innerHeight)
-      currentSearchAnchor.focus()
-      currentSearchAnchor.scrollIntoView()
-      const scrollLength = Math.min(350, window.innerHeight / 2)
-      // console.log('after', window.scrollY, document.body.scrollHeight, window.innerHeight, document.body.scrollHeight - window.innerHeight)
-      window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : -100)
-    }
-  },
+shortcuts.set('nextSearchResult', {
+  category: 'Search',
+  defaultKey: 'j',
+  description: 'Focus next search result / image',
+  event: () => {
+    updateResults()
 
-  'k': {
-    category: 'Search',
-    description: 'Focus previous search result / image',
-    event: () => {
-      updateResults()
+    searchResultIndex = (searchResultIndex + 1) % searchResultsAnchors.length
+    const currentSearchAnchor = searchResultsAnchors[searchResultIndex]
+    // console.log('before', window.scrollY, document.body.scrollHeight, window.innerHeight, document.body.scrollHeight - window.innerHeight)
+    currentSearchAnchor.focus()
+    currentSearchAnchor.scrollIntoView()
+    const scrollLength = Math.min(350, window.innerHeight / 2)
+    // console.log('after', window.scrollY, document.body.scrollHeight, window.innerHeight, document.body.scrollHeight - window.innerHeight)
+    window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : -100)
+  }
+})
 
-      searchResultIndex = searchResultIndex > 0 ? searchResultIndex - 1 : searchResultsAnchors.length - 1
-      const currentSearchAnchor = searchResultsAnchors[searchResultIndex]
-      currentSearchAnchor.focus()
-      currentSearchAnchor.scrollIntoView()
-      const scrollLength = Math.min(350, window.innerHeight / 2)
-      window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : -100)
-    }
-  },
+shortcuts.set('previousSearchResult', {
+  category: 'Search',
+  defaultKey: 'k',
+  description: 'Focus previous search result / image',
+  event: () => {
+    updateResults()
 
-  'J': {
-    category: 'Search',
-    description: 'Go to next search page',
-    verbatum: 'Shift+l',
-    event: () => {
-      nextPageAnchor.click()
-    }
-  },
+    searchResultIndex = searchResultIndex > 0 ? searchResultIndex - 1 : searchResultsAnchors.length - 1
+    const currentSearchAnchor = searchResultsAnchors[searchResultIndex]
+    currentSearchAnchor.focus()
+    currentSearchAnchor.scrollIntoView()
+    const scrollLength = Math.min(350, window.innerHeight / 2)
+    window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : -100)
+  }
+})
 
-  'K': {
-    category: 'Search',
-    description: 'Go to previous search page',
-    verbatum: 'Shift+j',
-    event: () => {
-      previousPageAnchor?.click()
-    }
-  },
+shortcuts.set('nextSearchPage', {
+  category: 'Search',
+  defaultKey: 'J',
+  description: 'Go to next search page',
+  event: () => {
+    nextPageAnchor.click()
+  }
+})
 
-  'o': {
-    category: 'Search',
-    description: 'Focus next related search',
-    event: () => {
-      updateResults()
+shortcuts.set('previousSearchPage', {
+  category: 'Search',
+  defaultKey: 'K',
+  description: 'Go to previous search page',
+  event: () => {
+    previousPageAnchor?.click()
+  }
+})
 
-      searchRelatedIndex = (searchRelatedIndex + 1) % searchRelatedAnchors.length
-      const currentRelatedAnchor = searchRelatedAnchors[searchRelatedIndex]
-      currentRelatedAnchor.focus()
-      currentRelatedAnchor.scrollIntoView()
-      const scrollLength = Math.min(350, window.innerHeight / 2)
-      window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : -100)
-    }
-  },
+shortcuts.set('nextRelatedSearch', {
+  category: 'Search',
+  defaultKey: 'o',
+  description: 'Focus next related search',
+  event: () => {
+    updateResults()
 
-}
+    searchRelatedIndex = (searchRelatedIndex + 1) % searchRelatedAnchors.length
+    const currentRelatedAnchor = searchRelatedAnchors[searchRelatedIndex]
+    currentRelatedAnchor.focus()
+    currentRelatedAnchor.scrollIntoView()
+    const scrollLength = Math.min(350, window.innerHeight / 2)
+    window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : -100)
+  }
+})
 
-Object.assign(keyboardOnlyNavigation.shortcuts, shortcuts)
+
+

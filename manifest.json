@@ -16,16 +16,25 @@
     }
   },
 
+  "permissions": [
+    "storage"
+  ],
+
   "icons": {
     "48": "icons/browser-action-enabled.svg",
     "96": "icons/browser-action-enabled.svg",
     "128": "icons/browser-action-enabled.svg"
   },
 
+  "options_ui": {
+    "browser_style": true,
+    "page": "pages/settings/settings.html"
+  },
+
   "browser_action": {
     "browser_style": true,
     "default_icon": "icons/browser-action-disabled.svg",
-    "default_popup": "browser-actions/default/default.html",
+    "default_popup": "pages/browser-action/default.html",
     "default_title": "Shortcuts for sites"
   },
 
@@ -231,7 +240,7 @@
       ],
       "js": [
         "content-scripts/init.js",
-        "content-scripts/google/search/shortcuts.js"
+        "content-scripts/initGoogleSearch.js"
       ]
     },
     {
@@ -429,7 +438,7 @@
       ],
       "js": [
         "content-scripts/init.js",
-        "content-scripts/google/translate/shortcuts.js"
+        "content-scripts/initGoogleTranslate.js"
       ]
     },
     {
@@ -438,8 +447,8 @@
       ],
       "js": [
         "content-scripts/init.js",
-        "content-scripts/youtube/shortcuts.js",
-        "content-scripts/youtube/markup.js"
+        "content-scripts/initYoutube.js",
+        "shortcuts/youtube/markup.js"
       ]
     },
     {
@@ -448,7 +457,7 @@
       ],
       "js": [
         "content-scripts/init.js",
-        "content-scripts/twitch/shortcuts.js"
+        "content-scripts/initTwitch.js"
       ]
     },
     {
@@ -457,18 +466,26 @@
       ],
       "js": [
         "content-scripts/init.js",
-        "content-scripts/reddit/shortcuts.js"
+        "content-scripts/initReddit.js"
       ]
     }
   ],
 
   "web_accessible_resources": [
-    "utils/locationUtils.js",
-    "utils/mutationUtils.js",
+    "shortcuts/google/search/shortcuts.js",
 
-    "utils/youtube.js",
-    "utils/twitch.js",
-    "utils/markdownUtils.js"
+    "shortcuts/google/translate/shortcuts.js",
+
+    "shortcuts/youtube/shortcuts.js",
+    "shortcuts/youtube/utils.js",
+
+    "shortcuts/twitch/shortcuts.js",
+    "shortcuts/twitch/utils.js",
+
+    "shortcuts/reddit/shortcuts.js",
+
+    "utils/locationUtils.js",
+    "utils/mutationUtils.js"
   ],
 
   "commands": {

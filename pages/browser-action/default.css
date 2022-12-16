@@ -24,7 +24,6 @@ section > h2 {
   padding-left: 1em;
 }
 
-
 section > div {
   padding: 0px 8px;
   /* border: 1px solid; */
@@ -32,7 +31,7 @@ section > div {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  justify-items: baseline;
+  align-items: baseline;
 }
 
 section > div > p {
@@ -42,9 +41,12 @@ section > div > p {
 
 section > div > p:last-child {
   flex-basis: 100px;
+  /* display: flex; */
+  /* justify-content: space-between; */
+  /* align-items: baseline; */
 }
 
-section > div > p > span {
+.key {
   font-weight: 500;
   padding: 4px 8px;
   border: 2px solid gray;

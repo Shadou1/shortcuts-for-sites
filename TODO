@@ -28,7 +28,7 @@ Todo:
     ✔ Browser action width doesn't fit @done(22-11-29 09:02)
     ☐ Show a hint if site has native shortcuts ('?' key)
     ☐ Vertical scrollbar displays incorrectly
-    ☐ Numeric shortcuts displayed first before character shortcuts
+    ✔ Numeric shortcuts displayed first before character shortcuts @done(22-12-17 04:05)
 
   Options:
     ☐ Extension options page

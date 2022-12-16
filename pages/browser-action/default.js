@@ -1,5 +1,7 @@
 const popupHeading = document.querySelector('main > h1')
 const shortcutsArticle = document.querySelector('article')
+const sectionTemplate = document.querySelector('#shortcuts-section')
+const rowTemplate = document.querySelector('#shortcut-row')
 
 function clearPopup() {
   popupHeading.textContent = 'No Available Shortcuts'
@@ -19,33 +21,28 @@ function fillPopupWithShortcuts(shortcuts) {
   const newShortcuts = []
   let lastCategory = null
   let categorySection = null
-  for (const [shortcut, { category, description, verbatum }] of Object.entries(shortcuts)) {
+  for (const [_shortcut, { category, description, defaultKey }] of shortcuts) {
     if (category !== lastCategory) {
       lastCategory = category
-      categorySection = document.createElement('section')
-      const categoryHeading = document.createElement('h2')
-      categoryHeading.textContent = category
-      categorySection.appendChild(categoryHeading)
+      categorySection = sectionTemplate.content.cloneNode(true)
+      categorySection.querySelector('h2').textContent = category
       newShortcuts.push(categorySection)
     }
 
-    const shortcutRow = document.createElement('div')
-    const shortcutDescription = document.createElement('p')
-    shortcutDescription.textContent = description
-    const shortcutButton = document.createElement('p')
-    const shortcutKey = document.createElement('span')
-    shortcutKey.textContent = shortcut
-    shortcutButton.appendChild(shortcutKey)
-    if (verbatum) shortcutButton.append(` (${verbatum})`)
-    shortcutRow.append(shortcutDescription, shortcutButton)
-    categorySection.append(shortcutRow)
+    const shortcutRow = rowTemplate.content.cloneNode(true)
+    shortcutRow.querySelector('.description').textContent = description
+    shortcutRow.querySelector('.key').textContent = defaultKey
+    if (defaultKey.match(/[A-Z]/)) {
+      shortcutRow.querySelector('.verbatum').textContent = `Shift+${defaultKey.toLowerCase()}`
+    }
+    categorySection.querySelector('section').append(shortcutRow)
   }
 
   shortcutsArticle.replaceChildren(...newShortcuts)
 }
 
 function handleShortcutsResponse(response) {
-  if (!Object.keys(response.shortcuts).length) {
+  if (!response.shortcuts.size) {
     clearPopup()
     // popupHeading.hidden = false
     return

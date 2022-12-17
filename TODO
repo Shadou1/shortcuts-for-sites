@@ -20,7 +20,8 @@ Todo:
 
   ☐ Mutation observers will stay in background if callback didn't disconnect (happens if it didn't find the queried element) @high
 
-  ☐ Come up with better structure for shortcuts
+  ✔ Come up with better structure for shortcuts @done(22-12-17 16:08)
+  ☐ Make init.js file load shortcuts.js files according to a matched location instead of separate init[site].js files
 
   ☐ Write tests?
 
@@ -31,7 +32,9 @@ Todo:
     ✔ Numeric shortcuts displayed first before character shortcuts @done(22-12-17 04:05)
 
   Options:
-    ☐ Extension options page
+    ✔ Extension options page @done(22-12-17 15:18)
+    ☐ Show if shortcut key is uppercase (Shift+key)
+    ☐ Show colliding hotkeys
 
     ☐ Allow user to configure scroll offset (when scrolling to an anchor for example)
 

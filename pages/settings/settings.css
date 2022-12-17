@@ -1,0 +1,94 @@
+body {
+  height: 1200px;
+}
+
+header {
+  padding: 0px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header > button {
+  font-size: x-large;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+menu {
+  padding: 0px;
+  padding-left: 1em;
+  display: flex;
+  flex-wrap: wrap;
+
+  border-bottom: 1px solid grey;
+}
+
+menu > li {
+  margin-bottom: 10px;
+  list-style-type: none;
+}
+
+main > h1 {
+  margin-left: 1em;
+}
+
+menu > li > button {
+  margin: 0px;
+  margin-right: 10px;
+  font-size: large;
+  border: none;
+  cursor: pointer;
+}
+
+fieldset {
+  margin: 10px;
+  padding-bottom: 20px;
+  border: none;
+
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 10px 20px;
+
+  /* border-bottom: 1px solid gray; */
+}
+
+fieldset > legend {
+  margin-left: 1em;
+  margin-bottom: 0.5em;
+  font-size: x-large;
+}
+
+fieldset :is(label, input) {
+  font-size: medium
+}
+
+fieldset input {
+  border: none;
+  border-bottom: 1px solid;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color: azure;
+    background-color: #202124;
+  }
+
+  menu {
+    border-color: azure;
+  }
+
+  fieldset {
+    border-color: azure;
+  }
+
+  button {
+    color: azure;
+    background-color: #202124;
+  }
+
+  input {
+    color: white;
+    background-color: #202124;
+  }
+}

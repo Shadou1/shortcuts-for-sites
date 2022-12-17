@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./settings.css">
+  <script src="./settings.js" defer></script>
+  <title>Shortcuts for Sites Settings</title>
+</head>
+
+<body>
+  <main>
+    <header>
+      <h1>Shortcuts settings</h1>
+      <button id="save-settings-button" aria-label="save-settings">Save</button>
+    </header>
+    <menu role="tablist" aria-label="site-shortcuts">
+    </menu>
+  </main>
+
+  <template id="tab-template">
+    <li>
+      <button class="browser-style" role="tab" aria-controls="panel" id="tab" aria-selected="false" tabindex="-1">Site</button>
+    </li>
+  </template>
+
+  <template id="tabpanel-template">
+    <form id="panel" role="tabpanel" aria-labelledby="tab" tabindex="0" hidden>
+    </form>
+  </template>
+
+  <template id="shortcuts-section-template">
+    <fieldset class="browser-style">
+      <legend>Category</legend>
+    </fieldset>
+  </template>
+
+  <template id="shortcut-template">
+    <label for="shortcut">Description</label>
+    <input id="shortcut" type="text" placeholder="k" />
+  </template>
+</body>
+
+</html>

@@ -20,6 +20,7 @@ let didPageMutate = false
 let whenTargetMutates
 import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
   ({ whenTargetMutates } = result)
+  if (!window.location.pathname.match('tbm=isch')) return
   // Mutates only on images page
   whenTargetMutates('#islmp[role="main"]', (mutations, observer) => {
     didPageMutate = true

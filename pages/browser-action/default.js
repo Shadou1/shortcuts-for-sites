@@ -21,7 +21,7 @@ function fillPopupWithShortcuts(shortcuts) {
   const newShortcuts = []
   let lastCategory = null
   let categorySection = null
-  for (const [_shortcut, { category, description, defaultKey }] of shortcuts) {
+  for (const [shortcutKey, { category, description }] of shortcuts) {
     if (category !== lastCategory) {
       lastCategory = category
       categorySection = sectionTemplate.content.cloneNode(true)
@@ -31,9 +31,9 @@ function fillPopupWithShortcuts(shortcuts) {
 
     const shortcutRow = rowTemplate.content.cloneNode(true)
     shortcutRow.querySelector('.description').textContent = description
-    shortcutRow.querySelector('.key').textContent = defaultKey
-    if (defaultKey.match(/[A-Z]/)) {
-      shortcutRow.querySelector('.verbatum').textContent = `Shift+${defaultKey.toLowerCase()}`
+    shortcutRow.querySelector('.key').textContent = shortcutKey
+    if (shortcutKey.match(/[A-Z]/)) {
+      shortcutRow.querySelector('.verbatum').textContent = `Shift+${shortcutKey.toLowerCase()}`
     }
     categorySection.querySelector('section').append(shortcutRow)
   }

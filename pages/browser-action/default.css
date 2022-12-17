@@ -40,10 +40,11 @@ section > div > p {
 }
 
 section > div > p:last-child {
+  margin: 0px;
   flex-basis: 100px;
-  /* display: flex; */
-  /* justify-content: space-between; */
-  /* align-items: baseline; */
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
 .key {

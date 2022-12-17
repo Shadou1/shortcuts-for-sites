@@ -20,10 +20,14 @@ const shortcutsProxyHandler = {
     }
 
     if (prop === 'shortcuts') {
-      for (const [_, shortcut] of value) {
-        shortcutsByKey.set(shortcut['defaultKey'], shortcut)
-      }
-      shortcutsSerialized = shortcutsToSerializable(value)
+      browser.storage.sync.get(shortcutsForSites.site).then((savedShortcuts) => {
+        const savedShortcutsSite = savedShortcuts[shortcutsForSites.site]
+        for (const [shortcutName, shortcut] of value) {
+          const key = savedShortcutsSite?.[shortcutName] || shortcut.defaultKey
+          shortcutsByKey.set(key, shortcut)
+        }
+        shortcutsSerialized = shortcutsToSerializable(shortcutsByKey)
+      })
     }
 
     return Reflect.set(target, prop, value)

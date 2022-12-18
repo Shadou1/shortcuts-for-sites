@@ -28,7 +28,7 @@
 
   "options_ui": {
     "browser_style": true,
-    "page": "pages/settings/settings.html"
+    "page": "pages/options/options.html"
   },
 
   "browser_action": {

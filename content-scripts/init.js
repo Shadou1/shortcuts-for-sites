@@ -2,6 +2,7 @@ let isShortcutsAvailable = false
 
 const _shortcutsForSites = {
   shortcuts: new Map(),
+  site: null
 }
 const shortcutsByKey = new Map()
 let shortcutsSerialized = new Map()
@@ -47,6 +48,21 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break
   }
 })
+
+// Import matching shortcuts
+async function importShortcuts() {
+  const { siteMatches } = await import(browser.runtime.getURL('shortcuts/siteMatches.js'))
+
+  for (const [site, { hostnameMatch, path }] of Object.entries(siteMatches)) {
+    if (!window.location.hostname.match(hostnameMatch)) continue
+
+    const { shortcuts } = await import(browser.runtime.getURL(path))
+    shortcutsForSites.site = site
+    shortcutsForSites.shortcuts = shortcuts
+    return
+  }
+}
+importShortcuts()
 
 // Handle shortcuts
 

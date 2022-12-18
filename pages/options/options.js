@@ -1,12 +1,3 @@
-// TODO get these from a common place
-const shortcutsPaths = {
-  'google-search': 'shortcuts/google/search/shortcuts.js',
-  'google-translate': 'shortcuts/google/translate/shortcuts.js',
-  'youtube': 'shortcuts/youtube/shortcuts.js',
-  'twitch': 'shortcuts/twitch/shortcuts.js',
-  'reddit': 'shortcuts/reddit/shortcuts.js',
-}
-
 const main = document.querySelector('main')
 const tablistMenu = document.querySelector('menu[role="tablist"]')
 const saveButton = document.querySelector('#save-settings-button')
@@ -63,7 +54,8 @@ async function populateShortcuts(path, tabId) {
 }
 
 async function populateAllShortcuts() {
-  for (const [site, path] of Object.entries(shortcutsPaths)) {
+  const { siteMatches } = await import(browser.runtime.getURL('shortcuts/siteMatches.js'))
+  for (const [site, { path }] of Object.entries(siteMatches)) {
 
     const tabId = site
 

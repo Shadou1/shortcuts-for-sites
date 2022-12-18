@@ -239,8 +239,7 @@
         "https://www.google.cat/search*"
       ],
       "js": [
-        "content-scripts/init.js",
-        "content-scripts/initGoogleSearch.js"
+        "content-scripts/init.js"
       ]
     },
     {
@@ -437,27 +436,23 @@
         "https://translate.google.cat/*"
       ],
       "js": [
-        "content-scripts/init.js",
-        "content-scripts/initGoogleTranslate.js"
+        "content-scripts/init.js"
       ]
     },
     {
       "matches": [
-        "https://*.youtube.com/*"
+        "https://www.youtube.com/*"
       ],
       "js": [
-        "content-scripts/init.js",
-        "content-scripts/initYoutube.js",
-        "shortcuts/youtube/markup.js"
+        "content-scripts/init.js"
       ]
     },
     {
       "matches": [
-        "https://*.twitch.tv/*"
+        "https://www.twitch.tv/*"
       ],
       "js": [
-        "content-scripts/init.js",
-        "content-scripts/initTwitch.js"
+        "content-scripts/init.js"
       ]
     },
     {
@@ -465,13 +460,14 @@
         "https://www.reddit.com/*"
       ],
       "js": [
-        "content-scripts/init.js",
-        "content-scripts/initReddit.js"
+        "content-scripts/init.js"
       ]
     }
   ],
 
   "web_accessible_resources": [
+    "shortcuts/siteMatches.js",
+
     "shortcuts/google/search/shortcuts.js",
 
     "shortcuts/google/translate/shortcuts.js",

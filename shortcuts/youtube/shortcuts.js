@@ -180,6 +180,7 @@ shortcuts.set('scrollToVideoDescription', {
   event: () => {
     if (!pathnameStartsWith('/watch')) return
 
+    // TODO when clicking to fast, it stops working
     const infoRenderer = document.querySelector('#info ytd-video-primary-info-renderer, #above-the-fold')
     const showMoreButton = document.querySelector('.ytd-video-secondary-info-renderer tp-yt-paper-button#more, tp-yt-paper-button#expand')
     const showLessButton = document.querySelector('.ytd-video-secondary-info-renderer tp-yt-paper-button#less, tp-yt-paper-button#collapse')

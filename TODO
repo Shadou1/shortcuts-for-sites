@@ -15,13 +15,11 @@ Todo:
   ✔ Redraw icons as svg @done(22-08-22 18:46)
 
   ✔ When shortcut navigates to new page, figure out how to query not yet rendered elements (await for element to appear / mutation observer) @done(22-08-30 19:15)
-
-  ☐ Force browser to draw focus outline when shortcut focuses something as if it was tabbed to with 'tab' @critical (can it be done?)
-
+  ☐ Force browser to draw focus outline when shortcut focuses something as if it was tabbed to with 'tab' @low (can it be done?)
   ☐ Mutation observers will stay in background if callback didn't disconnect (happens if it didn't find the queried element) @high
 
   ✔ Come up with better structure for shortcuts @done(22-12-17 16:08)
-  ☐ Make init.js file load shortcuts.js files according to a matched location instead of separate init[site].js files
+  ✔ Make init.js file load shortcuts.js files according to a matched location instead of separate init[site].js files @critical @done(22-12-18 16:38)
 
   ☐ Write tests?
 
@@ -30,6 +28,7 @@ Todo:
     ☐ Show a hint if site has native shortcuts ('?' key)
     ☐ Vertical scrollbar displays incorrectly
     ✔ Numeric shortcuts displayed first before character shortcuts @done(22-12-17 04:05)
+    ☐ Highligh shortcuts that can be used on the current page (current location)
 
   Options:
     ✔ Extension options page @done(22-12-17 15:18)
@@ -47,6 +46,8 @@ Todo:
 
     ✔ Shortcuts work in all video players (not only on the /watch pages) @done(22-12-07 13:22)
     ✔ When going to channel videos/playlists from /watch page and channel home has an autoplay video, this video will start autoplaying in the background incorrectly (sometimes) @done(22-12-03 14:23)
+
+    ☐ Maybe include 'all_frames' into manifest.json content_scripts so that shortcuts also work in iframes(chat)
 
     Bugs:
       ☐ When channel has a 'store' tab or doesn't have a 'community' tab, 'p' (go to playlists) shortcut will incorrectly select another tab @critical

@@ -1,4 +1,5 @@
 const popupHeading = document.querySelector('main > h1')
+const nativeShortcutsHint = document.querySelector('.native-shortcuts-hint')
 const shortcutsArticle = document.querySelector('article')
 const sectionTemplate = document.querySelector('#shortcuts-section')
 const rowTemplate = document.querySelector('#shortcut-row')
@@ -47,6 +48,7 @@ function handleShortcutsResponse(response) {
     // popupHeading.hidden = false
     return
   }
+  nativeShortcutsHint.hidden = !response.hasNativeShortcuts
   fillPopupWithShortcuts(response.shortcuts)
 }
 

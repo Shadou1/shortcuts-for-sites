@@ -173,6 +173,7 @@ shortcuts.set('focusVideo', {
   }
 })
 
+let descriptionExpanded = false
 shortcuts.set('scrollToVideoDescription', {
   category: 'Video',
   defaultKey: 'd',
@@ -184,16 +185,17 @@ shortcuts.set('scrollToVideoDescription', {
     const infoRenderer = document.querySelector('#info ytd-video-primary-info-renderer, #above-the-fold')
     const showMoreButton = document.querySelector('.ytd-video-secondary-info-renderer tp-yt-paper-button#more, tp-yt-paper-button#expand')
     const showLessButton = document.querySelector('.ytd-video-secondary-info-renderer tp-yt-paper-button#less, tp-yt-paper-button#collapse')
-    if (!showMoreButton.hidden) {
-      showMoreButton.focus()
+    if (!descriptionExpanded) {
       infoRenderer.scrollIntoView()
-      showMoreButton.click()
+      showMoreButton?.focus()
+      showMoreButton?.click()
     } else {
-      const video = document.querySelector('video')
-      video.focus()
-      showLessButton.click()
-      window.scrollTo({ top: 0 })
+      moviePlayer = moviePlayer || document.querySelector('#movie_player')
+      showLessButton?.click()
+      moviePlayer.focus()
+      // window.scrollTo({ top: 0 })
     }
+    descriptionExpanded = !descriptionExpanded
   }
 })
 

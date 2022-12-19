@@ -2,7 +2,8 @@ let isShortcutsAvailable = false
 
 const _shortcutsForSites = {
   shortcuts: new Map(),
-  site: null
+  site: null,
+  hasNativeShortcuts: false
 }
 const shortcutsByKey = new Map()
 let shortcutsSerialized = new Map()
@@ -43,7 +44,8 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'getShortcuts':
       sendResponse({
         type: 'shortcuts',
-        shortcuts: shortcutsSerialized
+        shortcuts: shortcutsSerialized,
+        hasNativeShortcuts: shortcutsForSites.hasNativeShortcuts
       })
       break
   }
@@ -53,12 +55,13 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 async function importShortcuts() {
   const { siteMatches } = await import(browser.runtime.getURL('shortcuts/siteMatches.js'))
 
-  for (const [site, { hostnameMatch, path }] of Object.entries(siteMatches)) {
+  for (const [site, { hostnameMatch, path, hasNativeShortcuts }] of Object.entries(siteMatches)) {
     if (!window.location.hostname.match(hostnameMatch)) continue
 
     const { shortcuts } = await import(browser.runtime.getURL(path))
     shortcutsForSites.site = site
     shortcutsForSites.shortcuts = shortcuts
+    shortcutsForSites.hasNativeShortcuts = hasNativeShortcuts
     return
   }
 }

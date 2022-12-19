@@ -5,8 +5,8 @@ Todo:
   ✔ Do not query elements in shortcuts.js if user is on the wrong page @done(22-05-27 10:44)
   ☐ Bundle code to be able to use export/import in content scripts
   ✘ Shortcuts that navigate to a new page should accept an optional 'Ctrl' key to instead open the page in a new tab @cancelled(22-08-30 19:14)
+  ☐ Add runtime.onInstalled (install and update)
 
-  ☐ Shortcuts with Ctrl, Alt modifiers render correctly in browser action
   ✔ Shortcuts with Ctrl, Alt collide with regular keys in object keys @done(22-08-30 19:14)
   ☐ Add being able to use shortcuts when active element is accepting input
 
@@ -25,7 +25,8 @@ Todo:
 
   Browser Action:
     ✔ Browser action width doesn't fit @done(22-11-29 09:02)
-    ☐ Show a hint if site has native shortcuts ('?' key)
+    ✔ Show a hint if site has native shortcuts ('?' key) @done(22-12-21 19:02)
+    ☐ Shortcuts with Ctrl, Alt modifiers render correctly
     ☐ Vertical scrollbar displays incorrectly
     ✔ Numeric shortcuts displayed first before character shortcuts @done(22-12-17 04:05)
     ☐ Highligh shortcuts that can be used on the current page (current location)
@@ -68,6 +69,8 @@ Todo:
   Reddit:
     ✔ Add Reddit shortcuts @done(22-12-10 23:55)
     ✔ Make shortcuts work on comments pages @done(22-12-15 02:20)
+    ☐ Add go to next/previous comment in current level
+    ☐ Go to next/previous comment shortcuts are slow
 
   Fandom wiki:
     ☐ Add fandom wiki domain level shortcuts (works on any wiki)

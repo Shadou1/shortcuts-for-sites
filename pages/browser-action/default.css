@@ -8,6 +8,11 @@ main {
   width: 500px;
 }
 
+.native-shortcuts-hint {
+  position: absolute;
+  right: 16px;
+}
+
 main > h1 {
   padding-left: 2em;
   margin-bottom: 0;

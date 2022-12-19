@@ -9,7 +9,10 @@ let activeVideoPlayer = null
 let activeVideo = null
 
 // Comments page
+let scrollContainerComments = null
+let activeComment = null
 let commentsPageSubredditLink = null
+
 let activeVideoPlayerInComments = null
 let activeVideoInComments = null
 
@@ -43,28 +46,49 @@ function updateSubredditLinkInComments() {
   return false
 }
 
-// Focus post link when post container is focused
+function updateScrollContainerInComments() {
+  if (didCommentsPageChange()) {
+    scrollContainerComments = document.querySelector('#overlayScrollContainer')
+  }
+  scrollContainerComments = scrollContainerComments || document.querySelector('#overlayScrollContainer')
+  if (scrollContainerComments) return true
+  return false
+}
+
 document.body.addEventListener('focusin', (event) => {
-  if (event.target.getAttribute('data-testid') !== 'post-container') return
+  // Focus post link when post container is focused
+  if (event.target.getAttribute('data-testid') === 'post-container') {
 
-  activePost = document.activeElement
-  activePostSubredditLink = activePost.querySelector('a[data-click-id="subreddit"]')
+    activePost = document.activeElement
+    activePostSubredditLink = activePost.querySelector('a[data-click-id="subreddit"]')
 
-  // const activePostImage = activePost.querySelector('.media-element')
-  // activePostImage?.scrollIntoView()
+    // const activePostImage = activePost.querySelector('.media-element')
+    // activePostImage?.scrollIntoView()
 
-  activeVideoPlayer = activePost.querySelector('shreddit-player')
-  // activeVideo?.scrollIntoView()
-  activeVideo = activeVideoPlayer?.shadowRoot.querySelector('video')
-  // activePlayButton = activeVideoPlayer?.shadowRoot.querySelector('vds-play-button')
+    activeVideoPlayer = activePost.querySelector('shreddit-player')
+    // activeVideo?.scrollIntoView()
+    activeVideo = activeVideoPlayer?.shadowRoot.querySelector('video')
+    // activePlayButton = activeVideoPlayer?.shadowRoot.querySelector('vds-play-button')
 
-  // const scrollLength = Math.min(150, window.innerHeight / 2)
-  // window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : -100)
-  activePost.scrollIntoView()
-  window.scrollBy(0, -150)
+    // const scrollLength = Math.min(150, window.innerHeight / 2)
+    // window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : -100)
+    activePost.scrollIntoView()
+    window.scrollBy(0, -150)
 
-  const postLink = activePost.querySelector('a[data-click-id="body"]')
-  postLink.focus()
+    const postLink = activePost.querySelector('a[data-click-id="body"]')
+    postLink.focus()
+
+  // Scroll to focused comment
+  } else if (event.target.style.paddingLeft) {
+    activeComment = document.activeElement
+    activeComment.scrollIntoView()
+    if (updateScrollContainerInComments()) {
+      scrollContainerComments.scrollTop -= 150
+    } else {
+      window.scrollBy(0, -150)
+    }
+  }
+
 })
 
 export const shortcuts = new Map()
@@ -102,6 +126,15 @@ shortcuts.set('goToSubreddit', {
     }
   },
 })
+
+// shortcuts.set('goToNextCommentInLevel', {
+//   category: 'Post',
+//   defaultKey: 'J',
+//   description: 'Next comment in level',
+//   event: () => {
+//     if (!pathnameMatches(/^\/r\/.+?\/comments/)) return
+//   },
+// })
 
 shortcuts.set('goToSubredditNewTab', {
   category: 'Post',
@@ -284,4 +317,5 @@ shortcuts.set('videoVolumeDown', {
   }
 })
 
+// TODO add show timeline shortcuts
 // TODO add quality settings shortcuts

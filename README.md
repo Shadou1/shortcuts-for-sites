@@ -39,10 +39,10 @@ https://youtu.be/9MR6KKRwTP0
 | <kbd>v</kbd> | Go to videos |
 | <kbd>n</kbd> | Go to news |
 | **Search** |
-| <kbd>l</kbd> | Focus next search result |
-| <kbd>j</kbd> | Focus previous search result |
-| <kbd>L</kbd> (<kbd>Shift</kbd>+<kbd>l</kbd>) | Go to next search page |
-| <kbd>J</kbd> (<kbd>Shift</kbd>+<kbd>j</kbd>) | Go to previous search page |
+| <kbd>j</kbd> | Focus next search result / image |
+| <kbd>k</kbd> | Focus previous search result / image |
+| <kbd>J</kbd> (<kbd>Shift</kbd>+<kbd>j</kbd>) | Go to next search page |
+| <kbd>K</kbd> (<kbd>Shift</kbd>+<kbd>k</kbd>) | Go to previous search page |
 | <kbd>o</kbd> | Focus next related search |
 
 </details>
@@ -65,21 +65,56 @@ https://youtu.be/9MR6KKRwTP0
 <br>
 
 <details>
+<summary>Youtube</summary>
+
+| Shortcut | Description |
+| -------- | ----------- |
+| **General** |
+| <kbd>e</kbd> | Expand/Collapse guide sidebar |
+| <kbd>o</kbd> | Go to Home |
+| <kbd>u</kbd> | Go to Subscriptions |
+| <kbd>U</kbd> (<kbd>Shift</kbd>+<kbd>u</kbd>) | Focus subscribed channels |
+| **Video** |
+| <kbd>s</kbd> | Open settings |
+| <kbd>q</kbd> | Open quality settings |
+| <kbd>;</kbd> | Focus video / show progress bar |
+| <kbd>d</kbd> | Scroll to description/video |
+| <kbd>r</kbd> | Focus first related video |
+| <kbd>n</kbd> | Comment |
+| **Playlist** |
+| <kbd>[</kbd> | Focus first video in playlist |
+| <kbd>]</kbd> | Focus last video in playlist |
+| **Channel (works on channel or video page)** |
+| <kbd>h</kbd> | Go to channel home |
+| <kbd>v</kbd> | Go to channel videos |
+| <kbd>p</kbd> | Go to channel playlists |
+| <kbd>H</kbd> (<kbd>Shift</kbd>+<kbd>h</kbd>) | Go to channel (new tab) |
+| **Premiere/Stream** |
+| <kbd>E</kbd> (<kbd>Shift</kbd>+<kbd>e</kbd>) | Hide/Show chat |
+| <kbd>b</kbd> | Chat |
+| <kbd>S</kbd> (<kbd>Shift</kbd>+<kbd>s</kbd>) | Skip ahead to live broadcast |
+
+</details>
+
+<br>
+
+<details>
 <summary>Twitch</summary>
 
 | Shortcut | Description |
 | -------- | ----------- |
+| **General** |
 | <kbd>E</kbd> (<kbd>Shift</kbd>+<kbd>e</kbd>) | Expand/collapse left sidebar |
 | <kbd>u</kbd> | Focus followed channels |
 | <kbd>r</kbd> | Focus recommended channels |
 | <kbd>o</kbd> | Go to home |
 | <kbd>U</kbd> (<kbd>Shift</kbd>+<kbd>u</kbd>) | Go to following |
 | <kbd>b</kbd> | Browse categories |
-| <kbd>B</kbd> | Browse live channels |
+| <kbd>B</kbd> (<kbd>Shift</kbd>+<kbd>b</kbd>) | Browse live channels |
 | **Stream** |
 | <kbd>s</kbd> | Open settings |
 | <kbd>q</kbd> | Open quality settings |
-| <kbd>C</kbd> | Go to stream category |
+| <kbd>C</kbd> (<kbd>Shift</kbd>+<kbd>c</kbd>) | Go to stream category |
 | <kbd>d</kbd> | Scroll to description/video |
 | **Chat** |
 | <kbd>c</kbd> | Chat |
@@ -97,33 +132,28 @@ https://youtu.be/9MR6KKRwTP0
 <br>
 
 <details>
-<summary>Youtube</summary>
+<summary>Reddit</summary>
 
 | Shortcut | Description |
 | -------- | ----------- |
 | **General** |
-| <kbd>e</kbd> | Expand/Collapse guide sidebar |
-| <kbd>o</kbd> | Go to Home |
-| <kbd>u</kbd> | Go to Subscriptions |
-| <kbd>U</kbd> (<kbd>Shift</kbd>+<kbd>u</kbd>) | Focus subscribed channels |
+| <kbd>o</kbd> | Go to home |
+| <kbd>u</kbd> | Go to popular |
+| **Post** |
+| <kbd>i</kbd> | Go to post's subreddit |
+| <kbd>I</kbd> (<kbd>Shift</kbd>+<kbd>i</kbd>) | Go to post's subreddit (new tab) |
+| **Posts filters** |
+| <kbd>1</kbd> | Hot posts |
+| <kbd>2</kbd> | New posts |
+| <kbd>3</kbd> | Top posts |
+| <kbd>4</kbd> | Rising posts |
+| <kbd>t</kbd> | Choose time period |
 | **Video** |
-| <kbd>s</kbd> | Open settings |
-| <kbd>q</kbd> | Open quality settings |
-| <kbd>;</kbd> | Show progress bar |
-| <kbd>d</kbd> | Scroll to description/video |
-| <kbd>r</kbd> | Focus first related video |
-| <kbd>n</kbd> | Comment |
-| **Playlist** |
-| <kbd>[</kbd> | Focus first video in playlist |
-| <kbd>]</kbd> | Focus last video in playlist |
-| **Channel (works on channel or video page)** |
-| <kbd>h</kbd> | Go to channel home |
-| <kbd>v</kbd> | Go to channel videos |
-| <kbd>p</kbd> | Go to channel playlists |
-| <kbd>H</kbd> (<kbd>Shift</kbd>+<kbd>h</kbd>) | Go to channel (new tab) |
-| **Premiere/Stream** |
-| <kbd>E</kbd> (<kbd>Shift</kbd>+<kbd>e</kbd>) | Hide/Show chat |
-| <kbd>b</kbd> | Chat |
-| <kbd>S</kbd> (<kbd>Shift</kbd>+<kbd>s</kbd>) | Skip ahead to live broadcast |
+| <kbd>;</kbd> | Pause/resume |
+| <kbd>[</kbd> | Rewind |
+| <kbd>]</kbd> | Fast forward |
+| <kbd>m</kbd> | Mute |
+| <kbd>+</kbd> | Volume up |
+| <kbd>-</kbd> | Volume down |
 
 </details>

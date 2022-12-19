@@ -9,6 +9,7 @@ Navigating websites without touching your mouse can be difficult. Focusing links
 ## Useful tips
 
 - Pressing <kbd>Alt</kbd>+<kbd>k</kbd> will display shortcuts for the current website.
+- You can rebind shortcuts on extension's options page (preferences page).
 - Press <kbd>Tab</kbd> once to force browser to draw focus outline.
 - On some websites, pressing <kbd>?</kbd> will display already available shortcuts.
 
@@ -24,7 +25,6 @@ https://youtu.be/9MR6KKRwTP0
 
 - Focus outline won't render on some pages if the user hasn't pressed <kbd>Tab</kbd> at least once while on a page.
 - On Twitch, <kbd>d</kbd> shortcut to scroll to stream description will work incorrectly the first time.
-- Shortcuts are not rebindable right now.
 
 ## Full list of available shortcuts
 

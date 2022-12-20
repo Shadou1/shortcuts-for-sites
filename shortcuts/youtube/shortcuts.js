@@ -118,6 +118,7 @@ shortcuts.set('openVideoSettings', {
   category: 'Video',
   defaultKey: 's',
   description: 'Open settings',
+  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
   event: () => {
     if (pathnameStartsWith('/watch')) {
       settingsButton = settingsButton || document.querySelector('#movie_player .ytp-settings-button')
@@ -134,6 +135,7 @@ shortcuts.set('openVideoQualitySettings', {
   category: 'Video',
   defaultKey: 'q',
   description: 'Open quality settings',
+  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
   event: () => {
     if (pathnameStartsWith('/watch')) {
       settingsButton = settingsButton || document.querySelector('#movie_player .ytp-settings-button')
@@ -162,9 +164,8 @@ shortcuts.set('focusVideo', {
   category: 'Video',
   defaultKey: ';',
   description: 'Focus video / show progress bar',
+  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
   event: () => {
-    if (!pathnameStartsWith('/watch')) return
-
     moviePlayer = moviePlayer || document.querySelector('#movie_player')
     // TODO refactor
     moviePlayer.focus()
@@ -178,9 +179,8 @@ shortcuts.set('scrollToVideoDescription', {
   category: 'Video',
   defaultKey: 'd',
   description: 'Scroll to description/video',
+  isAvailable: () => pathnameStartsWith('/watch'),
   event: () => {
-    if (!pathnameStartsWith('/watch')) return
-
     // TODO when clicking to fast, it stops working
     const infoRenderer = document.querySelector('#info ytd-video-primary-info-renderer, #above-the-fold')
     const showMoreButton = document.querySelector('.ytd-video-secondary-info-renderer tp-yt-paper-button#more, tp-yt-paper-button#expand')
@@ -203,9 +203,8 @@ shortcuts.set('focusFirstRelatedVideo', {
   category: 'Video',
   defaultKey: 'r',
   description: 'Focus first related video',
+  isAvailable: () => pathnameStartsWith('/watch'),
   event: () => {
-    if (!pathnameStartsWith('/watch')) return
-
     const relatedLink = document.querySelector('#related a.yt-simple-endpoint.style-scope.ytd-compact-video-renderer')
     relatedLink.focus()
   }
@@ -215,9 +214,8 @@ shortcuts.set('focusCommentBox', {
   category: 'Video',
   defaultKey: 'n',
   description: 'Comment',
+  isAvailable: () => pathnameStartsWith('/watch'),
   event: () => {
-    if (!pathnameStartsWith('/watch')) return
-
     let commentBox = document.querySelector('ytd-comment-simplebox-renderer #placeholder-area')
     if (!commentBox) {
 
@@ -241,9 +239,8 @@ shortcuts.set('focusFirstVideoInPlaylist', {
   category: 'Playlist',
   defaultKey: '[',
   description: 'Focus first video in playlist',
+  isAvailable: () => pathnameStartsWith('/watch'),
   event: () => {
-    if (!pathnameStartsWith('/watch')) return
-
     const firstPlaylistVideo = document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items a')
     firstPlaylistVideo.focus()
   }
@@ -253,9 +250,8 @@ shortcuts.set('focusLastVideoInPlaylist', {
   category: 'Playlist',
   defaultKey: ']',
   description: 'Focus last video in playlist',
+  isAvailable: () => pathnameStartsWith('/watch'),
   event: () => {
-    if (!pathnameStartsWith('/watch')) return
-
     const firstPlaylistVideo = document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items:last-of-type a')
     firstPlaylistVideo.focus()
   }
@@ -265,9 +261,8 @@ shortcuts.set('goToChannelHome', {
   category: 'Channel (works on channel or video page)',
   defaultKey: 'h',
   description: 'Go to channel home',
+  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
   event: () => {
-    if (!pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
-
     if (pathnameStartsWith('/watch')) {
       const channelLink = document.querySelector('a.ytd-video-owner-renderer')
       channelLink.click()
@@ -291,9 +286,8 @@ shortcuts.set('goToChannelVideos', {
   category: 'Channel (works on channel or video page)',
   defaultKey: 'v',
   description: 'Go to channel videos',
+  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
   event: () => {
-    if (!pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
-
     if (pathnameStartsWith('/watch')) {
       const channelLink = document.querySelector('a.ytd-video-owner-renderer')
       channelLink.click()
@@ -316,9 +310,8 @@ shortcuts.set('goToChannelPlaylists', {
   category: 'Channel (works on channel or video page)',
   defaultKey: 'p',
   description: 'Go to channel playlists',
+  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
   event: () => {
-    if (!pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user')) return
-
     if (pathnameStartsWith('/watch')) {
       const channelLink = document.querySelector('a.ytd-video-owner-renderer')
       channelLink.click()
@@ -341,9 +334,8 @@ shortcuts.set('goToChannelNewTab', {
   category: 'Channel (works on channel or video page)',
   defaultKey: 'H',
   description: 'Go to channel (new tab)',
+  isAvailable: () => pathnameStartsWith('/watch'),
   event: () => {
-    if (!pathnameStartsWith('/watch')) return
-
     const channelLink = document.querySelector('a.ytd-video-owner-renderer')
     // TODO figure out why new tab opens with white background when using window.open
     // middle clicking on channel link opens new page with user's preferred color scheme
@@ -355,9 +347,8 @@ shortcuts.set('hideChat', {
   category: 'Premiere/Stream',
   defaultKey: 'E',
   description: 'Hide/Show chat',
+  isAvailable: () => pathnameStartsWith('/watch'),
   event: () => {
-    if (!pathnameStartsWith('/watch')) return
-
     const hideChatButton = document.querySelector('ytd-app ytd-live-chat-frame #show-hide-button button')
     hideChatButton?.click()
   }
@@ -367,9 +358,8 @@ shortcuts.set('focusChatBox', {
   category: 'Premiere/Stream',
   defaultKey: 'b',
   description: 'Chat',
+  isAvailable: () => pathnameStartsWith('/watch'),
   event: () => {
-    if (!pathnameStartsWith('/watch')) return
-
     const chatIframe = document.querySelector('iframe#chatframe')
     const chatBox = chatIframe.contentDocument.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
     chatBox?.focus()
@@ -380,9 +370,8 @@ shortcuts.set('skipToLiveBroadcast', {
   category: 'Premiere/Stream',
   defaultKey: 'S',
   description: 'Skip ahead to live broadcast',
+  isAvailable: () => pathnameStartsWith('/watch'),
   event: () => {
-    if (!pathnameStartsWith('/watch')) return
-
     const skipButton = document.querySelector('#movie_player .ytp-left-controls button.ytp-live-badge')
     skipButton?.click()
   }

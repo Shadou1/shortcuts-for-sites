@@ -127,7 +127,6 @@ function updateResults() {
 
 export const shortcuts = new Map()
 
-
 shortcuts.set('goToAll', {
   category: 'Navigation',
   defaultKey: 'a',

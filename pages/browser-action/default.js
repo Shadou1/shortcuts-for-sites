@@ -16,9 +16,9 @@ function clearlPopupError() {
   shortcutsArticle.replaceChildren()
 }
 
-function fillPopupWithShortcuts(shortcuts) {
+function fillPopupWithShortcuts(shortcuts, shortcutsAvailable) {
   popupHeading.hidden = true
-
+  console.log(shortcuts, shortcutsAvailable)
   const newShortcuts = []
   let lastCategory = null
   let categorySection = null
@@ -32,7 +32,9 @@ function fillPopupWithShortcuts(shortcuts) {
 
     const shortcutRow = rowTemplate.content.cloneNode(true)
     shortcutRow.querySelector('.description').textContent = description
-    shortcutRow.querySelector('.key').textContent = shortcutKey
+    const key = shortcutRow.querySelector('.key')
+    if (!shortcutsAvailable.get(shortcutKey)) key.classList.remove('active-key')
+    key.textContent = shortcutKey
     if (shortcutKey.match(/[A-Z]/)) {
       shortcutRow.querySelector('.verbatum').textContent = `Shift+${shortcutKey.toLowerCase()}`
     }
@@ -49,7 +51,7 @@ function handleShortcutsResponse(response) {
     return
   }
   nativeShortcutsHint.hidden = !response.hasNativeShortcuts
-  fillPopupWithShortcuts(response.shortcuts)
+  fillPopupWithShortcuts(response.shortcuts, response.shortcutsAvailable)
 }
 
 // query shortcuts on newly activated tabs

@@ -29,7 +29,7 @@ Todo:
     ☐ Shortcuts with Ctrl, Alt modifiers render correctly
     ☐ Vertical scrollbar displays incorrectly
     ✔ Numeric shortcuts displayed first before character shortcuts @done(22-12-17 04:05)
-    ☐ Highligh shortcuts that can be used on the current page (current location)
+    ✔ Highligh shortcuts that can be used on the current page (current location) @done(22-12-21 19:07)
 
   Options:
     ✔ Extension options page @done(22-12-17 15:18)

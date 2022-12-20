@@ -59,6 +59,10 @@ section > div > p:last-child {
   border-radius: 4px;
 }
 
+.active-key {
+  border-color: forestgreen;
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     color: azure;
@@ -67,6 +71,10 @@ section > div > p:last-child {
 
   section > div {
     border-color: azure;
+  }
+
+  .active-key {
+    border-color: seagreen;
   }
 
 }

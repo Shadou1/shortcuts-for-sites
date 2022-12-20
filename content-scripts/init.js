@@ -11,6 +11,15 @@ let shortcutsSerialized = new Map()
 function shortcutsToSerializable(shortcuts) {
   return shortcuts
 }
+function getShortcutsAvailable(shortcuts) {
+  const shortcutsAvailable = new Map()
+  for (const [key, shortcut] of shortcuts) {
+    let isAvailable = true
+    if (shortcut.isAvailable && !shortcut.isAvailable()) isAvailable = false
+    shortcutsAvailable.set(key, isAvailable)
+  }
+  return shortcutsAvailable
+}
 const shortcutsProxyHandler = {
   set(target, prop, value) {
     if (!isShortcutsAvailable) {
@@ -45,6 +54,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({
         type: 'shortcuts',
         shortcuts: shortcutsSerialized,
+        shortcutsAvailable: getShortcutsAvailable(shortcutsSerialized),
         hasNativeShortcuts: shortcutsForSites.hasNativeShortcuts
       })
       break
@@ -88,6 +98,7 @@ document.addEventListener('keydown', (ev) => {
 
     const shortcutConf = shortcutsByKey.get(ev.key)
     if (!shortcutConf) return
+    if (shortcutConf.isAvailable && !shortcutConf.isAvailable()) return
 
     // if (ev.shiftKey) shortcutConf.eventShift?.(ev)
     if (ev.ctrlKey) shortcutConf.eventCtrl?.(ev)

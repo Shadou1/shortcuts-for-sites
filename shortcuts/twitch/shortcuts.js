@@ -30,7 +30,6 @@ import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
 })
 
 let focusFirstChannel,
-  focusFirstVideo,
   focusFirstVideoOnQueryType,
   focusFirstCategory,
   navigateToLiveChannels,
@@ -39,7 +38,6 @@ let focusFirstChannel,
 import(browser.runtime.getURL('shortcuts/twitch/utils.js')).then((result) => {
   ({
     focusFirstChannel,
-    focusFirstVideo,
     focusFirstVideoOnQueryType,
     focusFirstCategory,
     navigateToLiveChannels,

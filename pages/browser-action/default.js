@@ -18,7 +18,6 @@ function clearlPopupError() {
 
 function fillPopupWithShortcuts(shortcuts, shortcutsAvailable) {
   popupHeading.hidden = true
-  console.log(shortcuts, shortcutsAvailable)
   const newShortcuts = []
   let lastCategory = null
   let categorySection = null

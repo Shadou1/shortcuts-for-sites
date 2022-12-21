@@ -29,11 +29,9 @@ import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
   ({ whenTargetMutates } = result)
 })
 
-let navigateToHome,
-  navigateToVideos,
+let navigateToVideos,
   navigateToPlaylists,
   focusFirstVideo,
-  focusFirstVideoOn,
   focusFirstVideoOnQueryType,
   focusFirstPlaylist,
   goToHome,
@@ -42,11 +40,9 @@ let navigateToHome,
   focusFirstSubscription
 import(browser.runtime.getURL('shortcuts/youtube/utils.js')).then((result) => {
   ({
-    navigateToHome,
     navigateToVideos,
     navigateToPlaylists,
     focusFirstVideo,
-    focusFirstVideoOn,
     focusFirstVideoOnQueryType,
     focusFirstPlaylist,
     goToHome,

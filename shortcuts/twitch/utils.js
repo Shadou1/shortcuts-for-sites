@@ -1,6 +1,6 @@
-let pathnameStartsWith, pathnameEndsWith
+let pathnameStartsWith
 import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
-  ({ pathnameStartsWith, pathnameEndsWith } = result)
+  ({ pathnameStartsWith } = result)
 })
 
 let whenTargetMutates

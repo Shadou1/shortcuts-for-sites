@@ -1,6 +1,12 @@
 let homeAnchor = null
 let popularAnchor = null
 
+let hotPostsAnchor = null
+let newPostsAnchor = null
+let topPostsAnchor = null
+let risingPostsAnchor = null
+let timeSortAnchor = null
+
 // Main page
 let activePost = null
 let activePostSubredditLink = null
@@ -123,12 +129,18 @@ shortcuts.set('goToSubreddit', {
   category: 'Post',
   defaultKey: 'i',
   description: 'Go to post\'s subreddit',
+  isAvailable: () => {
+    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+      return updateSubredditLinkInComments()
+    } else {
+      return activePostSubredditLink?.offsetParent
+    }
+  },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      if (!updateSubredditLinkInComments()) return
       commentsPageSubredditLink.click()
     } else {
-      activePostSubredditLink?.click()
+      activePostSubredditLink.click()
     }
   },
 })
@@ -146,12 +158,17 @@ shortcuts.set('goToSubredditNewTab', {
   category: 'Post',
   defaultKey: 'I',
   description: 'Go to post\'s subreddit (new tab)',
+  isAvailable: () => {
+    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+      return updateSubredditLinkInComments()
+    } else {
+      return activePostSubredditLink?.offsetParent
+    }
+  },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      if (!updateSubredditLinkInComments()) return
       window.open(commentsPageSubredditLink.href, '_blank')
     } else {
-      if (!activePostSubredditLink) return
       window.open(activePostSubredditLink.href, '_blank')
     }
   },
@@ -163,9 +180,12 @@ shortcuts.set('showHotPosts', {
   category: 'Posts filters',
   defaultKey: '1',
   description: 'Hot posts',
+  isAvailable: () => {
+    hotPostsAnchor = hotPostsAnchor?.offsetParent ? hotPostsAnchor : document.querySelector('a[href*="hot"][role="button"]')
+    return hotPostsAnchor?.offsetParent
+  },
   event: () => {
-    const hotPostsAnchor = document.querySelector('a[href*="hot"][role="button"]')
-    hotPostsAnchor?.click()
+    hotPostsAnchor.click()
   }
 })
 
@@ -173,9 +193,12 @@ shortcuts.set('showNewPosts', {
   category: 'Posts filters',
   defaultKey: '2',
   description: 'New posts',
+  isAvailable: () => {
+    newPostsAnchor = newPostsAnchor?.offsetParent ? newPostsAnchor : document.querySelector('a[href*="new"][role="button"]')
+    return newPostsAnchor?.offsetParent
+  },
   event: () => {
-    const newPostsAnchor = document.querySelector('a[href*="new"][role="button"]')
-    newPostsAnchor?.click()
+    newPostsAnchor.click()
   }
 })
 
@@ -183,9 +206,12 @@ shortcuts.set('showTopPosts', {
   category: 'Posts filters',
   defaultKey: '3',
   description: 'Top posts',
+  isAvailable: () => {
+    topPostsAnchor = topPostsAnchor?.offsetParent ? topPostsAnchor : document.querySelector('a[href*="top"][role="button"]')
+    return topPostsAnchor?.offsetParent
+  },
   event: () => {
-    const topPostsAnchor = document.querySelector('a[href*="top"][role="button"]')
-    topPostsAnchor?.click()
+    topPostsAnchor.click()
   }
 })
 
@@ -193,9 +219,13 @@ shortcuts.set('showRisingPosts', {
   category: 'Posts filters',
   defaultKey: '4',
   description: 'Rising posts',
+  isAvailable: () => {
+    // Anchor is hidden, so not checking for offsetParent
+    risingPostsAnchor = risingPostsAnchor || document.querySelector('a[href*="rising"][role="menuitem"]')
+    return risingPostsAnchor
+  },
   event: () => {
-    const risingPostsAnchor = document.querySelector('a[href*="rising"][role="menuitem"]')
-    risingPostsAnchor?.click()
+    risingPostsAnchor.click()
   }
 })
 
@@ -203,9 +233,12 @@ shortcuts.set('chooseTimePeriod', {
   category: 'Posts filters',
   defaultKey: 't',
   description: 'Choose time period',
+  isAvailable: () => {
+    timeSortAnchor = timeSortAnchor?.offsetParent ? timeSortAnchor : document.querySelector('button#TimeSort--SortPicker')
+    return timeSortAnchor?.offsetParent
+  },
   event: () => {
-    const timeSortAnchor = document.querySelector('button#TimeSort--SortPicker')
-    timeSortAnchor?.click()
+    timeSortAnchor.click()
   }
 })
 
@@ -216,9 +249,15 @@ shortcuts.set('videoPauseResume', {
   category: 'Video',
   defaultKey: ';',
   description: 'Pause/resume',
+  isAvailable: () => {
+    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+      return updateVideoInComments()
+    } else {
+      return activeVideoPlayer?.offsetParent
+    }
+  },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      if (!updateVideoInComments()) return
 
       if (activeVideoInComments.readyState === 0) {
         const playButton = activeVideoPlayerInComments.shadowRoot.querySelector('vds-play-button icon-play')
@@ -231,7 +270,6 @@ shortcuts.set('videoPauseResume', {
       else activeVideoInComments.pause()
 
     } else {
-      if (!activeVideoPlayer) return
       if (activeVideo.paused) activeVideo.play()
       else activeVideo.pause()
     }
@@ -242,12 +280,17 @@ shortcuts.set('videoRewind', {
   category: 'Video',
   defaultKey: '[',
   description: 'Rewind',
+  isAvailable: () => {
+    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+      return updateVideoInComments()
+    } else {
+      return activeVideoPlayer?.offsetParent
+    }
+  },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      if (!updateVideoInComments()) return
       activeVideoInComments.fastSeek(activeVideoInComments.currentTime - 5)
     } else {
-      if (!activeVideoPlayer) return
       activeVideo.fastSeek(activeVideo.currentTime - 5)
     }
   }
@@ -257,12 +300,17 @@ shortcuts.set('videoForward', {
   category: 'Video',
   defaultKey: ']',
   description: 'Fast forward',
+  isAvailable: () => {
+    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+      return updateVideoInComments()
+    } else {
+      return activeVideoPlayer?.offsetParent
+    }
+  },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      if (!updateVideoInComments()) return
       activeVideoInComments.fastSeek(activeVideoInComments.currentTime + 5)
     } else {
-      if (!activeVideoPlayer) return
       activeVideo.fastSeek(activeVideo.currentTime + 5)
     }
   }
@@ -282,12 +330,17 @@ shortcuts.set('videoMute', {
   category: 'Video',
   defaultKey: 'm',
   description: 'Mute',
+  isAvailable: () => {
+    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+      return updateVideoInComments()
+    } else {
+      return activeVideoPlayer?.offsetParent
+    }
+  },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      if (!updateVideoInComments()) return
       activeVideoInComments.muted = !activeVideoInComments.muted
     } else {
-      if (!activeVideoPlayer) return
       activeVideo.muted = !activeVideo.muted
     }
   }
@@ -297,12 +350,17 @@ shortcuts.set('videoVolumeUp', {
   category: 'Video',
   defaultKey: '+',
   description: 'Volume up',
+  isAvailable: () => {
+    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+      return updateVideoInComments()
+    } else {
+      return activeVideoPlayer?.offsetParent
+    }
+  },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      if (!updateVideoInComments()) return
       activeVideoInComments.volume = Math.max(0, Math.min(1, activeVideoInComments.volume + 0.05))
     } else {
-      if (!activeVideoPlayer) return
       activeVideo.volume = Math.max(0, Math.min(1, activeVideo.volume + 0.05))
     }
   }
@@ -312,12 +370,17 @@ shortcuts.set('videoVolumeDown', {
   category: 'Video',
   defaultKey: '-',
   description: 'Volume down',
+  isAvailable: () => {
+    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+      return updateVideoInComments()
+    } else {
+      return activeVideoPlayer?.offsetParent
+    }
+  },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      if (!updateVideoInComments()) return
       activeVideoInComments.volume = Math.max(0, Math.min(1, activeVideoInComments.volume - 0.05))
     } else {
-      if (!activeVideoPlayer) return
       activeVideo.volume = Math.max(0, Math.min(1, activeVideo.volume - 0.05))
     }
   }

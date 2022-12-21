@@ -1,11 +1,23 @@
 let homeAnchor = null
 let followingAnchor = null
 let browseAnchor = null
-let settingsButton = null // inconsistent
-let qualityButton = null // inconsistent
-let chatTextarea = null // inconsistent
-let collapseLeftNavButton = null // inconsistent
-let collapseChatButton = null // inconsistent
+
+// all inconsistent
+let settingsButton = null
+let qualityButton = null
+let streamGameAnchor = null
+let streamInformationSection = null
+
+let channelAnchor = null
+let videosAnchor = null
+let scheduleAnchor = null
+
+let chatTextarea = null
+let collapseLeftNavButton = null
+let collapseChatButton = null
+
+let expandMiniPlayerButton = null
+let closeMiniPlayerButton = null
 
 let pathnameStartsWith, pathnameEndsWith
 import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
@@ -145,9 +157,13 @@ shortcuts.set('openVideoSettings', {
   category: 'Stream',
   defaultKey: 's',
   description: 'Open settings',
-  event: () => {
+  isAvailable: () => {
     const allSettingsButtons = document.querySelectorAll('#channel-player button[data-a-target="player-settings-button"]')
+    if (!allSettingsButtons.length) return false
     settingsButton = allSettingsButtons[allSettingsButtons.length - 1]
+    return settingsButton?.offsetParent
+  },
+  event: () => {
     settingsButton.click()
     // qualityButton = qualityButton || document.querySelector('div[data-a-target="player-settings-menu"] button[data-a-target="player-settings-menu-item-quality"]')
     qualityButton = document.querySelector('div[data-a-target="player-settings-menu"] button[data-a-target="player-settings-menu-item-quality"]')
@@ -159,9 +175,13 @@ shortcuts.set('openVideoQualitySettings', {
   category: 'Stream',
   defaultKey: 'q',
   description: 'Open quality settings',
-  event: () => {
+  isAvailable: () => {
     const allSettingsButtons = document.querySelectorAll('#channel-player button[data-a-target="player-settings-button"]')
+    if (!allSettingsButtons.length) return false
     settingsButton = allSettingsButtons[allSettingsButtons.length - 1]
+    return settingsButton?.offsetParent
+  },
+  event: () => {
     settingsButton.click()
     qualityButton = document.querySelector('div[data-a-target="player-settings-menu"] button[data-a-target="player-settings-menu-item-quality"]')
     qualityButton.click()
@@ -174,16 +194,18 @@ shortcuts.set('goToStreamCategory', {
   category: 'Stream',
   defaultKey: 'C',
   description: 'Go to stream category',
+  isAvailable: () => {
+    if (window.location.pathname === '/') return false
+    if (pathnameStartsWith('/directory/game')) return true
+    streamGameAnchor = document.querySelector('a[data-a-target="stream-game-link"]')
+    return streamGameAnchor?.offsetParent
+  },
   event: () => {
-    if (window.location.pathname === '/') return
-
-    if (pathnameStartsWith('/directory')) {
+    if (pathnameStartsWith('/directory/game')) {
       focusFirstChannel()
       return
     }
 
-    const streamGameAnchor = document.querySelector('a[data-a-target="stream-game-link"]')
-    if (!streamGameAnchor) return
     streamGameAnchor.click()
     whenTargetMutates('main', focusFirstChannel)
   }
@@ -193,14 +215,17 @@ shortcuts.set('scrollToStreamDescription', {
   category: 'Stream',
   defaultKey: 'd',
   description: 'Scroll to description/video',
+  isAvailable: () => {
+    streamInformationSection = document.querySelector('.channel-info-content section#live-channel-stream-information')
+    return streamInformationSection?.offsetParent
+  },
   event: () => {
-    const streamInformatinoSection = document.querySelector('.channel-info-content section#live-channel-stream-information')
-    if (document.activeElement !== streamInformatinoSection) {
-      streamInformatinoSection.focus()
+    if (document.activeElement !== streamInformationSection) {
+      streamInformationSection.focus()
       // TODO first time scrolling will work incorrectly
-      streamInformatinoSection.scrollIntoView()
+      streamInformationSection.scrollIntoView()
     } else {
-      streamInformatinoSection.blur()
+      streamInformationSection.blur()
       const video = document.querySelector('video')
       video.scrollIntoView()
     }
@@ -211,9 +236,11 @@ shortcuts.set('focusChatBox', {
   category: 'Chat',
   defaultKey: 'c',
   description: 'Chat',
-  event: () => {
-    // chatTextarea = chatTextarea || document.querySelector('textarea[data-a-target="chat-input"]')
+  isAvailable: () => {
     chatTextarea = document.querySelector('[data-a-target="chat-input"]')
+    return chatTextarea?.offsetParent
+  },
+  event: () => {
     chatTextarea.focus()
   }
 })
@@ -222,9 +249,11 @@ shortcuts.set('expandChat', {
   category: 'Chat',
   defaultKey: 'e',
   description: 'Expand/collapse chat',
-  event: () => {
-    // collapseChatButton = collapseChatButton || document.querySelector('button[data-a-target="right-column__toggle-collapse-btn"]')
+  isAvailable: () => {
     collapseChatButton = document.querySelector('button[data-a-target="right-column__toggle-collapse-btn"]')
+    return collapseChatButton?.offsetParent
+  },
+  event: () => {
     collapseChatButton.click()
   }
 })
@@ -233,9 +262,12 @@ shortcuts.set('goToOfflineChannel', {
   category: 'Channel',
   defaultKey: 'h',
   description: 'Go to online/offline channel sections',
+  isAvailable: () => {
+    channelAnchor = document.querySelector('#live-channel-stream-information a:not([href^="/directory"], [data-a-target="stream-game-link"]), #offline-channel-main-content a')
+    return channelAnchor?.offsetParent
+  },
   event: () => {
     const offlineSection = document.querySelector('#offline-channel-main-content')
-    const channelAnchor = document.querySelector('#live-channel-stream-information a:not([href^="/directory"], [data-a-target="stream-game-link"]), #offline-channel-main-content a')
     channelAnchor.click()
     if (!offlineSection) {
       whenTargetMutates('main', focusFirstVideoOnQueryType('channel home'))
@@ -247,8 +279,13 @@ shortcuts.set('goToChannelVideos', {
   category: 'Channel',
   defaultKey: 'v',
   description: 'Go to channel videos',
+  isAvailable: () => {
+    videosAnchor = document.querySelector('a[tabname="videos"]')
+    if (videosAnchor?.offsetParent) return true
+    channelAnchor = document.querySelector('#live-channel-stream-information a:not([href^="/directory"], .tw-link, [data-test-selector="clips-watch-full-button"]), #offline-channel-main-content a')
+    return channelAnchor?.offsetParent
+  },
   event: () => {
-    const videosAnchor = document.querySelector('a[tabname="videos"]')
     if (videosAnchor) {
       if (pathnameEndsWith('/videos')) {
         const firstVideo = document.querySelector('[data-test-selector="preview-card-carousel-child-container"] a')
@@ -258,7 +295,6 @@ shortcuts.set('goToChannelVideos', {
         whenTargetMutates('main', focusFirstVideoOnQueryType('channel video'))
       }
     } else {
-      const channelAnchor = document.querySelector('#live-channel-stream-information a:not([href^="/directory"], .tw-link, [data-test-selector="clips-watch-full-button"]), #offline-channel-main-content a')
       channelAnchor.click()
       whenTargetMutates('main', navigateToVideos)
     }
@@ -269,8 +305,13 @@ shortcuts.set('goToChannelSchedule', {
   category: 'Channel',
   defaultKey: 'S',
   description: 'Go to channel schedule',
+  isAvailable: () => {
+    scheduleAnchor = document.querySelector('a[tabname="schedule"]')
+    if (scheduleAnchor?.offsetParent) return true
+    channelAnchor = document.querySelector('#live-channel-stream-information a:not([href^="/directory"]):not(.tw-link):not([data-test-selector="clips-watch-full-button"]), #offline-channel-main-content a')
+    return channelAnchor?.offsetParent
+  },
   event: () => {
-    const scheduleAnchor = document.querySelector('a[tabname="schedule"]')
     if (scheduleAnchor) {
       if (pathnameEndsWith('/schedule')) {
         scheduleAnchor.focus()
@@ -279,7 +320,6 @@ shortcuts.set('goToChannelSchedule', {
         scheduleAnchor.focus()
       }
     } else {
-      const channelAnchor = document.querySelector('#live-channel-stream-information a:not([href^="/directory"]):not(.tw-link):not([data-test-selector="clips-watch-full-button"]), #offline-channel-main-content a')
       channelAnchor.click()
       whenTargetMutates('main', navigateToSchedule)
     }
@@ -290,9 +330,13 @@ shortcuts.set('expandMiniPlayer', {
   category: 'Mini player',
   defaultKey: 'x',
   description: 'Expand mini player',
+  isAvailable: () => {
+    expandMiniPlayerButton = document.querySelector('[data-a-player-state="mini"] .player-overlay-background > div:nth-child(2) button')
+    return expandMiniPlayerButton?.offsetParent
+  },
   event: () => {
-    const expandPlayerButton = document.querySelector('[data-a-player-state="mini"] .player-overlay-background > div:nth-child(2) button')
-    expandPlayerButton?.click()
+    expandMiniPlayerButton = document.querySelector('[data-a-player-state="mini"] .player-overlay-background > div:nth-child(2) button')
+    expandMiniPlayerButton?.click()
   }
 })
 
@@ -300,9 +344,13 @@ shortcuts.set('closeMiniPlayer', {
   category: 'Mini player',
   defaultKey: 'X',
   description: 'Close mini player',
+  isAvailable: () => {
+    closeMiniPlayerButton = document.querySelector('[data-a-player-state="mini"] .player-overlay-background > div:first-child button')
+    return closeMiniPlayerButton?.offsetParent
+  },
   event: () => {
-    const closePlayerButton = document.querySelector('[data-a-player-state="mini"] .player-overlay-background > div:first-child button')
-    closePlayerButton?.click()
+    closeMiniPlayerButton = document.querySelector('[data-a-player-state="mini"] .player-overlay-background > div:first-child button')
+    closeMiniPlayerButton?.click()
   }
 })
 

@@ -68,14 +68,15 @@ Todo:
 
   Twitch:
     ☐ Add predictions and other chat action shortcuts
-    ☐ Add isAvailable functions
+    ✔ Add isAvailable functions @done(22-12-21 19:11)
+    ☐ Maybe add checks for ?.offsetParent before requerying elements (won't work if elements are still incorrectly visible)
 
   Reddit:
     ✔ Add Reddit shortcuts @done(22-12-10 23:55)
     ✔ Make shortcuts work on comments pages @done(22-12-15 02:20)
     ☐ Add go to next/previous comment in current level
     ☐ Go to next/previous comment shortcuts are slow
-    ☐ Add isAvailable functions
+    ✔ Add isAvailable functions @done(22-12-21 19:11)
 
   Fandom wiki:
     ☐ Add fandom wiki domain level shortcuts (works on any wiki)

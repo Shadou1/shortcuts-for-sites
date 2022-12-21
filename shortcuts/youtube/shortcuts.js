@@ -1,11 +1,22 @@
 let guideButton = null
 let homeAnchor = null
 let subscriptionsAnchor = null
+
+let moviePlayer = null // consistent
 let settingsButton = null
-let settingsButtonChannel = null
 let qualityButton = null
+
+let moviePlayerChannel = null // constistent
+let settingsButtonChannel = null
 let qualityButtonChannel = null
-let moviePlayer = null
+
+let firstPlaylistVideo = null
+let lastPlaylistVideo = null
+
+let hideChatButton = null
+let chatIframe = null
+let chatInputBox = null
+let skipToLiveBroadcastButton = null
 
 // TODO use bundler to import these functions with 'import {} from'
 let pathnameStartsWith, pathnameEndsWith
@@ -118,13 +129,19 @@ shortcuts.set('openVideoSettings', {
   category: 'Video',
   defaultKey: 's',
   description: 'Open settings',
-  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
+  isAvailable: () => {
+    if (pathnameStartsWith('/watch')) return true
+    else if (pathnameStartsWith('/@', '/channel', '/c', '/user')) {
+      moviePlayerChannel = moviePlayerChannel || document.querySelector('#c4-player')
+      return moviePlayerChannel?.offsetParent
+    }
+  },
   event: () => {
     if (pathnameStartsWith('/watch')) {
       settingsButton = settingsButton || document.querySelector('#movie_player .ytp-settings-button')
       settingsButton?.click()
     }
-    if (pathnameStartsWith('/@', '/channel', '/c', '/user')) {
+    else if (pathnameStartsWith('/@', '/channel', '/c', '/user')) {
       settingsButtonChannel = settingsButtonChannel || document.querySelector('#c4-player .ytp-settings-button')
       settingsButtonChannel?.click()
     }
@@ -135,7 +152,13 @@ shortcuts.set('openVideoQualitySettings', {
   category: 'Video',
   defaultKey: 'q',
   description: 'Open quality settings',
-  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
+  isAvailable: () => {
+    if (pathnameStartsWith('/watch')) return true
+    else if (pathnameStartsWith('/@', '/channel', '/c', '/user')) {
+      moviePlayerChannel = moviePlayerChannel || document.querySelector('#c4-player')
+      return moviePlayerChannel?.offsetParent
+    }
+  },
   event: () => {
     if (pathnameStartsWith('/watch')) {
       settingsButton = settingsButton || document.querySelector('#movie_player .ytp-settings-button')
@@ -147,7 +170,7 @@ shortcuts.set('openVideoQualitySettings', {
         settingsButton.click()
       }
     }
-    if (pathnameStartsWith('/@', '/channel', '/c', '/user')) {
+    else if (pathnameStartsWith('/@', '/channel', '/c', '/user')) {
       settingsButtonChannel = settingsButtonChannel || document.querySelector('#c4-player .ytp-settings-button')
       if (settingsButtonChannel.getAttribute('aria-expanded') === 'false') {
         settingsButtonChannel.click()
@@ -164,13 +187,28 @@ shortcuts.set('focusVideo', {
   category: 'Video',
   defaultKey: ';',
   description: 'Focus video / show progress bar',
-  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
+  isAvailable: () => {
+    if (pathnameStartsWith('/watch')) return true
+    else if (pathnameStartsWith('/@', '/channel', '/c', '/user')) {
+      moviePlayerChannel = moviePlayerChannel || document.querySelector('#c4-player')
+      return moviePlayerChannel?.offsetParent
+    }
+  },
   event: () => {
-    moviePlayer = moviePlayer || document.querySelector('#movie_player')
-    // TODO refactor
-    moviePlayer.focus()
-    moviePlayer.click()
-    moviePlayer.click()
+    if (pathnameStartsWith('/watch')) {
+      moviePlayer = moviePlayer || document.querySelector('#movie_player')
+      // TODO refactor
+      moviePlayer.focus()
+      moviePlayer.click()
+      moviePlayer.click()
+    }
+    else if (pathnameStartsWith('/@', '/channel', '/c', '/user')) {
+      moviePlayerChannel = moviePlayerChannel || document.querySelector('#c4-player')
+      // TODO refactor
+      moviePlayerChannel.focus()
+      moviePlayerChannel.click()
+      moviePlayerChannel.click()
+    }
   }
 })
 
@@ -239,9 +277,12 @@ shortcuts.set('focusFirstVideoInPlaylist', {
   category: 'Playlist',
   defaultKey: '[',
   description: 'Focus first video in playlist',
-  isAvailable: () => pathnameStartsWith('/watch'),
+  isAvailable: () => {
+    if (!pathnameStartsWith('/watch')) return false
+    firstPlaylistVideo = firstPlaylistVideo?.offsetParent ? firstPlaylistVideo : document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items a')
+    return firstPlaylistVideo?.offsetParent
+  },
   event: () => {
-    const firstPlaylistVideo = document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items a')
     firstPlaylistVideo.focus()
   }
 })
@@ -250,10 +291,13 @@ shortcuts.set('focusLastVideoInPlaylist', {
   category: 'Playlist',
   defaultKey: ']',
   description: 'Focus last video in playlist',
-  isAvailable: () => pathnameStartsWith('/watch'),
+  isAvailable: () => {
+    if (!pathnameStartsWith('/watch')) return false
+    lastPlaylistVideo = lastPlaylistVideo?.offsetParent ? lastPlaylistVideo : document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items:last-of-type a')
+    return lastPlaylistVideo?.offsetParent
+  },
   event: () => {
-    const firstPlaylistVideo = document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items:last-of-type a')
-    firstPlaylistVideo.focus()
+    lastPlaylistVideo.focus()
   }
 })
 
@@ -347,10 +391,13 @@ shortcuts.set('hideChat', {
   category: 'Premiere/Stream',
   defaultKey: 'E',
   description: 'Hide/Show chat',
-  isAvailable: () => pathnameStartsWith('/watch'),
+  isAvailable: () => {
+    if (!pathnameStartsWith('/watch')) return false
+    hideChatButton = hideChatButton?.offsetParent ? hideChatButton : document.querySelector('ytd-app ytd-live-chat-frame #show-hide-button button')
+    return hideChatButton?.offsetParent
+  },
   event: () => {
-    const hideChatButton = document.querySelector('ytd-app ytd-live-chat-frame #show-hide-button button')
-    hideChatButton?.click()
+    hideChatButton.click()
   }
 })
 
@@ -358,11 +405,14 @@ shortcuts.set('focusChatBox', {
   category: 'Premiere/Stream',
   defaultKey: 'b',
   description: 'Chat',
-  isAvailable: () => pathnameStartsWith('/watch'),
+  isAvailable: () => {
+    if (!pathnameStartsWith('/watch')) return false
+    chatIframe = chatIframe?.offsetParent ? chatIframe : document.querySelector('iframe#chatframe')
+    chatInputBox = chatInputBox?.offsetParent ? chatInputBox : document.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
+    return chatInputBox?.offsetParent
+  },
   event: () => {
-    const chatIframe = document.querySelector('iframe#chatframe')
-    const chatBox = chatIframe.contentDocument.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
-    chatBox?.focus()
+    chatInputBox.focus()
   }
 })
 
@@ -370,9 +420,26 @@ shortcuts.set('skipToLiveBroadcast', {
   category: 'Premiere/Stream',
   defaultKey: 'S',
   description: 'Skip ahead to live broadcast',
-  isAvailable: () => pathnameStartsWith('/watch'),
+  isAvailable: () => {
+    if (!pathnameStartsWith('/watch')) return false
+    skipToLiveBroadcastButton = skipToLiveBroadcastButton?.offsetParent ? skipToLiveBroadcastButton : document.querySelector('#movie_player .ytp-left-controls button.ytp-live-badge')
+    return skipToLiveBroadcastButton?.offsetParent
+  },
   event: () => {
-    const skipButton = document.querySelector('#movie_player .ytp-left-controls button.ytp-live-badge')
-    skipButton?.click()
+    skipToLiveBroadcastButton.click()
+  }
+})
+
+shortcuts.set('skipToLiveBroadcast', {
+  category: 'Premiere/Stream',
+  defaultKey: 'S',
+  description: 'Skip ahead to live broadcast',
+  isAvailable: () => {
+    if (!pathnameStartsWith('/watch')) return false
+    skipToLiveBroadcastButton = skipToLiveBroadcastButton?.offsetParent ? skipToLiveBroadcastButton : document.querySelector('#movie_player .ytp-left-controls button.ytp-live-badge')
+    return skipToLiveBroadcastButton?.offsetParent
+  },
+  event: () => {
+    skipToLiveBroadcastButton.click()
   }
 })

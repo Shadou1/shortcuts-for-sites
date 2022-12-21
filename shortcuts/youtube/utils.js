@@ -38,6 +38,7 @@ export function navigateToVideos(mutations, observer) {
   // TODO refactor if possible
   // clicking videosTabs right away won't work for some reason, but will work if autoplay video is loaded
   // probably because by the time autoplay video is loaded, video tab is set up and ready to be clicked
+  // TODO it still sometimes plays video in background
   setTimeout(() => videosTab.click(), 100)
 
   whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(1))
@@ -58,6 +59,7 @@ export function navigateToPlaylists(mutations, observer) {
   observer?.disconnect()
 
   // TODO refactor if possible
+  // TODO it still sometimes plays video in background
   setTimeout(() => playlistsTab.click(), 100)
 
   whenTargetMutates('#content.ytd-app', focusFirstPlaylist)

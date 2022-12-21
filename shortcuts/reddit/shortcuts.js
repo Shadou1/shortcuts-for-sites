@@ -55,25 +55,30 @@ function updateScrollContainerInComments() {
   return false
 }
 
+// TODO maybe rework
+let isKeyboardFocused = false
+document.body.addEventListener('keydown', (event) => {
+  if (event.key !== 'j' && event.key !== 'k') return
+  isKeyboardFocused = true
+})
+
 document.body.addEventListener('focusin', (event) => {
+  // Only work when j/k keys have been used
+  if (!isKeyboardFocused) return
+  isKeyboardFocused = false
+
   // Focus post link when post container is focused
   if (event.target.getAttribute('data-testid') === 'post-container') {
 
     activePost = document.activeElement
     activePostSubredditLink = activePost.querySelector('a[data-click-id="subreddit"]')
 
-    // const activePostImage = activePost.querySelector('.media-element')
-    // activePostImage?.scrollIntoView()
-
     activeVideoPlayer = activePost.querySelector('shreddit-player')
-    // activeVideo?.scrollIntoView()
     activeVideo = activeVideoPlayer?.shadowRoot.querySelector('video')
-    // activePlayButton = activeVideoPlayer?.shadowRoot.querySelector('vds-play-button')
 
-    // const scrollLength = Math.min(150, window.innerHeight / 2)
-    // window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : -100)
     activePost.scrollIntoView()
-    window.scrollBy(0, -150)
+    const scrollLength = Math.min(150, window.innerHeight / 2)
+    window.scrollBy(0, -scrollLength)
 
     const postLink = activePost.querySelector('a[data-click-id="body"]')
     postLink.focus()
@@ -82,10 +87,11 @@ document.body.addEventListener('focusin', (event) => {
   } else if (event.target.style.paddingLeft) {
     activeComment = document.activeElement
     activeComment.scrollIntoView()
+    const scrollLength = Math.min(150, window.innerHeight / 2)
     if (updateScrollContainerInComments()) {
-      scrollContainerComments.scrollTop -= 150
+      scrollContainerComments.scrollTop += scrollContainerComments.scrollTop < scrollContainerComments.scrollHeight - window.innerHeight ? -scrollLength : 0
     } else {
-      window.scrollBy(0, -150)
+      window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : 0)
     }
   }
 

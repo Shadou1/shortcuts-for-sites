@@ -20,6 +20,7 @@ Todo:
 
   ✔ Come up with better structure for shortcuts @done(22-12-17 16:08)
   ✔ Make init.js file load shortcuts.js files according to a matched location instead of separate init[site].js files @critical @done(22-12-18 16:38)
+  ✔ For shotrcuts that can't have cached elements and have isAvailable function, elements will often be queried two times @done(22-12-21 16:01)
 
   ☐ Write tests?
 
@@ -47,6 +48,8 @@ Todo:
 
     ✔ Shortcuts work in all video players (not only on the /watch pages) @done(22-12-07 13:22)
     ✔ When going to channel videos/playlists from /watch page and channel home has an autoplay video, this video will start autoplaying in the background incorrectly (sometimes) @done(22-12-03 14:23)
+    ✔ Improve isAvailable functions @done(22-12-21 16:00)
+    ✘ Re-query null elements only when window.location.pathname changed (? maybe won't work) @cancelled(22-12-21 15:28) won't work when going from page to another page and then back to the first page without checking for pathname change on second page
 
     ☐ Maybe include 'all_frames' into manifest.json content_scripts so that shortcuts also work in iframes(chat)
 
@@ -65,12 +68,14 @@ Todo:
 
   Twitch:
     ☐ Add predictions and other chat action shortcuts
+    ☐ Add isAvailable functions
 
   Reddit:
     ✔ Add Reddit shortcuts @done(22-12-10 23:55)
     ✔ Make shortcuts work on comments pages @done(22-12-15 02:20)
     ☐ Add go to next/previous comment in current level
     ☐ Go to next/previous comment shortcuts are slow
+    ☐ Add isAvailable functions
 
   Fandom wiki:
     ☐ Add fandom wiki domain level shortcuts (works on any wiki)

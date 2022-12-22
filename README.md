@@ -4,14 +4,15 @@ WebExtension that adds keyboard shortcuts for easier navigation on popular websi
 
 ## Description
 
-Navigating websites without touching your mouse can be difficult. Focusing links and other text elements is easy enough with *quick find* and *quick find within link-text only* (<kbd>/</kbd> and <kbd>'</kbd> shortcuts in firefox), but for everything else pressing <kbd>Tab</kbd> every time can become a chore. With this in mind, I implemented a number of shortcuts for different websites which should make navigating them with a keyboard more comfortable.
+Navigating websites without touching your mouse can be difficult. Although there are features like `find`, `quick find`, and `quick find within link-text only` (<kbd>Ctrl</kbd>+<kbd>f</kbd>, <kbd>/</kbd>, and <kbd>'</kbd> shortcuts in firefox) which can be used to focus needed elements, sometimes using <kbd>Tab</kbd> is unavoidable. Moreover, typing out search strings every time can become old. With this in mind, I implemented a number of shortcuts for different websites which should make navigating them with a keyboard more comfortable.
 
 ## Useful tips
 
 - Pressing <kbd>Alt</kbd>+<kbd>k</kbd> will display shortcuts for the current website.
-- You can rebind shortcuts on extension's options page (preferences page).
-- Press <kbd>Tab</kbd> once to force browser to draw focus outline.
+- $\textcolor{green}{\text{Green outline}}$ means that the shortcut is usable right now.
 - On some websites, pressing <kbd>?</kbd> will display already available shortcuts.
+- You can rebind shortcuts on extension's *options page* (preferences page).
+- Press <kbd>Tab</kbd> once to force browser to draw focus outline.
 
 ## Popup
 
@@ -21,10 +22,19 @@ Navigating websites without touching your mouse can be difficult. Focusing links
 
 https://youtu.be/9MR6KKRwTP0
 
+## How it works
+
+Extension loads [content script](/content-scripts/init.js) into sites that it has shortcuts for (defined in [manifest.json](manifest.json)). Content script listens for [keydown](/content-scripts/init.js#L88) events and executes corresponding [shortcut](shortcuts/) events. Shortcut events define what should happen when the user presses the shortcut's key. These events do a wide range of things, focusing and clicking elements, going to next/previous elements, opening menus (settings menus), navigating to different site sections, controlling video players, and other. Sometimes there are functionality besides shourtcut events for the site, like scrolling a page when an element is focused.
+
+> __Note__
+>
+> Because sites can update their structure, be it html or javascript, shortcuts might break or stop working. If they did break, it means that I haven't updated the extension yet. Submit a new issue if shortcuts have been broken for some time.
+
 ## Issues
 
 - Focus outline won't render on some pages if the user hasn't pressed <kbd>Tab</kbd> at least once while on a page.
 - On Twitch, <kbd>d</kbd> shortcut to scroll to stream description will work incorrectly the first time.
+- On Youtube, going to channel videos/playlists from */watch* will sometimes play channel's autoplay video in background.
 
 ## Full list of available shortcuts
 
@@ -84,7 +94,7 @@ https://youtu.be/9MR6KKRwTP0
 | **Playlist** |
 | <kbd>[</kbd> | Focus first video in playlist |
 | <kbd>]</kbd> | Focus last video in playlist |
-| **Channel (works on channel or video page)** |
+| **Channel** |
 | <kbd>h</kbd> | Go to channel home |
 | <kbd>v</kbd> | Go to channel videos |
 | <kbd>p</kbd> | Go to channel playlists |

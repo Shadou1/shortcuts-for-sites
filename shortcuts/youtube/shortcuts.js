@@ -298,7 +298,7 @@ shortcuts.set('focusLastVideoInPlaylist', {
 })
 
 shortcuts.set('goToChannelHome', {
-  category: 'Channel (works on channel or video page)',
+  category: 'Channel',
   defaultKey: 'h',
   description: 'Go to channel home',
   isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
@@ -323,7 +323,7 @@ shortcuts.set('goToChannelHome', {
 })
 
 shortcuts.set('goToChannelVideos', {
-  category: 'Channel (works on channel or video page)',
+  category: 'Channel',
   defaultKey: 'v',
   description: 'Go to channel videos',
   isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
@@ -347,7 +347,7 @@ shortcuts.set('goToChannelVideos', {
 })
 
 shortcuts.set('goToChannelPlaylists', {
-  category: 'Channel (works on channel or video page)',
+  category: 'Channel',
   defaultKey: 'p',
   description: 'Go to channel playlists',
   isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
@@ -371,7 +371,7 @@ shortcuts.set('goToChannelPlaylists', {
 })
 
 shortcuts.set('goToChannelNewTab', {
-  category: 'Channel (works on channel or video page)',
+  category: 'Channel',
   defaultKey: 'H',
   description: 'Go to channel (new tab)',
   isAvailable: () => pathnameStartsWith('/watch'),
@@ -404,7 +404,7 @@ shortcuts.set('focusChatBox', {
   isAvailable: () => {
     if (!pathnameStartsWith('/watch')) return false
     chatIframe = chatIframe?.offsetParent ? chatIframe : document.querySelector('iframe#chatframe')
-    chatInputBox = chatInputBox?.offsetParent ? chatInputBox : document.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
+    chatInputBox = chatInputBox?.offsetParent ? chatInputBox : chatIframe.contentDocument.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
     return chatInputBox?.offsetParent
   },
   event: () => {

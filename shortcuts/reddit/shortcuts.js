@@ -174,7 +174,7 @@ shortcuts.set('goToSubredditNewTab', {
   },
 })
 
-// TODO focus post (on comments page)
+// TODO add focus post (on comments page)
 
 shortcuts.set('showHotPosts', {
   category: 'Posts filters',
@@ -242,7 +242,7 @@ shortcuts.set('chooseTimePeriod', {
   }
 })
 
-// TODO Add go to first/last post shortcuts
+// TODO add go to first/last post shortcuts
 // TODO add focus sidebar
 
 shortcuts.set('videoPauseResume', {

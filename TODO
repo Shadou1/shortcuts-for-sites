@@ -77,6 +77,7 @@ Todo:
     ☐ Add go to next/previous comment in current level
     ☐ Go to next/previous comment shortcuts are slow
     ✔ Add isAvailable functions @done(22-12-21 19:11)
+    ☐ Shortcuts work poorly without logging in
 
   Fandom wiki:
     ☐ Add fandom wiki domain level shortcuts (works on any wiki)

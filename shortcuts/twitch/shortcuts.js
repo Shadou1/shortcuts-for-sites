@@ -333,8 +333,7 @@ shortcuts.set('expandMiniPlayer', {
     return expandMiniPlayerButton?.offsetParent
   },
   event: () => {
-    expandMiniPlayerButton = document.querySelector('[data-a-player-state="mini"] .player-overlay-background > div:nth-child(2) button')
-    expandMiniPlayerButton?.click()
+    expandMiniPlayerButton.click()
   }
 })
 
@@ -347,8 +346,7 @@ shortcuts.set('closeMiniPlayer', {
     return closeMiniPlayerButton?.offsetParent
   },
   event: () => {
-    closeMiniPlayerButton = document.querySelector('[data-a-player-state="mini"] .player-overlay-background > div:first-child button')
-    closeMiniPlayerButton?.click()
+    closeMiniPlayerButton.click()
   }
 })
 

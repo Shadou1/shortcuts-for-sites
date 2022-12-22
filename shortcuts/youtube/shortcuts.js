@@ -404,25 +404,11 @@ shortcuts.set('focusChatBox', {
   isAvailable: () => {
     if (!pathnameStartsWith('/watch')) return false
     chatIframe = chatIframe?.offsetParent ? chatIframe : document.querySelector('iframe#chatframe')
-    chatInputBox = chatInputBox?.offsetParent ? chatInputBox : chatIframe.contentDocument.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
+    chatInputBox = chatInputBox?.offsetParent ? chatInputBox : chatIframe?.contentDocument.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
     return chatInputBox?.offsetParent
   },
   event: () => {
     chatInputBox.focus()
-  }
-})
-
-shortcuts.set('skipToLiveBroadcast', {
-  category: 'Premiere/Stream',
-  defaultKey: 'S',
-  description: 'Skip ahead to live broadcast',
-  isAvailable: () => {
-    if (!pathnameStartsWith('/watch')) return false
-    skipToLiveBroadcastButton = skipToLiveBroadcastButton?.offsetParent ? skipToLiveBroadcastButton : document.querySelector('#movie_player .ytp-left-controls button.ytp-live-badge')
-    return skipToLiveBroadcastButton?.offsetParent
-  },
-  event: () => {
-    skipToLiveBroadcastButton.click()
   }
 })
 

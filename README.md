@@ -13,6 +13,7 @@ Navigating websites without touching your mouse can be difficult. Although there
 - On some websites, pressing <kbd>?</kbd> will display already available shortcuts.
 - You can rebind shortcuts on extension's *options page* (preferences page).
 - Press <kbd>Tab</kbd> once to force browser to draw focus outline.
+- On Reddit, without logging in shortcuts will work poorly. Also native <kbd>j</kbd>/<kbd>k</kbd> shortcuts will sometimes stop working, pressing <kbd>Tab</kbd> or reloading the page will usually get them working again.
 
 ## Popup
 
@@ -35,6 +36,7 @@ Extension loads [content script](/content-scripts/init.js) into sites that it ha
 - Focus outline won't render on some pages if the user hasn't pressed <kbd>Tab</kbd> at least once while on a page.
 - On Twitch, <kbd>d</kbd> shortcut to scroll to stream description will work incorrectly the first time.
 - On Youtube, going to channel videos/playlists from */watch* will sometimes play channel's autoplay video in background.
+- On Reddit, shortcuts work poorly without logging in.
 
 ## Full list of available shortcuts
 

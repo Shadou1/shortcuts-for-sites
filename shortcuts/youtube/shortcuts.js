@@ -404,7 +404,8 @@ shortcuts.set('focusChatBox', {
   isAvailable: () => {
     if (!pathnameStartsWith('/watch')) return false
     chatIframe = chatIframe?.offsetParent ? chatIframe : document.querySelector('iframe#chatframe')
-    chatInputBox = chatInputBox?.offsetParent ? chatInputBox : chatIframe?.contentDocument.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
+    if (!chatIframe) return false
+    chatInputBox = chatInputBox?.offsetParent ? chatInputBox : chatIframe?.contentDocument?.querySelector('yt-live-chat-app yt-live-chat-text-input-field-renderer #input')
     return chatInputBox?.offsetParent
   },
   event: () => {

@@ -62,6 +62,8 @@ Todo:
     ☐ Scroll height problems (inconsistent at the bottom of the page)
     ✔ Add images shortcuts @done(22-12-09 00:17)
     ✔ Add videos shortcuts @done(22-12-09 00:17)
+    ✔ Go to next/previous search result doesn't work on film pages @done(22-12-23 15:20)
+    ☐ Related searches (not suggested) are separated from all search results
 
     ☐ Since google search pages are not dynamic, maybe don't need to write logic to update searchResults arrays when query changes
     ☐ When page mutates, add newely added anchors to the searchResultsAnchors instead of querying all anchors again
@@ -78,6 +80,7 @@ Todo:
     ☐ Go to next/previous comment shortcuts are slow
     ✔ Add isAvailable functions @done(22-12-21 19:11)
     ☐ Shortcuts work poorly without logging in
+    ☐ When going to a subreddit from a post (not in new tab), scrolling with j/k will continue from the original post, which may be undesirable
 
   Fandom wiki:
     ☐ Add fandom wiki domain level shortcuts (works on any wiki)

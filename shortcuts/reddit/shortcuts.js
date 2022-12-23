@@ -22,43 +22,53 @@ let commentsPageSubredditLink = null
 let activeVideoPlayerInComments = null
 let activeVideoInComments = null
 
+let didPageChange
 let didCommentsPageChange
 
 let pathnameMatches, didPathnameChange
 import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
   ({ pathnameMatches, didPathnameChange } = result)
+  didPageChange = didPathnameChange()
   didCommentsPageChange = didPathnameChange()
 })
 
 function updateVideoInComments() {
   if (didCommentsPageChange()) {
     activeVideoPlayerInComments = document.querySelector('[data-test-id="post-content"] shreddit-player')
-    activeVideoInComments = activeVideoPlayerInComments.shadowRoot.querySelector('video')
+    activeVideoInComments = activeVideoPlayerInComments?.shadowRoot.querySelector('video')
   }
-  // Redundantly query again if still null
-  activeVideoPlayerInComments = activeVideoPlayerInComments || document.querySelector('[data-test-id="post-content"] shreddit-player')
-  activeVideoInComments = activeVideoInComments || activeVideoPlayerInComments?.shadowRoot.querySelector('video')
-
-  if (activeVideoPlayerInComments && activeVideoInComments) return true
-  return false
+  // If user goes to a comments page (curent tab) then back an then back to the comments page, activeVideoPlayerInComments will now refer to a hidden element (offsetParent is null)
+  // This happens because didCommentsPageChange() will return false, so need to check for ?.offsetParent
+  activeVideoPlayerInComments = activeVideoPlayerInComments?.offsetParent ? activeVideoPlayerInComments : document.querySelector('[data-test-id="post-content"] shreddit-player')
+  activeVideoInComments = activeVideoInComments?.offsetParent ? activeVideoInComments : activeVideoPlayerInComments?.shadowRoot.querySelector('video')
+  return activeVideoPlayerInComments?.offsetParent && activeVideoInComments?.offsetParent
 }
 
 function updateSubredditLinkInComments() {
   if (didCommentsPageChange()) {
     commentsPageSubredditLink = document.querySelector('a > span[title]').parentElement
   }
+  // Here is an elements offsetParent is null, it is still valid to click on it (its href is also valid)
   commentsPageSubredditLink = commentsPageSubredditLink || document.querySelector('a > span[title]').parentElement
-  if (commentsPageSubredditLink) return true
-  return false
+  return commentsPageSubredditLink
 }
 
 function updateScrollContainerInComments() {
   if (didCommentsPageChange()) {
     scrollContainerComments = document.querySelector('#overlayScrollContainer')
   }
-  scrollContainerComments = scrollContainerComments || document.querySelector('#overlayScrollContainer')
-  if (scrollContainerComments) return true
-  return false
+  // Here if offsetParent is null, scrollContainer is not valid
+  scrollContainerComments = scrollContainerComments?.offsetParent ? scrollContainerComments : document.querySelector('#overlayScrollContainer')
+  return scrollContainerComments?.offsetParent
+}
+
+function updateRisingAnchor() {
+  // Anchor is hidden, and current one might refer to the previous /rising page (from a subreddit, from a /poular, or from a home page)
+  if (didPageChange()) {
+    risingPostsAnchor = document.querySelector('a[href*="rising"][role="menuitem"]')
+  }
+  risingPostsAnchor = risingPostsAnchor || document.querySelector('a[href*="rising"][role="menuitem"]')
+  return risingPostsAnchor
 }
 
 // TODO maybe rework
@@ -80,7 +90,13 @@ document.body.addEventListener('focusin', (event) => {
     activePostSubredditLink = activePost.querySelector('a[data-click-id="subreddit"]')
 
     activeVideoPlayer = activePost.querySelector('shreddit-player')
-    activeVideo = activeVideoPlayer?.shadowRoot.querySelector('video')
+    if (!activeVideoPlayer) {
+      // Posts on home pages have videos without shadow dom
+      activeVideoPlayer = activePost.querySelector('[data-isvideoplayer="1"]')
+      activeVideo = activeVideoPlayer?.querySelector('video')
+    } else {
+      activeVideo = activeVideoPlayer?.shadowRoot.querySelector('video')
+    }
 
     activePost.scrollIntoView()
     const scrollLength = Math.min(150, window.innerHeight / 2)
@@ -219,11 +235,7 @@ shortcuts.set('showRisingPosts', {
   category: 'Posts filters',
   defaultKey: '4',
   description: 'Rising posts',
-  isAvailable: () => {
-    // Anchor is hidden, so not checking for offsetParent
-    risingPostsAnchor = risingPostsAnchor || document.querySelector('a[href*="rising"][role="menuitem"]')
-    return risingPostsAnchor
-  },
+  isAvailable: () => updateRisingAnchor(),
   event: () => {
     risingPostsAnchor.click()
   }
@@ -245,6 +257,8 @@ shortcuts.set('chooseTimePeriod', {
 // TODO add go to first/last post shortcuts
 // TODO add focus sidebar
 
+// TODO video player on /hot, /new, /top pages works without a shadow dom (no saving mute/unmute, volume, and restarting video is wacky)
+// TODO video is played in background sometimes
 shortcuts.set('videoPauseResume', {
   category: 'Video',
   defaultKey: ';',

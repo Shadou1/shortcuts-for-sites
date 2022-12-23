@@ -20,7 +20,7 @@ export async function constructShortcutsReadmeMarkdown() {
         lastCategory = category
         markdown += `| **${category}** |\n`
       }
-      const verbatum = defaultKey.match(/[A-Z]/) ? ` (<kbd>Shift</kbd>+<kbd>${defaultKey.toLowerCase()}</kbd>)` : ''
+      const verbatum = defaultKey.match(/^[A-Z]$/) ? ` (<kbd>Shift</kbd>+<kbd>${defaultKey.toLowerCase()}</kbd>)` : ''
       markdown += `| <kbd>${defaultKey}</kbd>${verbatum} | ${description} |\n`
     }
     markdown += '\n</details>\n\n<br>\n'

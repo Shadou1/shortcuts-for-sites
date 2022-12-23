@@ -34,7 +34,7 @@ function fillPopupWithShortcuts(shortcuts, shortcutsAvailable) {
     const key = shortcutRow.querySelector('.key')
     if (!shortcutsAvailable.get(shortcutKey)) key.classList.remove('active-key')
     key.textContent = shortcutKey
-    if (shortcutKey.match(/[A-Z]/)) {
+    if (shortcutKey.match(/^[A-Z]$/)) {
       shortcutRow.querySelector('.verbatum').textContent = `Shift+${shortcutKey.toLowerCase()}`
     }
     categorySection.querySelector('section').append(shortcutRow)

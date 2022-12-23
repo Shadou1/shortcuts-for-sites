@@ -9,6 +9,7 @@ Todo:
 
   ✔ Shortcuts with Ctrl, Alt collide with regular keys in object keys @done(22-08-30 19:14)
   ☐ Add being able to use shortcuts when active element is accepting input
+  ☐ Correctly handle shortcut keys which are more that 1 character in length ('Escape')
 
   ☐ Shortcuts will only work in english keyboard locale
 
@@ -56,7 +57,7 @@ Todo:
     Bugs:
       ☐ When channel has a 'store' tab or doesn't have a 'community' tab, 'p' (go to playlists) shortcut will incorrectly select another tab @critical
 
-  Google:
+  Google Search:
     ✔ Should work not only on '.com' domains @critical @done(22-08-22 09:32)
     ✔ Make search indexes relative to the current index so that after pressing 'tab' and then pressing a shortcut it tabs to the next search result after currently focused @done(22-12-09 00:17)
     ☐ Scroll height problems (inconsistent at the bottom of the page)
@@ -67,6 +68,9 @@ Todo:
 
     ☐ Since google search pages are not dynamic, maybe don't need to write logic to update searchResults arrays when query changes
     ☐ When page mutates, add newely added anchors to the searchResultsAnchors instead of querying all anchors again
+
+  Google Translate:
+    ☐ Show/hide shortcuts also scroll to their corresponding div
 
   Twitch:
     ☐ Add predictions and other chat action shortcuts

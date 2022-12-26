@@ -3,9 +3,9 @@ import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
   ({ pathnameStartsWith } = result)
 })
 
-let whenTargetMutates
+let whenElementMutatesQuery
 import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
-  ({ whenTargetMutates } = result)
+  ({ whenElementMutatesQuery } = result)
 })
 
 export function focusFirstChannel(mutations, observer) {
@@ -81,7 +81,7 @@ export function navigateToLiveChannels(mutations, observer) {
   // Sometimes it does not mutate and callback will execute wrongly
   const isFocused = focusFirstVideoOnQueryType('browse')()
   if (!isFocused) {
-    whenTargetMutates('main', focusFirstVideoOnQueryType('browse'))
+    whenElementMutatesQuery('main', focusFirstVideoOnQueryType('browse'))
   }
 }
 
@@ -92,7 +92,7 @@ export function navigateToVideos(mutations, observer) {
   observer.disconnect()
   videosAnchor.click()
 
-  whenTargetMutates('main', focusFirstVideo)
+  whenElementMutatesQuery('main', focusFirstVideo)
 }
 
 export function navigateToSchedule(mutations, observer) {

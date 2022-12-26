@@ -22,13 +22,13 @@ let commentsPageSubredditLink = null
 let activeVideoPlayerInComments = null
 let activeVideoInComments = null
 
-let didPageChange
+let didPagePathnameChange
 let didCommentsPageChange
 
 let pathnameMatches, didPathnameChange
 import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
   ({ pathnameMatches, didPathnameChange } = result)
-  didPageChange = didPathnameChange()
+  didPagePathnameChange = didPathnameChange()
   didCommentsPageChange = didPathnameChange()
 })
 

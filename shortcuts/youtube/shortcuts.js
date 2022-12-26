@@ -1,38 +1,20 @@
-let guideButton = null
-let homeAnchor = null
-let subscriptionsAnchor = null
-
-let moviePlayer = null // consistent
-let settingsButton = null
-let qualityButton = null
-
-let moviePlayerChannel = null // constistent
-let settingsButtonChannel = null
-let qualityButtonChannel = null
-
-let firstPlaylistVideo = null
-let lastPlaylistVideo = null
-
-let hideChatButton = null
-let chatIframe = null
-let chatInputBox = null
-let skipToLiveBroadcastButton = null
-
+let pathnameStartsWith, pathnameEndsWith, didPathnameChange
+let whenElementMutates, whenElementMutatesQuery
+let didPagePathnameChange
 // TODO use bundler to import these functions with 'import {} from'
-let pathnameStartsWith, pathnameEndsWith
-import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
-  ({ pathnameStartsWith, pathnameEndsWith } = result)
+Promise.all([
+  import(browser.runtime.getURL('utils/locationUtils.js')),
+  import(browser.runtime.getURL('utils/mutationUtils.js')),
+]).then(([locationUtils, mutationUtils]) => {
+  ({ pathnameStartsWith, pathnameEndsWith, didPathnameChange } = locationUtils);
+  ({ whenElementMutates, whenElementMutatesQuery } = mutationUtils)
+  didPagePathnameChange = didPathnameChange()
+  // On document_idle
+  updateVideoAnchors()
 })
 
-let whenTargetMutates
-import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
-  ({ whenTargetMutates } = result)
-})
-
-let navigateToVideos,
-  navigateToPlaylists,
-  focusFirstVideo,
-  focusFirstVideoOnQueryType,
+let goToVideosTab,
+  goToPlaylistsTab,
   focusFirstPlaylist,
   goToHome,
   goToSubscriptions,
@@ -40,10 +22,8 @@ let navigateToVideos,
   focusFirstSubscription
 import(browser.runtime.getURL('shortcuts/youtube/utils.js')).then((result) => {
   ({
-    navigateToVideos,
-    navigateToPlaylists,
-    focusFirstVideo,
-    focusFirstVideoOnQueryType,
+    goToVideosTab,
+    goToPlaylistsTab,
     focusFirstPlaylist,
     goToHome,
     goToSubscriptions,
@@ -53,6 +33,10 @@ import(browser.runtime.getURL('shortcuts/youtube/utils.js')).then((result) => {
 })
 
 export const shortcuts = new Map()
+
+let guideButton = null
+let homeAnchor = null
+let subscriptionsAnchor = null
 
 shortcuts.set('expandGuideSidebar', {
   category: 'General',
@@ -64,23 +48,21 @@ shortcuts.set('expandGuideSidebar', {
   }
 })
 
+// TODO CRITICAL conflicts with native 'captions: rotate through opacity levels'
 shortcuts.set('goToHome', {
   category: 'General',
   defaultKey: 'o',
   description: 'Go to Home',
   event: () => {
-    if (window.location.pathname !== '/') {
-      homeAnchor = homeAnchor || document.querySelector('#sections #endpoint[href="/"]')
-      if (!homeAnchor) {
-        guideButton = guideButton || document.querySelector('ytd-masthead #guide-button #button')
-        guideButton.click()
-        whenTargetMutates('#content.ytd-app', goToHome)
-      } else {
-        homeAnchor.click()
-        whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(1))
-      }
+    if (window.location.pathname === '/') return
+
+    homeAnchor = homeAnchor || document.querySelector('#sections #endpoint[href="/"]')
+    if (!homeAnchor) {
+      guideButton = guideButton || document.querySelector('ytd-masthead #guide-button #button')
+      guideButton.click()
+      whenElementMutatesQuery('#content.ytd-app', goToHome)
     } else {
-      focusFirstVideo()
+      homeAnchor.click()
     }
   }
 })
@@ -90,18 +72,15 @@ shortcuts.set('goToSubscriptions', {
   defaultKey: 'u',
   description: 'Go to Subscriptions',
   event: () => {
-    if (!pathnameEndsWith('/subscriptions')) {
-      subscriptionsAnchor = subscriptionsAnchor || document.querySelector('#sections #endpoint[href="/feed/subscriptions"]')
-      if (!subscriptionsAnchor) {
-        guideButton = guideButton || document.querySelector('ytd-masthead #guide-button #button')
-        guideButton.click()
-        whenTargetMutates('#content.ytd-app', goToSubscriptions)
-      } else {
-        subscriptionsAnchor.click()
-        whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(2))
-      }
+    if (pathnameStartsWith('/subscriptions')) return
+
+    subscriptionsAnchor = subscriptionsAnchor || document.querySelector('#sections #endpoint[href="/feed/subscriptions"]')
+    if (!subscriptionsAnchor) {
+      guideButton = guideButton || document.querySelector('ytd-masthead #guide-button #button')
+      guideButton.click()
+      whenElementMutatesQuery('#content.ytd-app', goToSubscriptions)
     } else {
-      focusFirstVideo()
+      subscriptionsAnchor.click()
     }
   }
 })
@@ -114,15 +93,174 @@ shortcuts.set('focusSubscribedChannels', {
     guideButton = guideButton || document.querySelector('ytd-masthead #guide-button #button')
     if (guideButton.getAttribute('aria-pressed') === 'false' || guideButton.getAttribute('aria-pressed') === null) {
       guideButton.click()
-      whenTargetMutates('#content.ytd-app', expandAndFocusFirstSubscription)
+      whenElementMutatesQuery('#content.ytd-app', expandAndFocusFirstSubscription)
     } else {
       focusFirstSubscription()
     }
   }
 })
 
+let videoAnchors = []
+let videoAnchorsPanels = []
+let videoAnchorIndex = -1
+let didVideoAnchorsMutate = true
+// This needs to account for fixed headers, sometimes there are more than 1 fixed header (on the home page there are video categories header)
+// TODO make this value dynamic
+let videoAnchorPanelScrollHeight = 120
+
+let updateVideoAnchorIndexAborts = []
+function updateVideoAnchorIndex(toIndex) {
+  // console.log('updating anchor index')
+  return function () {
+    videoAnchorIndex = toIndex
+  }
+}
+
+let lastMutationTimeout
+const mutationWaitTimeMs = 100
+function updateVideoAnchors() {
+  const didPathChange = didPagePathnameChange()
+  if (!didVideoAnchorsMutate && !didPathChange) return videoAnchors.length
+
+  if (didPathChange) {
+    didVideoAnchorsMutate = true
+    videoAnchorIndex = -1
+  }
+
+  updateVideoAnchorIndexAborts.forEach((abortController) => abortController.abort())
+  updateVideoAnchorIndexAborts = []
+
+  videoAnchors = document.querySelectorAll('ytd-page-manager > :not([hidden=""]) a:is(.ytd-compact-video-renderer, .ytd-grid-video-renderer, .ytd-grid-playlist-renderer, #video-title, #video-title-link)')
+  // If no videoAnchors, keep didVideoAnchorsMutate true (maybe they haven't been scrolled to yet)
+  if (!videoAnchors.length) return videoAnchors.length
+  didVideoAnchorsMutate = false
+
+  videoAnchorsPanels = []
+  videoAnchors.forEach((videoAnchor) => {
+    let currentParent = videoAnchor
+    for (let i = 0; i < 10; i++) {
+      currentParent = currentParent.parentElement
+      if (currentParent.id === 'dismissible' || currentParent.tagName === 'YTD-GRID-PLAYLIST-RENDERER') break
+    }
+    videoAnchorsPanels.push(currentParent)
+  })
+
+  // Find the common parent to watch for mutations on
+  let currentParentFirstElement = videoAnchorsPanels[0]
+  let currentParentLastElement = videoAnchorsPanels[videoAnchors.length - 1]
+  let commonParent
+  for (let i = 0; i < 20; i++) {
+    currentParentFirstElement = currentParentFirstElement.parentElement
+    currentParentLastElement = currentParentLastElement.parentElement
+    if (currentParentFirstElement === currentParentLastElement) {
+      commonParent = currentParentFirstElement
+      break
+    }
+  }
+
+  // on /results pages, common parent is commonParent's parent's parent
+  // this is only valid for the first search results, when other search results are loaded, commonParent is correct
+  if (window.location.pathname === '/results' && commonParent.classList.contains('ytd-item-section-renderer')) {
+    commonParent = commonParent.parentElement.parentElement
+  }
+  // TODO on /results pages we need to look for mutations of the parentElement for a subset of search results (the incorrect commonParent)
+  // because sometimes correct commonParent mutates, videoAnchors update when user presses shortcut, but the container for new videoAnchors (the element that caused the mutation)
+  // didn't yet get the new videoAnchors, and so the new videoAnchors list now doesn't have the new videoAnchors, and because the mutation of correct commonParent
+  // has already been recorded, these new video anchors will newer get added. Unless the user scrolls to the bottom of the page and causes another mutation
+  // When waiting for all the new videos to load, before using any shortcuts, this doesn't happen
+  // TODO maybe on other pages this is also true
+  // console.log('common parent:', commonParent)
+
+  // When common parent has new child elements added
+  // wait for mutationWaitTimeMs, there may be a series of mutations in a row
+  whenElementMutates(commonParent, (_mutations, observer) => {
+    // console.log('\nmutated common parent')
+    clearTimeout(lastMutationTimeout)
+    lastMutationTimeout = setTimeout(() => {
+      didVideoAnchorsMutate = true
+      updateVideoAnchors()
+    }, mutationWaitTimeMs)
+    observer.disconnect()
+  }, { childList: true })
+
+  videoAnchors.forEach((videoAnchor, index) => {
+    const abortController = new AbortController()
+    videoAnchor.addEventListener('focus', updateVideoAnchorIndex(index), { signal: abortController.signal })
+    updateVideoAnchorIndexAborts.push(abortController)
+  })
+
+  return videoAnchors.length
+}
+
+function scrollToVideoAnchorPanel(videoAnchorPanel) {
+  const rect = videoAnchorPanel.getBoundingClientRect()
+  window.scrollBy(0, rect.top - videoAnchorPanelScrollHeight)
+}
+
+shortcuts.set('focusNextVideo', {
+  category: 'Videos',
+  defaultKey: ']',
+  description: 'Focus next video',
+  isAvailable: () => updateVideoAnchors(),
+  event: () => {
+    const prevIndex = videoAnchorIndex
+    videoAnchorIndex = Math.min(videoAnchorIndex + 1, videoAnchors.length - 1)
+    if (videoAnchorIndex === prevIndex) return
+    scrollToVideoAnchorPanel(videoAnchorsPanels[videoAnchorIndex])
+    videoAnchors[videoAnchorIndex].focus()
+  }
+})
+
+shortcuts.set('focusPreviousVideo', {
+  category: 'Videos',
+  defaultKey: '[',
+  description: 'Focus previous video',
+  isAvailable: () => updateVideoAnchors(),
+  event: () => {
+    const prevIndex = videoAnchorIndex
+    videoAnchorIndex = Math.max(videoAnchorIndex - 1, 0)
+    if (videoAnchorIndex === prevIndex) return
+    scrollToVideoAnchorPanel(videoAnchorsPanels[videoAnchorIndex])
+    videoAnchors[videoAnchorIndex].focus()
+  }
+})
+
+shortcuts.set('focusFirstVideo', {
+  category: 'Videos',
+  defaultKey: '{',
+  description: 'Focus first video',
+  isAvailable: () => updateVideoAnchors(),
+  event: () => {
+    if (videoAnchorIndex === 0) return
+    videoAnchorIndex = 0
+    scrollToVideoAnchorPanel(videoAnchorsPanels[videoAnchorIndex])
+    videoAnchors[videoAnchorIndex].focus()
+  }
+})
+
+shortcuts.set('focusLastVideo', {
+  category: 'Videos',
+  defaultKey: '}',
+  description: 'Focus last video',
+  isAvailable: () => updateVideoAnchors(),
+  event: () => {
+    if (videoAnchorIndex === videoAnchors.length - 1) return
+    videoAnchorIndex = videoAnchors.length - 1
+    scrollToVideoAnchorPanel(videoAnchorsPanels[videoAnchorIndex])
+    videoAnchors[videoAnchorIndex].focus()
+  }
+})
+
+let moviePlayer = null // consistent
+let settingsButton = null
+let qualityButton = null
+
+let moviePlayerChannel = null // constistent
+let settingsButtonChannel = null
+let qualityButtonChannel = null
+
 shortcuts.set('openVideoSettings', {
-  category: 'Video',
+  category: 'Video player',
   defaultKey: 's',
   description: 'Open settings',
   isAvailable: () => {
@@ -145,7 +283,7 @@ shortcuts.set('openVideoSettings', {
 })
 
 shortcuts.set('openVideoQualitySettings', {
-  category: 'Video',
+  category: 'Video player',
   defaultKey: 'q',
   description: 'Open quality settings',
   isAvailable: () => {
@@ -179,10 +317,10 @@ shortcuts.set('openVideoQualitySettings', {
   }
 })
 
-shortcuts.set('focusVideo', {
-  category: 'Video',
+shortcuts.set('focusVideoPlayer', {
+  category: 'Video player',
   defaultKey: ';',
-  description: 'Focus video / show progress bar',
+  description: 'Focus video player / show progress bar',
   isAvailable: () => {
     if (pathnameStartsWith('/watch')) return true
     else if (pathnameStartsWith('/@', '/channel', '/c', '/user')) {
@@ -210,7 +348,7 @@ shortcuts.set('focusVideo', {
 
 let descriptionExpanded = false
 shortcuts.set('scrollToVideoDescription', {
-  category: 'Video',
+  category: 'Video player',
   defaultKey: 'd',
   description: 'Scroll to description/video',
   isAvailable: () => pathnameStartsWith('/watch'),
@@ -233,19 +371,8 @@ shortcuts.set('scrollToVideoDescription', {
   }
 })
 
-shortcuts.set('focusFirstRelatedVideo', {
-  category: 'Video',
-  defaultKey: 'r',
-  description: 'Focus first related video',
-  isAvailable: () => pathnameStartsWith('/watch'),
-  event: () => {
-    const relatedLink = document.querySelector('#related a.yt-simple-endpoint.style-scope.ytd-compact-video-renderer')
-    relatedLink.focus()
-  }
-})
-
 shortcuts.set('focusCommentBox', {
-  category: 'Video',
+  category: 'Video player',
   defaultKey: 'n',
   description: 'Comment',
   isAvailable: () => pathnameStartsWith('/watch'),
@@ -255,7 +382,7 @@ shortcuts.set('focusCommentBox', {
 
       const infoRenderer = document.querySelector('#info ytd-video-primary-info-renderer, #above-the-fold')
       infoRenderer.scrollIntoView()
-      whenTargetMutates('#content.ytd-app', (mutations, observer) => {
+      whenElementMutatesQuery('#content.ytd-app', (mutations, observer) => {
         commentBox = document.querySelector('ytd-comment-simplebox-renderer #placeholder-area')
         if (!commentBox) return
 
@@ -269,34 +396,6 @@ shortcuts.set('focusCommentBox', {
   }
 })
 
-shortcuts.set('focusFirstVideoInPlaylist', {
-  category: 'Playlist',
-  defaultKey: '[',
-  description: 'Focus first video in playlist',
-  isAvailable: () => {
-    if (!pathnameStartsWith('/watch')) return false
-    firstPlaylistVideo = firstPlaylistVideo?.offsetParent ? firstPlaylistVideo : document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items a')
-    return firstPlaylistVideo?.offsetParent
-  },
-  event: () => {
-    firstPlaylistVideo.focus()
-  }
-})
-
-shortcuts.set('focusLastVideoInPlaylist', {
-  category: 'Playlist',
-  defaultKey: ']',
-  description: 'Focus last video in playlist',
-  isAvailable: () => {
-    if (!pathnameStartsWith('/watch')) return false
-    lastPlaylistVideo = lastPlaylistVideo?.offsetParent ? lastPlaylistVideo : document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items:last-of-type a')
-    return lastPlaylistVideo?.offsetParent
-  },
-  event: () => {
-    lastPlaylistVideo.focus()
-  }
-})
-
 shortcuts.set('goToChannelHome', {
   category: 'Channel',
   defaultKey: 'h',
@@ -306,18 +405,10 @@ shortcuts.set('goToChannelHome', {
     if (pathnameStartsWith('/watch')) {
       const channelLink = document.querySelector('a.ytd-video-owner-renderer')
       channelLink.click()
-      // whenTargetMutates('#content.ytd-app', navigateToHome)
-      whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(3))
-
     } else {
-      if (!pathnameEndsWith('/videos', '/shorts', '/streams', '/playlists', '/community', '/channels', '/about')) {
-        // focusFirstVideo()
-        focusFirstVideoOnQueryType(3)()
-      } else {
-        const homeTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(1)')
-        homeTab.click()
-        whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(3))
-      }
+      // if (!pathnameEndsWith('/videos', '/shorts', '/streams', '/playlists', '/community', '/channels', '/about'))
+      const homeTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(1)')
+      homeTab.click()
     }
   }
 })
@@ -331,17 +422,12 @@ shortcuts.set('goToChannelVideos', {
     if (pathnameStartsWith('/watch')) {
       const channelLink = document.querySelector('a.ytd-video-owner-renderer')
       channelLink.click()
-      whenTargetMutates('#content.ytd-app', navigateToVideos)
+      whenElementMutatesQuery('#content.ytd-app', goToVideosTab)
 
-    } else {
-      if (pathnameEndsWith('/videos')) {
-        focusFirstVideo()
-      } else {
-        // TODO refactor :nth-of-type(2)
-        const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(2)')
-        videosTab.click()
-        whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(1))
-      }
+    } else if (!pathnameEndsWith('/videos')) {
+      // TODO refactor :nth-of-type(2)
+      const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(2)')
+      videosTab.click()
     }
   }
 })
@@ -355,17 +441,13 @@ shortcuts.set('goToChannelPlaylists', {
     if (pathnameStartsWith('/watch')) {
       const channelLink = document.querySelector('a.ytd-video-owner-renderer')
       channelLink.click()
-      whenTargetMutates('#content.ytd-app', navigateToPlaylists)
+      whenElementMutatesQuery('#content.ytd-app', goToPlaylistsTab)
 
-    } else {
-      if (pathnameEndsWith('/playlists')) {
-        focusFirstPlaylist()
-      } else {
-        // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab, or doesn't have community tab
-        const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(5)')
-        playlistsTab.click()
-        whenTargetMutates('#content.ytd-app', focusFirstPlaylist)
-      }
+    } else if (!pathnameEndsWith('/playlists')) {
+      // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab, or doesn't have community tab
+      const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(5)')
+      playlistsTab.click()
+      whenElementMutatesQuery('#content.ytd-app', focusFirstPlaylist)
     }
   }
 })
@@ -382,6 +464,42 @@ shortcuts.set('goToChannelNewTab', {
     window.open(channelLink.href, '_blank')
   }
 })
+
+let firstPlaylistVideo = null
+let lastPlaylistVideo = null
+
+shortcuts.set('focusFirstVideoInPlaylist', {
+  category: 'Playlist',
+  defaultKey: ',',
+  description: 'Focus first video in playlist',
+  isAvailable: () => {
+    if (!pathnameStartsWith('/watch')) return false
+    firstPlaylistVideo = firstPlaylistVideo?.offsetParent ? firstPlaylistVideo : document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items a')
+    return firstPlaylistVideo?.offsetParent
+  },
+  event: () => {
+    firstPlaylistVideo.focus()
+  }
+})
+
+shortcuts.set('focusLastVideoInPlaylist', {
+  category: 'Playlist',
+  defaultKey: '.',
+  description: 'Focus last video in playlist',
+  isAvailable: () => {
+    if (!pathnameStartsWith('/watch')) return false
+    lastPlaylistVideo = lastPlaylistVideo?.offsetParent ? lastPlaylistVideo : document.querySelector('#content ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer#playlist-items:last-of-type a')
+    return lastPlaylistVideo?.offsetParent
+  },
+  event: () => {
+    lastPlaylistVideo.focus()
+  }
+})
+
+let hideChatButton = null
+let chatIframe = null
+let chatInputBox = null
+let skipToLiveBroadcastButton = null
 
 shortcuts.set('hideChat', {
   category: 'Premiere/Stream',

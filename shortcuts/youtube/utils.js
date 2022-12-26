@@ -3,25 +3,24 @@ import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
   ({ pathnameStartsWith, pathnameEndsWith } = result)
 })
 
-let whenTargetMutates
+let whenElementMutatesQuery
 import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
-  ({ whenTargetMutates } = result)
+  ({ whenElementMutatesQuery } = result)
 })
 
 // Functions can be used as both callbacks for MutationObserver and as regular functions
 
-export function navigateToHome(mutations, observer) {
+// unused
+export function goToChannelHome(mutations, observer) {
   const homeTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(1)')
   if (!homeTab?.offsetParent) return
 
   observer?.disconnect()
 
   setTimeout(() => homeTab.click(), 50)
-
-  whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(3))
 }
 
-export function navigateToVideos(mutations, observer) {
+export function goToChannelVideos(mutations, observer) {
   // TODO refactor :nth-of-type(2)
   const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(2)')
   if (!videosTab?.offsetParent) return
@@ -40,11 +39,9 @@ export function navigateToVideos(mutations, observer) {
   // probably because by the time autoplay video is loaded, video tab is set up and ready to be clicked
   // TODO it still sometimes plays video in background
   setTimeout(() => videosTab.click(), 100)
-
-  whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(1))
 }
 
-export function navigateToPlaylists(mutations, observer) {
+export function goToChannelPlaylists(mutations, observer) {
   // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab
   const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(5)')
   if (!playlistsTab?.offsetParent) return
@@ -61,10 +58,9 @@ export function navigateToPlaylists(mutations, observer) {
   // TODO refactor if possible
   // TODO it still sometimes plays video in background
   setTimeout(() => playlistsTab.click(), 100)
-
-  whenTargetMutates('#content.ytd-app', focusFirstPlaylist)
 }
 
+// These are now obsolete since focus next/previous first/last video shortcuts are available
 export function focusFirstVideo(mutations, observer) {
   const firstVideo = document.querySelector('ytd-browse:not([hidden]) #contents #dismissible #meta a')
   if (!firstVideo) return
@@ -130,8 +126,6 @@ export function goToHome(mutations, observer) {
 
   observer?.disconnect()
   homeAnchor.click()
-
-  whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(1))
 }
 
 export function goToSubscriptions(mutations, observer) {
@@ -142,8 +136,15 @@ export function goToSubscriptions(mutations, observer) {
 
   observer?.disconnect()
   subscriptionsAnchor.click()
+}
 
-  whenTargetMutates('#content.ytd-app', focusFirstVideoOnQueryType(2))
+export function focusFirstSubscription(mutations, observer) {
+  const firstChannelItem = document.querySelector('#sections ytd-guide-section-renderer:nth-child(2) tp-yt-paper-item')
+
+  if (!firstChannelItem) return
+
+  observer?.disconnect()
+  firstChannelItem.focus()
 }
 
 export function expandAndFocusFirstSubscription(mutations, observer) {
@@ -155,14 +156,5 @@ export function expandAndFocusFirstSubscription(mutations, observer) {
 
   // TODO using setTimeout is inconsistent, since if it takes more than 200ms to open guide bar it will not focus
   setTimeout(focusFirstSubscription, 200)
-  // whenTargetMutates(focusFirstSubscription)
-}
-
-export function focusFirstSubscription(mutations, observer) {
-  const firstChannelItem = document.querySelector('#sections ytd-guide-section-renderer:nth-child(2) tp-yt-paper-item')
-
-  if (!firstChannelItem) return
-
-  observer?.disconnect()
-  firstChannelItem.focus()
+  // whenElementMutatesQuery(focusFirstSubscription)
 }

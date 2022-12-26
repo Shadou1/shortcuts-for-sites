@@ -6,6 +6,7 @@ Todo:
   ☐ Bundle code to be able to use export/import in content scripts
   ✘ Shortcuts that navigate to a new page should accept an optional 'Ctrl' key to instead open the page in a new tab @cancelled(22-08-30 19:14)
   ☐ Add runtime.onInstalled (install and update)
+  ☐ Logic in Google Search 'searchResultIndex' and Youtube 'videoAnchorIndex' is similar
 
   ✔ Shortcuts with Ctrl, Alt collide with regular keys in object keys @done(22-08-30 19:14)
   ☐ Add being able to use shortcuts when active element is accepting input
@@ -32,6 +33,7 @@ Todo:
     ☐ Vertical scrollbar displays incorrectly
     ✔ Numeric shortcuts displayed first before character shortcuts @done(22-12-17 04:05)
     ✔ Highligh shortcuts that can be used on the current page (current location) @done(22-12-21 19:07)
+    ☐ Opening browser action in slow @high (maybe it's always slow)
 
   Options:
     ✔ Extension options page @done(22-12-17 15:18)
@@ -51,6 +53,7 @@ Todo:
     ✔ When going to channel videos/playlists from /watch page and channel home has an autoplay video, this video will start autoplaying in the background incorrectly (sometimes) @done(22-12-03 14:23)
     ✔ Improve isAvailable functions @done(22-12-21 16:00)
     ✘ Re-query null elements only when window.location.pathname changed (? maybe won't work) @cancelled(22-12-21 15:28) won't work when going from page to another page and then back to the first page without checking for pathname change on second page
+    ☐ When page mutates, go to next/previous video and other focusing shortcuts are unresponsive (normal tabbing is also unresponsive)
 
     ☐ Maybe include 'all_frames' into manifest.json content_scripts so that shortcuts also work in iframes(chat)
 

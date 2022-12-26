@@ -24,9 +24,9 @@ import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
   ({ pathnameStartsWith, pathnameEndsWith } = result)
 })
 
-let whenTargetMutates
+let whenElementMutatesQuery
 import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
-  ({ whenTargetMutates } = result)
+  ({ whenElementMutatesQuery } = result)
 })
 
 let focusFirstChannel,
@@ -89,7 +89,7 @@ shortcuts.set('goToHome', {
     if (window.location.pathname !== '/') {
       homeAnchor = homeAnchor || document.querySelector('a[data-a-target="home-link"]')
       homeAnchor?.click()
-      whenTargetMutates('main', focusFirstVideoOnQueryType('home'))
+      whenElementMutatesQuery('main', focusFirstVideoOnQueryType('home'))
     } else {
       focusFirstVideoOnQueryType('home')()
     }
@@ -104,7 +104,7 @@ shortcuts.set('goToFollowing', {
     if (!pathnameEndsWith('/following')) {
       followingAnchor = followingAnchor || document.querySelector('a[data-a-target="following-link"]')
       followingAnchor?.click()
-      whenTargetMutates('main', focusFirstVideoOnQueryType('following'))
+      whenElementMutatesQuery('main', focusFirstVideoOnQueryType('following'))
     } else {
       focusFirstVideoOnQueryType('following')()
     }
@@ -121,11 +121,11 @@ shortcuts.set('goToCategories', {
       categoriesAnchor?.click()
       // Sometimes it does not mutate and callback will execute wrongly
       const isFocused = focusFirstCategory()
-      if (!isFocused) whenTargetMutates('main', focusFirstCategory)
+      if (!isFocused) whenElementMutatesQuery('main', focusFirstCategory)
     } else if (!pathnameEndsWith('/directory')) {
       browseAnchor = browseAnchor || document.querySelector('a[data-a-target="browse-link"]')
       browseAnchor?.click()
-      whenTargetMutates('main', focusFirstCategory)
+      whenElementMutatesQuery('main', focusFirstCategory)
     } else {
       focusFirstCategory()
     }
@@ -143,7 +143,7 @@ shortcuts.set('goToLiveChannels', {
       } else {
         browseAnchor = browseAnchor || document.querySelector('a[data-a-target="browse-link"]')
         browseAnchor?.click()
-        whenTargetMutates('main', navigateToLiveChannels)
+        whenElementMutatesQuery('main', navigateToLiveChannels)
       }
     } else {
       focusFirstVideoOnQueryType('browse')()
@@ -205,7 +205,7 @@ shortcuts.set('goToStreamCategory', {
     }
 
     streamGameAnchor.click()
-    whenTargetMutates('main', focusFirstChannel)
+    whenElementMutatesQuery('main', focusFirstChannel)
   }
 })
 
@@ -268,7 +268,7 @@ shortcuts.set('goToOfflineChannel', {
     const offlineSection = document.querySelector('#offline-channel-main-content')
     channelAnchor.click()
     if (!offlineSection) {
-      whenTargetMutates('main', focusFirstVideoOnQueryType('channel home'))
+      whenElementMutatesQuery('main', focusFirstVideoOnQueryType('channel home'))
     }
   }
 })
@@ -290,11 +290,11 @@ shortcuts.set('goToChannelVideos', {
         firstVideo.focus()
       } else {
         videosAnchor.click()
-        whenTargetMutates('main', focusFirstVideoOnQueryType('channel video'))
+        whenElementMutatesQuery('main', focusFirstVideoOnQueryType('channel video'))
       }
     } else {
       channelAnchor.click()
-      whenTargetMutates('main', navigateToVideos)
+      whenElementMutatesQuery('main', navigateToVideos)
     }
   }
 })
@@ -319,7 +319,7 @@ shortcuts.set('goToChannelSchedule', {
       }
     } else {
       channelAnchor.click()
-      whenTargetMutates('main', navigateToSchedule)
+      whenElementMutatesQuery('main', navigateToSchedule)
     }
   }
 })

@@ -1,11 +1,36 @@
+let didPagePathnameChange
+let didCommentsPageChange
+let pathnameMatches, didPathnameChange
+import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
+  ({ pathnameMatches, didPathnameChange } = result)
+  didPagePathnameChange = didPathnameChange()
+  didCommentsPageChange = didPathnameChange()
+})
+
+export const shortcuts = new Map()
+
 let homeAnchor = null
 let popularAnchor = null
 
-let hotPostsAnchor = null
-let newPostsAnchor = null
-let topPostsAnchor = null
-let risingPostsAnchor = null
-let timeSortAnchor = null
+shortcuts.set('goToHome', {
+  category: 'General',
+  defaultKey: 'o',
+  description: 'Go to home',
+  event: () => {
+    homeAnchor = homeAnchor || document.querySelector('header a[href="/"]')
+    homeAnchor?.click()
+  }
+})
+
+shortcuts.set('goToPopular', {
+  category: 'General',
+  defaultKey: 'u',
+  description: 'Go to popular',
+  event: () => {
+    popularAnchor = popularAnchor || document.querySelector('header a[href*="popular"]')
+    popularAnchor?.click()
+  }
+})
 
 // Main page
 let activePost = null
@@ -21,16 +46,6 @@ let commentsPageSubredditLink = null
 
 let activeVideoPlayerInComments = null
 let activeVideoInComments = null
-
-let didPagePathnameChange
-let didCommentsPageChange
-
-let pathnameMatches, didPathnameChange
-import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
-  ({ pathnameMatches, didPathnameChange } = result)
-  didPagePathnameChange = didPathnameChange()
-  didCommentsPageChange = didPathnameChange()
-})
 
 function updateVideoInComments() {
   if (didCommentsPageChange()) {
@@ -62,15 +77,6 @@ function updateScrollContainerInComments() {
   return scrollContainerComments?.offsetParent
 }
 
-function updateRisingAnchor() {
-  // Anchor is hidden, and current one might refer to the previous /rising page (from a subreddit, from a /poular, or from a home page)
-  if (didPageChange()) {
-    risingPostsAnchor = document.querySelector('a[href*="rising"][role="menuitem"]')
-  }
-  risingPostsAnchor = risingPostsAnchor || document.querySelector('a[href*="rising"][role="menuitem"]')
-  return risingPostsAnchor
-}
-
 // TODO maybe rework
 let isKeyboardFocused = false
 document.body.addEventListener('keydown', (event) => {
@@ -78,6 +84,8 @@ document.body.addEventListener('keydown', (event) => {
   isKeyboardFocused = true
 })
 
+const postScrollHeight = 150
+const commentScrollHeight = 150
 document.body.addEventListener('focusin', (event) => {
   // Only work when j/k keys have been used
   if (!isKeyboardFocused) return
@@ -98,9 +106,9 @@ document.body.addEventListener('focusin', (event) => {
       activeVideo = activeVideoPlayer?.shadowRoot.querySelector('video')
     }
 
-    activePost.scrollIntoView()
-    const scrollLength = Math.min(150, window.innerHeight / 2)
-    window.scrollBy(0, -scrollLength)
+    const activePostRect = activePost.getBoundingClientRect()
+    const scrollLength = Math.min(postScrollHeight, window.innerHeight / 2)
+    window.scrollBy(0, activePostRect.top - scrollLength)
 
     const postLink = activePost.querySelector('a[data-click-id="body"]')
     postLink.focus()
@@ -108,37 +116,15 @@ document.body.addEventListener('focusin', (event) => {
   // Scroll to focused comment
   } else if (event.target.style.paddingLeft) {
     activeComment = document.activeElement
-    activeComment.scrollIntoView()
-    const scrollLength = Math.min(150, window.innerHeight / 2)
+    const activeCommentRect = activeComment.getBoundingClientRect()
+    const scrollLength = Math.min(commentScrollHeight, window.innerHeight / 2)
     if (updateScrollContainerInComments()) {
-      scrollContainerComments.scrollTop += scrollContainerComments.scrollTop < scrollContainerComments.scrollHeight - window.innerHeight ? -scrollLength : 0
+      scrollContainerComments.scrollBy(0, activeCommentRect.top - scrollLength)
     } else {
-      window.scrollBy(0, window.scrollY < document.body.scrollHeight - window.innerHeight ? -scrollLength : 0)
+      window.scrollBy(0, activeCommentRect.top - scrollLength)
     }
   }
 
-})
-
-export const shortcuts = new Map()
-
-shortcuts.set('goToHome', {
-  category: 'General',
-  defaultKey: 'o',
-  description: 'Go to home',
-  event: () => {
-    homeAnchor = homeAnchor || document.querySelector('header a[href="/"]')
-    homeAnchor?.click()
-  }
-})
-
-shortcuts.set('goToPopular', {
-  category: 'General',
-  defaultKey: 'u',
-  description: 'Go to popular',
-  event: () => {
-    popularAnchor = popularAnchor || document.querySelector('header a[href*="popular"]')
-    popularAnchor?.click()
-  }
 })
 
 shortcuts.set('goToSubreddit', {
@@ -191,6 +177,21 @@ shortcuts.set('goToSubredditNewTab', {
 })
 
 // TODO add focus post (on comments page)
+
+let hotPostsAnchor = null
+let newPostsAnchor = null
+let topPostsAnchor = null
+let risingPostsAnchor = null
+let timeSortAnchor = null
+
+function updateRisingAnchor() {
+  // Anchor is hidden, and current one might refer to the previous /rising page (from a subreddit, from a /poular, or from a home page)
+  if (didPagePathnameChange()) {
+    risingPostsAnchor = document.querySelector('a[href*="rising"][role="menuitem"]')
+  }
+  risingPostsAnchor = risingPostsAnchor || document.querySelector('a[href*="rising"][role="menuitem"]')
+  return risingPostsAnchor
+}
 
 shortcuts.set('showHotPosts', {
   category: 'Posts filters',

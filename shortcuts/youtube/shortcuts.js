@@ -118,6 +118,50 @@ function updateVideoAnchorIndex(toIndex) {
 
 let lastMutationTimeout
 const mutationWaitTimeMs = 100
+function setupVideoAnchorsMutations() {
+  // Find the common parent to watch for mutations on
+  const firstElementParents = []
+  let currentFirstElementParent = videoAnchorsPanels[0]
+  for (let i = 0; i < 20; i++) {
+    currentFirstElementParent = currentFirstElementParent.parentElement
+    if (!currentFirstElementParent) break
+    firstElementParents.push(currentFirstElementParent)
+  }
+  let commonParent
+  let currentSecondElementParent = videoAnchorsPanels[videoAnchors.length - 1]
+  for (let i = 0; i < firstElementParents.length; i++) {
+    currentSecondElementParent = currentSecondElementParent.parentElement
+    if (firstElementParents[i] !== currentSecondElementParent) continue
+    commonParent = currentSecondElementParent
+    break
+  }
+
+  // on /results pages, common parent is commonParent's parent's parent
+  // this is only valid for the first search results, when other search results are loaded, commonParent is correct
+  if (window.location.pathname === '/results' && commonParent.classList.contains('ytd-item-section-renderer')) {
+    commonParent = commonParent.parentElement.parentElement
+  }
+  // TODO on /results pages we need to look for mutations of the parentElement for a subset of search results (the incorrect commonParent)
+  // because sometimes correct commonParent mutates, videoAnchors update when user presses shortcut, but the container for new videoAnchors (the element that caused the mutation)
+  // didn't yet get the new videoAnchors, and so the new videoAnchors list now doesn't have the new videoAnchors, and because the mutation of correct commonParent
+  // has already been recorded, these new video anchors will newer get added. Unless the user scrolls to the bottom of the page and causes another mutation
+  // When waiting for all the new videos to load, before using any shortcuts, this doesn't happen
+  // TODO maybe on other pages this is also true
+  // console.log('common parent:', commonParent)
+
+  // When common parent has new child elements added
+  // wait for mutationWaitTimeMs, there may be a series of mutations in a row
+  whenElementMutates(commonParent, (_mutations, observer) => {
+    // console.log('\nmutated common parent')
+    clearTimeout(lastMutationTimeout)
+    lastMutationTimeout = setTimeout(() => {
+      didVideoAnchorsMutate = true
+      updateVideoAnchors()
+    }, mutationWaitTimeMs)
+    observer.disconnect()
+  }, { childList: true })
+}
+
 function updateVideoAnchors() {
   const didPathChange = didPagePathnameChange()
   if (!didVideoAnchorsMutate && !didPathChange) return videoAnchors.length
@@ -145,43 +189,8 @@ function updateVideoAnchors() {
     videoAnchorsPanels.push(currentParent)
   })
 
-  // Find the common parent to watch for mutations on
-  let currentParentFirstElement = videoAnchorsPanels[0]
-  let currentParentLastElement = videoAnchorsPanels[videoAnchors.length - 1]
-  let commonParent
-  for (let i = 0; i < 20; i++) {
-    currentParentFirstElement = currentParentFirstElement.parentElement
-    currentParentLastElement = currentParentLastElement.parentElement
-    if (currentParentFirstElement === currentParentLastElement) {
-      commonParent = currentParentFirstElement
-      break
-    }
-  }
-
-  // on /results pages, common parent is commonParent's parent's parent
-  // this is only valid for the first search results, when other search results are loaded, commonParent is correct
-  if (window.location.pathname === '/results' && commonParent.classList.contains('ytd-item-section-renderer')) {
-    commonParent = commonParent.parentElement.parentElement
-  }
-  // TODO on /results pages we need to look for mutations of the parentElement for a subset of search results (the incorrect commonParent)
-  // because sometimes correct commonParent mutates, videoAnchors update when user presses shortcut, but the container for new videoAnchors (the element that caused the mutation)
-  // didn't yet get the new videoAnchors, and so the new videoAnchors list now doesn't have the new videoAnchors, and because the mutation of correct commonParent
-  // has already been recorded, these new video anchors will newer get added. Unless the user scrolls to the bottom of the page and causes another mutation
-  // When waiting for all the new videos to load, before using any shortcuts, this doesn't happen
-  // TODO maybe on other pages this is also true
-  // console.log('common parent:', commonParent)
-
-  // When common parent has new child elements added
-  // wait for mutationWaitTimeMs, there may be a series of mutations in a row
-  whenElementMutates(commonParent, (_mutations, observer) => {
-    // console.log('\nmutated common parent')
-    clearTimeout(lastMutationTimeout)
-    lastMutationTimeout = setTimeout(() => {
-      didVideoAnchorsMutate = true
-      updateVideoAnchors()
-    }, mutationWaitTimeMs)
-    observer.disconnect()
-  }, { childList: true })
+  // Setup updates on mutations
+  setupVideoAnchorsMutations()
 
   videoAnchors.forEach((videoAnchor, index) => {
     const abortController = new AbortController()

@@ -58,7 +58,6 @@ let searchResultsDivs = []
 let searchResultsDivsAdditional = []
 let searchResultsAnchors = []
 let searchResultIndex = -1
-let didSearchResultsMutate = true
 
 let searchSuggestedAnchors = []
 let searchSuggestedIndex = -1
@@ -78,52 +77,47 @@ function updateSearchSuggestedIndex(toIndex) {
   }
 }
 
-let isMutationsSetup = false
 let lastMutationTimeout
 const mutationWaitTimeMs = 100
-// Static MutationObserver, because google pages are not dynamic (redirect and reload when clicking any link)
+// Static MutationObserver, because google pages are not dynamic (redirect causes page reload)
 function setupImageMutations() {
   const firstElementParents = []
-  let currentFirstElementParent = searchResultsAnchors[0]
-  for (let i = 0; i < 20; i++) {
+  let currentFirstElementParent = searchResultsAnchors[0].parentElement
+  while (currentFirstElementParent) {
+    firstElementParents.unshift(currentFirstElementParent)
     currentFirstElementParent = currentFirstElementParent.parentElement
-    if (!currentFirstElementParent) break
-    firstElementParents.push(currentFirstElementParent)
   }
-  let commonParent
-  // Look for the second element and not the last like on Youtube
+  // Look for the second element and not the last one like on Youtube
   // Because last element when new image results are added is incorrect before scrolling to it
-  let currentSecondElementParent = searchResultsAnchors[1]
-  for (let i = 0; i < firstElementParents.length; i++) {
-    currentSecondElementParent = currentSecondElementParent.parentElement
-    console.log(currentSecondElementParent)
-    if (firstElementParents[i] !== currentSecondElementParent) continue
-    commonParent = currentSecondElementParent
-    break
+  const lastElementParents = []
+  let currentLastElementParent = searchResultsAnchors[1].parentElement
+  while (currentLastElementParent) {
+    lastElementParents.unshift(currentLastElementParent)
+    currentLastElementParent = currentLastElementParent.parentElement
+  }
+
+  let commonParent = lastElementParents[0]
+  for (let i = 1; i < lastElementParents.length; i++) {
+    if (firstElementParents[i] !== lastElementParents[i]) break
+    commonParent = lastElementParents[i]
   }
 
   whenElementMutates(commonParent, (_mutations, _observer) => {
     clearTimeout(lastMutationTimeout)
     lastMutationTimeout = setTimeout(() => {
-      didSearchResultsMutate = true
-      updateSearchResults()
+      getSearchResults()
     }, mutationWaitTimeMs)
   }, { childList: true })
-
-  isMutationsSetup = true
 }
 
-function updateSearchResults() {
-  // don't if the page hasn't mutated (for image searches)
-  if (!didSearchResultsMutate) return searchResultsAnchors.length
-
-  const urlSearchParams = new URLSearchParams(window.location.search)
-  const queryType = urlSearchParams.get('tbm')
-
+function getSearchResults() {
   updateSearchResultIndexAborts.forEach((abortController) => abortController.abort())
   updateSearchSuggestedIndexAborts.forEach((abortController) => abortController.abort())
   updateSearchResultIndexAborts = []
   updateSearchSuggestedIndexAborts = []
+
+  const urlSearchParams = new URLSearchParams(window.location.search)
+  const queryType = urlSearchParams.get('tbm')
 
   // Populate search results
   // all search, news, videos
@@ -141,10 +135,6 @@ function updateSearchResults() {
         searchResultsDivs = document.querySelectorAll('#rcnt > #center_col #rso > div')
         break
     }
-
-    if (!searchResultsDivs.length) return searchResultsDivs.length
-    // If no searchResultsDivs, keep didSearchResultsMutate true (maybe they haven't been scrolled to yet)
-    didSearchResultsMutate = false
 
     for (let i = 0; i < searchResultsDivsAdditional.length; i++) {
       const resultAnchor = searchResultsDivsAdditional[i].querySelector('a')
@@ -177,14 +167,9 @@ function updateSearchResults() {
   } else if (queryType === 'isch') {
     // Populate image results
     searchResultsAnchors = document.querySelectorAll('#islmp[role="main"] a[tabindex="0"]')
-    if (!searchResultsAnchors.length) return searchResultsAnchors.length
-    didSearchResultsMutate = false
 
     // Populate suggested image searches
     searchSuggestedAnchors = document.querySelectorAll('scrolling-carousel a[href*="tbm=isch"]')
-
-    // Need to look for mutations on infinitely scrollable image search pages
-    if (!isMutationsSetup) setupImageMutations()
   }
 
   searchResultsAnchors.forEach((searchResult, index) => {
@@ -199,8 +184,27 @@ function updateSearchResults() {
     updateSearchSuggestedIndexAborts.push(abortController)
   })
 
-  return searchResultsAnchors.length
+  return searchResultsAnchors
+}
 
+let isMutationsSetup = false
+function updateSearchResults() {
+  if (isMutationsSetup) return searchResultsAnchors.length
+
+  const searchResultsAnchorsLength = getSearchResults().length
+
+  if (!searchResultsAnchorsLength) return searchResultsAnchorsLength
+  // Bellow code will only run once
+  isMutationsSetup = true
+
+  const urlSearchParams = new URLSearchParams(window.location.search)
+  const queryType = urlSearchParams.get('tbm')
+  if (queryType === 'isch') {
+    // Need to look for mutations on infinitely scrollable image search pages
+    setupImageMutations()
+  }
+
+  return searchResultsAnchorsLength
 }
 
 const searchResultScrollLength = 250

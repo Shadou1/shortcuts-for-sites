@@ -92,7 +92,7 @@ shortcuts.set('swapLanguages', {
   defaultKey: 'i',
   description: 'Swap languages',
   event: () => {
-    swapLanguagesButton = swapLanguagesButton?.offsetParent ? swapLanguagesButton : document.querySelector('[__is_owner="true"] button[jslog]')
+    swapLanguagesButton = swapLanguagesButton?.offsetParent ? swapLanguagesButton : document.querySelector('c-wiz[data-node-index="1;0"] c-wiz[data-node-index="3;0"] button[jslog]')
     swapLanguagesButton?.click()
   }
 })

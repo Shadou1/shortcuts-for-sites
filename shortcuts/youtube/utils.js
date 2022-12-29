@@ -11,7 +11,7 @@ import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
 // Functions can be used as both callbacks for MutationObserver and as regular functions
 
 // unused
-export function goToChannelHome(mutations, observer) {
+export function goToHomeTab(mutations, observer) {
   const homeTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(1)')
   if (!homeTab?.offsetParent) return
 
@@ -20,7 +20,7 @@ export function goToChannelHome(mutations, observer) {
   setTimeout(() => homeTab.click(), 50)
 }
 
-export function goToChannelVideos(mutations, observer) {
+export function goToVideosTab(mutations, observer) {
   // TODO refactor :nth-of-type(2)
   const videosTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-of-type(2)')
   if (!videosTab?.offsetParent) return
@@ -41,7 +41,7 @@ export function goToChannelVideos(mutations, observer) {
   setTimeout(() => videosTab.click(), 100)
 }
 
-export function goToChannelPlaylists(mutations, observer) {
+export function goToPlaylistsTab(mutations, observer) {
   // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab
   const playlistsTab = document.querySelector('#tabsContainer tp-yt-paper-tab:nth-last-of-type(5)')
   if (!playlistsTab?.offsetParent) return

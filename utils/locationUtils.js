@@ -29,3 +29,14 @@ export function didPathnameChange() {
     return false
   }
 }
+
+export function didHrefChange() {
+  let previousHref = null
+  return function checkChange() {
+    if (window.location.href !== previousHref) {
+      previousHref = window.location.href
+      return true
+    }
+    return false
+  }
+}

@@ -1,14 +1,14 @@
-let pathnameStartsWith, pathnameEndsWith, didPathnameChange
+let pathnameStartsWith, pathnameEndsWith, didHrefChange
 let whenElementMutates, whenElementMutatesQuery
-let didPagePathnameChange
+let didPageHrefChange
 // TODO use bundler to import these functions with 'import {} from'
 Promise.all([
   import(browser.runtime.getURL('utils/locationUtils.js')),
   import(browser.runtime.getURL('utils/mutationUtils.js')),
 ]).then(([locationUtils, mutationUtils]) => {
-  ({ pathnameStartsWith, pathnameEndsWith, didPathnameChange } = locationUtils);
+  ({ pathnameStartsWith, pathnameEndsWith, didHrefChange } = locationUtils);
   ({ whenElementMutates, whenElementMutatesQuery } = mutationUtils)
-  didPagePathnameChange = didPathnameChange()
+  didPageHrefChange = didHrefChange()
   // On document_idle
   updateVideoAnchors()
 })
@@ -103,94 +103,135 @@ shortcuts.set('focusSubscribedChannels', {
 let videoAnchors = []
 let videoAnchorsPanels = []
 let videoAnchorIndex = -1
-let didVideoAnchorsMutate = true
-// This needs to account for fixed headers, sometimes there are more than 1 fixed header (on the home page there are video categories header)
-// TODO make this value dynamic
-let videoAnchorPanelScrollHeight = 120
+
+let videoAnchorsCommonParent
+let mutationObserver
+let mutationObserverOnResultsPage
+let lastMutationTimeout
+// TODO maybe this can be reduced
+const mutationWaitTimeMs = 150
+function setupVideoAnchorsMutations(isResultsPage) {
+  // Find the common parent to watch for mutations on
+  // This is the lowest common ancestor
+  const firstElementParents = []
+  let currentFirstElementParent = videoAnchorsPanels[0].parentElement
+  while (currentFirstElementParent) {
+    firstElementParents.unshift(currentFirstElementParent)
+    currentFirstElementParent = currentFirstElementParent.parentElement
+  }
+  const lastElementParents = []
+  let currentLastElementParent = videoAnchorsPanels[videoAnchors.length - 1].parentElement
+  while (currentLastElementParent) {
+    lastElementParents.unshift(currentLastElementParent)
+    currentLastElementParent = currentLastElementParent.parentElement
+  }
+
+  let commonParent = lastElementParents[0]
+  for (let i = 1; i < lastElementParents.length; i++) {
+    if (firstElementParents[i] !== lastElementParents[i]) break
+    commonParent = lastElementParents[i]
+  }
+  videoAnchorsCommonParent = commonParent
+
+  // On /results pages, common parent is commonParent's parent's parent
+  if (isResultsPage && videoAnchorsCommonParent.classList.contains('ytd-item-section-renderer')) {
+    videoAnchorsCommonParent = videoAnchorsCommonParent.parentElement.parentElement
+  }
+
+  // If setting up new mutation observer, the last one should be disconnected
+  mutationObserver?.disconnect()
+  mutationObserver = whenElementMutates(videoAnchorsCommonParent, (_mutations, _observer) => {
+    // If mutated anchors are no longer visible, return
+    // The observer will later be disconnected by updateVideoAnchors()
+    if (!videoAnchors[0]?.offsetParent) return
+    // If mutation didn't add any new nodes, don't count it
+    let didAddNodes = false
+    outer: for (let mutation of _mutations) {
+      if (mutation.addedNodes.length) {
+        didAddNodes = true
+        break outer
+      }
+    }
+    if (!didAddNodes) return
+
+    // Wait for mutationWaitTimeMs, there may be a series of mutations in a row
+    clearTimeout(lastMutationTimeout)
+    lastMutationTimeout = setTimeout(() => {
+      getVideoAnchors()
+      // If on results page, setup mutation observer for the newely added elements
+      if (isResultsPage) {
+        setupVideoAnchorsMutationsOnResultsPage()
+      }
+    }, mutationWaitTimeMs)
+  }, { childList: true })
+}
+
+// TODO maybe other pages also need this functionality
+let lastMutationTimeoutNewResults
+function setupVideoAnchorsMutationsOnResultsPage() {
+  // Watch for mutation on the last section renderer contents div
+  // New results will be added there, most time asynchronously
+  const lastSectionContents = videoAnchorsCommonParent.querySelector('ytd-item-section-renderer:last-of-type > #contents')
+  // If adding a new mutation observer on results page, the last on is not needed anymore
+  mutationObserverOnResultsPage?.disconnect()
+  mutationObserverOnResultsPage = whenElementMutates(lastSectionContents, (_mutations, observer) => {
+    if (!lastSectionContents?.offsetParent) {
+      // No need to watch for mutations on a now invisible element
+      // If it later becomes visible, videoAnchors will already have all the results from it
+      observer?.disconnect()
+      return
+    }
+    clearTimeout(lastMutationTimeoutNewResults)
+    lastMutationTimeoutNewResults = setTimeout(() => {
+      getVideoAnchors()
+      // If this gets called, there will be no future results, so it's ok to disconnect the observer
+      // However, disconnecting the observer may lead to errors:
+      // If time between new results mutations is greater than mutationWaitTimeMs, videoAnchors will not contain the latest results
+      // This can be fixed by not disconnecting the observer
+      // There is no overehead (probably)
+      // observer.disconnect()
+    }, mutationWaitTimeMs)
+  }, { childList: true })
+}
 
 let updateVideoAnchorIndexAborts = []
 function updateVideoAnchorIndex(toIndex) {
-  // console.log('updating anchor index')
   return function () {
     videoAnchorIndex = toIndex
   }
 }
 
-let lastMutationTimeout
-const mutationWaitTimeMs = 100
-function setupVideoAnchorsMutations() {
-  // Find the common parent to watch for mutations on
-  const firstElementParents = []
-  let currentFirstElementParent = videoAnchorsPanels[0]
-  for (let i = 0; i < 20; i++) {
-    currentFirstElementParent = currentFirstElementParent.parentElement
-    if (!currentFirstElementParent) break
-    firstElementParents.push(currentFirstElementParent)
-  }
-  let commonParent
-  let currentSecondElementParent = videoAnchorsPanels[videoAnchors.length - 1]
-  for (let i = 0; i < firstElementParents.length; i++) {
-    currentSecondElementParent = currentSecondElementParent.parentElement
-    if (firstElementParents[i] !== currentSecondElementParent) continue
-    commonParent = currentSecondElementParent
-    break
-  }
-
-  // on /results pages, common parent is commonParent's parent's parent
-  // this is only valid for the first search results, when other search results are loaded, commonParent is correct
-  if (window.location.pathname === '/results' && commonParent.classList.contains('ytd-item-section-renderer')) {
-    commonParent = commonParent.parentElement.parentElement
-  }
-  // TODO on /results pages we need to look for mutations of the parentElement for a subset of search results (the incorrect commonParent)
-  // because sometimes correct commonParent mutates, videoAnchors update when user presses shortcut, but the container for new videoAnchors (the element that caused the mutation)
-  // didn't yet get the new videoAnchors, and so the new videoAnchors list now doesn't have the new videoAnchors, and because the mutation of correct commonParent
-  // has already been recorded, these new video anchors will newer get added. Unless the user scrolls to the bottom of the page and causes another mutation
-  // When waiting for all the new videos to load, before using any shortcuts, this doesn't happen
-  // TODO maybe on other pages this is also true
-  // console.log('common parent:', commonParent)
-
-  // When common parent has new child elements added
-  // wait for mutationWaitTimeMs, there may be a series of mutations in a row
-  whenElementMutates(commonParent, (_mutations, observer) => {
-    // console.log('\nmutated common parent')
-    clearTimeout(lastMutationTimeout)
-    lastMutationTimeout = setTimeout(() => {
-      didVideoAnchorsMutate = true
-      updateVideoAnchors()
-    }, mutationWaitTimeMs)
-    observer.disconnect()
-  }, { childList: true })
-}
-
-function updateVideoAnchors() {
-  const didPathChange = didPagePathnameChange()
-  if (!didVideoAnchorsMutate && !didPathChange) return videoAnchors.length
-
-  if (didPathChange) {
-    didVideoAnchorsMutate = true
-    videoAnchorIndex = -1
-  }
-
+function getVideoAnchors() {
   updateVideoAnchorIndexAborts.forEach((abortController) => abortController.abort())
   updateVideoAnchorIndexAborts = []
 
-  videoAnchors = document.querySelectorAll('ytd-page-manager > :not([hidden=""]) a:is(.ytd-compact-video-renderer, .ytd-grid-video-renderer, .ytd-grid-playlist-renderer, #video-title, #video-title-link)')
-  // If no videoAnchors, keep didVideoAnchorsMutate true (maybe they haven't been scrolled to yet)
-  if (!videoAnchors.length) return videoAnchors.length
-  didVideoAnchorsMutate = false
+  videoAnchors = document.querySelectorAll(`ytd-page-manager > :not([hidden=""]) a:is(
+.ytd-compact-video-renderer,
+.ytd-compact-playlist-renderer,
+.ytd-grid-video-renderer,
+.ytd-grid-playlist-renderer,
+.yt-simple-endpoint.ytd-playlist-renderer,
+.yt-simple-endpoint.ytd-radio-renderer,
+.yt-simple-endpoint.ytd-compact-radio-renderer,
+#video-title,
+#video-title-link
+)`)
+  // This query still sometimes queries invisible elements
+  videoAnchors = [...videoAnchors.values()].filter((videoAnchor) => videoAnchor.offsetParent)
 
   videoAnchorsPanels = []
   videoAnchors.forEach((videoAnchor) => {
     let currentParent = videoAnchor
     for (let i = 0; i < 10; i++) {
       currentParent = currentParent.parentElement
-      if (currentParent.id === 'dismissible' || currentParent.tagName === 'YTD-GRID-PLAYLIST-RENDERER') break
+      if (
+        currentParent.id === 'dismissible' ||
+        currentParent.tagName === 'YTD-GRID-PLAYLIST-RENDERER' ||
+        currentParent.tagName === 'YTD-RADIO-RENDERER'
+      ) break
     }
     videoAnchorsPanels.push(currentParent)
   })
-
-  // Setup updates on mutations
-  setupVideoAnchorsMutations()
 
   videoAnchors.forEach((videoAnchor, index) => {
     const abortController = new AbortController()
@@ -198,9 +239,33 @@ function updateVideoAnchors() {
     updateVideoAnchorIndexAborts.push(abortController)
   })
 
-  return videoAnchors.length
+  return videoAnchors
 }
 
+function updateVideoAnchors() {
+  const didPathChange = didPageHrefChange()
+  const lastVideoAnchorsLength = videoAnchors.length
+  const lastVideoAnchorVisible = videoAnchors[0]?.offsetParent
+  if (!didPathChange && lastVideoAnchorsLength !== 0 && lastVideoAnchorVisible) return videoAnchors.length
+  // Bellow only runs if we need to setup new mutation observer
+
+  const videoAnchorsLength = getVideoAnchors().length
+  if (!videoAnchorsLength) return videoAnchorsLength
+
+  videoAnchorIndex = -1
+  const isResultsPage = window.location.pathname === '/results'
+  setupVideoAnchorsMutations(isResultsPage)
+  if (isResultsPage) {
+    // Only for initial results, not all of them may be loaded yet
+    setupVideoAnchorsMutationsOnResultsPage()
+  }
+
+  return videoAnchorsLength
+}
+
+// This needs to account for fixed headers, sometimes there are more than 1 fixed header (on the home page there are video categories header)
+// TODO make this value dynamic
+let videoAnchorPanelScrollHeight = 120
 function scrollToVideoAnchorPanel(videoAnchorPanel) {
   const rect = videoAnchorPanel.getBoundingClientRect()
   window.scrollBy(0, rect.top - videoAnchorPanelScrollHeight)

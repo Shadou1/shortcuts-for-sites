@@ -1,32 +1,16 @@
-let homeAnchor = null
-let followingAnchor = null
-let browseAnchor = null
-
-// all inconsistent
-let settingsButton = null
-let qualityButton = null
-let streamGameAnchor = null
-let streamInformationSection = null
-
-let channelAnchor = null
-let videosAnchor = null
-let scheduleAnchor = null
-
-let chatTextarea = null
-let collapseLeftNavButton = null
-let collapseChatButton = null
-
-let expandMiniPlayerButton = null
-let closeMiniPlayerButton = null
-
-let pathnameStartsWith, pathnameEndsWith
-import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
-  ({ pathnameStartsWith, pathnameEndsWith } = result)
-})
-
-let whenElementMutatesQuery
-import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
-  ({ whenElementMutatesQuery } = result)
+let pathnameStartsWith, pathnameEndsWith, didHrefChange
+let whenElementMutates, whenElementMutatesQuery
+let didPageHrefChange
+// TODO use bundler to import these functions with 'import {} from'
+Promise.all([
+  import(browser.runtime.getURL('utils/locationUtils.js')),
+  import(browser.runtime.getURL('utils/mutationUtils.js')),
+]).then(([locationUtils, mutationUtils]) => {
+  ({ pathnameStartsWith, pathnameEndsWith, didHrefChange } = locationUtils);
+  ({ whenElementMutates, whenElementMutatesQuery } = mutationUtils)
+  didPageHrefChange = didHrefChange()
+  // Relevant anchors won't be loaded when this function is called
+  // updateRelevantAnchors()
 })
 
 let focusFirstChannel,
@@ -48,8 +32,9 @@ import(browser.runtime.getURL('shortcuts/twitch/utils.js')).then((result) => {
 
 export const shortcuts = new Map()
 
+let collapseLeftNavButton = null
 shortcuts.set('expandLeftSidebar', {
-  category: 'General',
+  category: 'Sidebar',
   defaultKey: 'E',
   description: 'Expand/collapse left sidebar',
   event: () => {
@@ -60,7 +45,7 @@ shortcuts.set('expandLeftSidebar', {
 })
 
 shortcuts.set('focusFollowedChannels', {
-  category: 'General',
+  category: 'Sidebar',
   defaultKey: 'u',
   description: 'Focus followed channels',
   event: () => {
@@ -71,7 +56,7 @@ shortcuts.set('focusFollowedChannels', {
 })
 
 shortcuts.set('focusRecommendedChannels', {
-  category: 'General',
+  category: 'Sidebar',
   defaultKey: 'r',
   description: 'Focus recommended channels',
   event: () => {
@@ -81,8 +66,197 @@ shortcuts.set('focusRecommendedChannels', {
   }
 })
 
+let relevantAnchors = []
+let showMoreRelevantButtons = []
+let relevantAnchorIndex = -1
+let relevantAnchorScrollHeight = 120
+let relevantAnchorScrollHeightHomePageAdjustment = 100
+let isOnHomePage // Scroll height on channel pages must be adjusted
+let scrollAndFocusCurrentRelevantAnchor
+let updateRelevantAnchorsAborts = []
+function updateRelevantAnchorIndex(toIndex) {
+  return function () {
+    relevantAnchorIndex = toIndex
+  }
+}
+
+// Should get streams, videos, clips, categories
+function getRelevantAnchors() {
+  updateRelevantAnchorsAborts.forEach((abortController) => abortController.abort())
+  updateRelevantAnchorsAborts = []
+
+  const twTowersAndShowMoreButtons = document.querySelectorAll(':is([data-test-selector="view-all"], .tw-tower, .show-more__move-up button)')
+
+  showMoreRelevantButtons = []
+  let relevantAnchorsParents = []
+  for (let i = 0; i < twTowersAndShowMoreButtons.length; i++) {
+    const currentTower = twTowersAndShowMoreButtons[i]
+    if (!currentTower.classList.contains('tw-tower')) continue
+
+    let showMoreButton
+    if (twTowersAndShowMoreButtons[i - 1]?.tagName === 'H5') {
+      showMoreButton = twTowersAndShowMoreButtons[i - 1]
+    } else if (twTowersAndShowMoreButtons[i + 1]?.tagName === 'BUTTON') {
+      showMoreButton = twTowersAndShowMoreButtons[i + 1]
+    }
+    // Page will not have new showMore buttons when towers mutate
+    // However it is necessary to push new references to showMoreRelevantButtons when new relevantAnchors are added
+    currentTower.querySelectorAll(':is(article, .game-card)').forEach((relevantParent) => {
+      if (!relevantParent.offsetParent) return
+      showMoreRelevantButtons.push(showMoreButton)
+      relevantAnchorsParents.push(relevantParent)
+    })
+  }
+  // console.log('showMoreButtons', showMoreRelevantButtons)
+
+  // Selectors in order:
+  // streams, categories, clips and videos
+  relevantAnchors = []
+  relevantAnchorsParents.forEach((relevantAnchorParent) => relevantAnchors.push(relevantAnchorParent.querySelector(`:is(
+    a.tw-link[data-test-selector="TitleAndChannel"],
+    [data-test-selector="tw-card-title"] a.tw-link,
+    a.tw-link[lines]
+  )`)))
+  // console.log('relevantAnchors', relevantAnchors)
+
+  const rootScrollContentElement = relevantAnchorsParents[0]?.closest('.simplebar-scroll-content')
+  scrollAndFocusCurrentRelevantAnchor = () => {
+    const scrollHeight = isOnHomePage ? relevantAnchorScrollHeight + relevantAnchorScrollHeightHomePageAdjustment : relevantAnchorScrollHeight
+    const rect = relevantAnchorsParents[relevantAnchorIndex].getBoundingClientRect()
+    rootScrollContentElement.scrollBy(0, rect.top - scrollHeight)
+    relevantAnchors[relevantAnchorIndex].focus()
+  }
+
+  relevantAnchors.forEach((relevantAnchor, index) => {
+    const abortController = new AbortController()
+    relevantAnchor.addEventListener('focus', updateRelevantAnchorIndex(index), { signal: abortController.signal })
+    updateRelevantAnchorsAborts.push(abortController)
+  })
+
+  return relevantAnchors
+}
+
+// const placeholders = document.querySelectorAll(`:not(.game-card) > :is(
+//   .tw-card,
+//   [class*="TowerPlaceholder"]
+// )`)
+
+let mutationObservers = []
+let lastMutationTimeout
+let mutationWaitTimeMs = 100
+function setupRelevantAnchorsMutations() {
+  // .tw-tower elements have all the relevant anchors and anchors that can become visible later
+  const twTowers = document.querySelectorAll('.tw-tower')
+
+  mutationObservers.forEach((observer) => observer.disconnect())
+  twTowers.forEach((tower) => {
+    const mutationObserver = whenElementMutates(tower, (_mutations, _observer) => {
+      if (!tower.offsetParent) return
+
+      let didAddNodes = false
+      outer: for (let mutation of _mutations) {
+        if (mutation.addedNodes.length) {
+          didAddNodes = true
+          break outer
+        }
+      }
+      if (!didAddNodes) return
+
+      clearTimeout(lastMutationTimeout)
+      lastMutationTimeout = setTimeout(() => {
+        getRelevantAnchors()
+      }, mutationWaitTimeMs)
+    }, { childList: true })
+    mutationObservers.push(mutationObserver)
+  })
+}
+
+function updateRelevantAnchors() {
+  const didPathChange = didPageHrefChange()
+  const lastRelevantAnchorsLength = relevantAnchors.length
+  const lastRelevantAnchorVisible = relevantAnchors[0]?.offsetParent
+  if (!didPathChange && lastRelevantAnchorsLength !== 0 && lastRelevantAnchorVisible) return relevantAnchors.length
+  // Bellow only runs if we need to setup new mutation observer
+
+  const relevantAnchorsLength = getRelevantAnchors().length
+  if (!relevantAnchorsLength) return relevantAnchorsLength
+
+  isOnHomePage = document.querySelector('.home-header-sticky')
+
+  relevantAnchorIndex = -1
+  setupRelevantAnchorsMutations()
+
+  return relevantAnchorsLength
+}
+
+shortcuts.set('focusNextRelevant', {
+  category: 'Relevant content (stream, video...)',
+  defaultKey: ']',
+  description: 'Focus next relevant',
+  isAvailable: () => updateRelevantAnchors(),
+  event: () => {
+    const prevIndex = relevantAnchorIndex
+    relevantAnchorIndex = Math.min(relevantAnchorIndex + 1, relevantAnchors.length - 1)
+    if (relevantAnchorIndex === prevIndex) return
+    scrollAndFocusCurrentRelevantAnchor()
+  }
+})
+
+shortcuts.set('focusPreviousRelevant', {
+  category: 'Relevant content (stream, video...)',
+  defaultKey: '[',
+  description: 'Focus previous relevant',
+  isAvailable: () => updateRelevantAnchors(),
+  event: () => {
+    const prevIndex = relevantAnchorIndex
+    relevantAnchorIndex = Math.max(relevantAnchorIndex - 1, 0)
+    if (relevantAnchorIndex === prevIndex) return
+    scrollAndFocusCurrentRelevantAnchor()
+  }
+})
+
+shortcuts.set('focusFirstRelevant', {
+  category: 'Relevant content (stream, video...)',
+  defaultKey: '{',
+  description: 'Focus first relevant',
+  isAvailable: () => updateRelevantAnchors(),
+  event: () => {
+    if (relevantAnchorIndex === 0) return
+    relevantAnchorIndex = 0
+    scrollAndFocusCurrentRelevantAnchor()
+  }
+})
+
+shortcuts.set('focusLastRelevant', {
+  category: 'Relevant content (stream, video...)',
+  defaultKey: '}',
+  description: 'Focus last relevant',
+  isAvailable: () => updateRelevantAnchors(),
+  event: () => {
+    if (relevantAnchorIndex === relevantAnchors.length - 1) return
+    relevantAnchorIndex = relevantAnchors.length - 1
+    scrollAndFocusCurrentRelevantAnchor()
+  }
+})
+
+shortcuts.set('showMoreViewAll', {
+  category: 'Relevant content (stream, video...)',
+  defaultKey: '\\',
+  description: 'Show more / all',
+  isAvailable: () => showMoreRelevantButtons[relevantAnchorIndex],
+  event: () => {
+    showMoreRelevantButtons[relevantAnchorIndex].click()
+  }
+})
+
+// TODO on home page, add shortcuts to press right/left arrows, or handle them somehow
+
+let homeAnchor = null
+let followingAnchor = null
+let browseAnchor = null
+
 shortcuts.set('goToHome', {
-  category: 'General',
+  category: 'Navigation',
   defaultKey: 'o',
   description: 'Go to home',
   event: () => {
@@ -97,7 +271,7 @@ shortcuts.set('goToHome', {
 })
 
 shortcuts.set('goToFollowing', {
-  category: 'General',
+  category: 'Navigation',
   defaultKey: 'U',
   description: 'Go to following',
   event: () => {
@@ -112,7 +286,7 @@ shortcuts.set('goToFollowing', {
 })
 
 shortcuts.set('goToCategories', {
-  category: 'General',
+  category: 'Navigation',
   defaultKey: 'b',
   description: 'Browse categories',
   event: () => {
@@ -133,7 +307,7 @@ shortcuts.set('goToCategories', {
 })
 
 shortcuts.set('goToLiveChannels', {
-  category: 'General',
+  category: 'Navigation',
   defaultKey: 'B',
   description: 'Browse live channels',
   event: () => {
@@ -150,6 +324,12 @@ shortcuts.set('goToLiveChannels', {
     }
   }
 })
+
+// all inconsistent
+let settingsButton = null
+let qualityButton = null
+let streamGameAnchor = null
+let streamInformationSection = null
 
 shortcuts.set('openVideoSettings', {
   category: 'Stream',
@@ -188,6 +368,7 @@ shortcuts.set('openVideoQualitySettings', {
   }
 })
 
+// TODO make it also go to currenly selected relevant anchor stream category
 shortcuts.set('goToStreamCategory', {
   category: 'Stream',
   defaultKey: 'C',
@@ -230,6 +411,9 @@ shortcuts.set('scrollToStreamDescription', {
   }
 })
 
+let chatTextarea = null
+let collapseChatButton = null
+
 shortcuts.set('focusChatBox', {
   category: 'Chat',
   defaultKey: 'c',
@@ -256,6 +440,10 @@ shortcuts.set('expandChat', {
   }
 })
 
+let channelAnchor = null
+let videosAnchor = null
+let scheduleAnchor = null
+
 shortcuts.set('goToOfflineChannel', {
   category: 'Channel',
   defaultKey: 'h',
@@ -273,6 +461,7 @@ shortcuts.set('goToOfflineChannel', {
   }
 })
 
+// TODO when window.location.search is not null, make it go back to just /videos
 shortcuts.set('goToChannelVideos', {
   category: 'Channel',
   defaultKey: 'v',
@@ -323,6 +512,11 @@ shortcuts.set('goToChannelSchedule', {
     }
   }
 })
+
+// TODO add filter by shortcuts
+
+let expandMiniPlayerButton = null
+let closeMiniPlayerButton = null
 
 shortcuts.set('expandMiniPlayer', {
   category: 'Mini player',

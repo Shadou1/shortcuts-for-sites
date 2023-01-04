@@ -23,6 +23,9 @@ Todo:
   ✔ Come up with better structure for shortcuts @done(22-12-17 16:08)
   ✔ Make init.js file load shortcuts.js files according to a matched location instead of separate init[site].js files @critical @done(22-12-18 16:38)
   ✔ For shotrcuts that can't have cached elements and have isAvailable function, elements will often be queried two times @done(22-12-21 16:01)
+  ☐ Logic for mutation observers is done with too many outer scope variables and is hard to follow
+  ☐ Use Element.closest() instead of manually traversing elements' parents @high
+  ☐ Figure out if querying elelemnts in a 'query element -> query elements of that element -> ...' manner is slower than 1 querySelectorAll query @low
 
   ☐ Write tests?
 
@@ -47,13 +50,16 @@ Todo:
     ☐ Volume up/down shortcuts (in addition to standard up/down arrows)
     ☐ Fast forward/rewind shortcuts (in addition to standard 'j'/'l' keys)
     ✔ Show progress bar shortcut @done(22-08-18 13:34)
-    ☐ Add go to next / previous video shortcuts (maybe)
+    ✔ Add go to next / previous video shortcuts (maybe) @done(23-01-05 01:34)
 
     ✔ Shortcuts work in all video players (not only on the /watch pages) @done(22-12-07 13:22)
     ✔ When going to channel videos/playlists from /watch page and channel home has an autoplay video, this video will start autoplaying in the background incorrectly (sometimes) @done(22-12-03 14:23)
     ✔ Improve isAvailable functions @done(22-12-21 16:00)
     ✘ Re-query null elements only when window.location.pathname changed (? maybe won't work) @cancelled(22-12-21 15:28) won't work when going from page to another page and then back to the first page without checking for pathname change on second page
     ☐ When page mutates, go to next/previous video and other focusing shortcuts are unresponsive (normal tabbing is also unresponsive)
+    ✔ Rarely, when going back to /results page from any other page, go to next/previous video shortcuts stop working properly @done(22-12-29 22:41) (fix videoAnchors query returning invisible elements)
+    ☐ Pages other than /results also have video anchors in different parents (home page, subscriptions page) and if only 1 such parent is loaded (which seems to only happen on /results pages but one time it has happened on /home page) when updateVideoAnchors() is run, the mutation observer will be set up incorrectly (it will only observe this first not common parent) @critical
+    ☐ Add go to focused video channel
 
     ☐ Maybe include 'all_frames' into manifest.json content_scripts so that shortcuts also work in iframes(chat)
 
@@ -69,8 +75,8 @@ Todo:
     ✔ Go to next/previous search result doesn't work on film pages @done(22-12-23 15:20)
     ☐ Related searches (not suggested) are separated from all search results
 
-    ☐ Since google search pages are not dynamic, maybe don't need to write logic to update searchResults arrays when query changes
-    ☐ When page mutates, add newely added anchors to the searchResultsAnchors instead of querying all anchors again
+    ✔ Since google search pages are not dynamic, maybe don't need to write logic to update searchResults arrays when query changes @done(22-12-29 23:23)
+    ✘ When page mutates, add newely added anchors to the searchResultsAnchors instead of querying all anchors again @cancelled(22-12-29 23:23)
 
   Google Translate:
     ☐ Show/hide shortcuts also scroll to their corresponding div
@@ -79,6 +85,9 @@ Todo:
     ☐ Add predictions and other chat action shortcuts
     ✔ Add isAvailable functions @done(22-12-21 19:11)
     ☐ Maybe add checks for ?.offsetParent before requerying elements (won't work if elements are still incorrectly visible)
+    ✔ Add go to next/previous relevant anchor @done(23-01-05 01:34)
+    ☐ Make showMoreViewAll shortcut use stored elements instead of querying every time
+    ☐ Add go to focused relevant anchor channel and category (for streams)
 
   Reddit:
     ✔ Add Reddit shortcuts @done(22-12-10 23:55)

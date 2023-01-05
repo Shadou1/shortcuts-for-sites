@@ -13,17 +13,11 @@ Promise.all([
   // updateRelevantAnchors()
 })
 
-let focusFirstChannel,
-  focusFirstVideoOnQueryType,
-  focusFirstCategory,
-  navigateToLiveChannels,
+let navigateToLiveChannels,
   navigateToVideos,
   navigateToSchedule
 import(browser.runtime.getURL('shortcuts/twitch/utils.js')).then((result) => {
   ({
-    focusFirstChannel,
-    focusFirstVideoOnQueryType,
-    focusFirstCategory,
     navigateToLiveChannels,
     navigateToVideos,
     navigateToSchedule,
@@ -260,13 +254,9 @@ shortcuts.set('goToHome', {
   defaultKey: 'o',
   description: 'Go to home',
   event: () => {
-    if (window.location.pathname !== '/') {
-      homeAnchor = homeAnchor || document.querySelector('a[data-a-target="home-link"]')
-      homeAnchor?.click()
-      whenElementMutatesQuery('main', focusFirstVideoOnQueryType('home'))
-    } else {
-      focusFirstVideoOnQueryType('home')()
-    }
+    if (window.location.pathname === '/') return
+    homeAnchor = homeAnchor || document.querySelector('a[data-a-target="home-link"]')
+    homeAnchor?.click()
   }
 })
 
@@ -275,13 +265,9 @@ shortcuts.set('goToFollowing', {
   defaultKey: 'U',
   description: 'Go to following',
   event: () => {
-    if (!pathnameEndsWith('/following')) {
-      followingAnchor = followingAnchor || document.querySelector('a[data-a-target="following-link"]')
-      followingAnchor?.click()
-      whenElementMutatesQuery('main', focusFirstVideoOnQueryType('following'))
-    } else {
-      focusFirstVideoOnQueryType('following')()
-    }
+    if (pathnameEndsWith('/following')) return
+    followingAnchor = followingAnchor || document.querySelector('a[data-a-target="following-link"]')
+    followingAnchor?.click()
   }
 })
 
@@ -293,15 +279,9 @@ shortcuts.set('goToCategories', {
     if (pathnameEndsWith('/directory/all')) {
       const categoriesAnchor = document.querySelector('a[data-a-target="browse-type-tab-categories"]')
       categoriesAnchor?.click()
-      // Sometimes it does not mutate and callback will execute wrongly
-      const isFocused = focusFirstCategory()
-      if (!isFocused) whenElementMutatesQuery('main', focusFirstCategory)
     } else if (!pathnameEndsWith('/directory')) {
       browseAnchor = browseAnchor || document.querySelector('a[data-a-target="browse-link"]')
       browseAnchor?.click()
-      whenElementMutatesQuery('main', focusFirstCategory)
-    } else {
-      focusFirstCategory()
     }
   }
 })
@@ -311,16 +291,13 @@ shortcuts.set('goToLiveChannels', {
   defaultKey: 'B',
   description: 'Browse live channels',
   event: () => {
-    if (!pathnameEndsWith('/directory/all')) {
-      if (pathnameEndsWith('/directory')) {
-        navigateToLiveChannels()
-      } else {
-        browseAnchor = browseAnchor || document.querySelector('a[data-a-target="browse-link"]')
-        browseAnchor?.click()
-        whenElementMutatesQuery('main', navigateToLiveChannels)
-      }
+    if (pathnameEndsWith('/directory/all')) return
+    if (pathnameEndsWith('/directory')) {
+      navigateToLiveChannels()
     } else {
-      focusFirstVideoOnQueryType('browse')()
+      browseAnchor = browseAnchor || document.querySelector('a[data-a-target="browse-link"]')
+      browseAnchor?.click()
+      whenElementMutatesQuery('main', navigateToLiveChannels)
     }
   }
 })
@@ -380,13 +357,7 @@ shortcuts.set('goToStreamCategory', {
     return streamGameAnchor?.offsetParent
   },
   event: () => {
-    if (pathnameStartsWith('/directory/game')) {
-      focusFirstChannel()
-      return
-    }
-
     streamGameAnchor.click()
-    whenElementMutatesQuery('main', focusFirstChannel)
   }
 })
 
@@ -453,11 +424,7 @@ shortcuts.set('goToOfflineChannel', {
     return channelAnchor?.offsetParent
   },
   event: () => {
-    const offlineSection = document.querySelector('#offline-channel-main-content')
     channelAnchor.click()
-    if (!offlineSection) {
-      whenElementMutatesQuery('main', focusFirstVideoOnQueryType('channel home'))
-    }
   }
 })
 
@@ -474,13 +441,8 @@ shortcuts.set('goToChannelVideos', {
   },
   event: () => {
     if (videosAnchor) {
-      if (pathnameEndsWith('/videos')) {
-        const firstVideo = document.querySelector('[data-test-selector="preview-card-carousel-child-container"] a')
-        firstVideo.focus()
-      } else {
-        videosAnchor.click()
-        whenElementMutatesQuery('main', focusFirstVideoOnQueryType('channel video'))
-      }
+      if (pathnameEndsWith('/videos')) return
+      videosAnchor.click()
     } else {
       channelAnchor.click()
       whenElementMutatesQuery('main', navigateToVideos)

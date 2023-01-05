@@ -26,6 +26,7 @@ Todo:
   ☐ Logic for mutation observers is done with too many outer scope variables and is hard to follow
   ☐ Use Element.closest() instead of manually traversing elements' parents @high
   ☐ Figure out if querying elelemnts in a 'query element -> query elements of that element -> ...' manner is slower than 1 querySelectorAll query @low
+  ☐ When shortcut event clicks a tab, maybe also focus that tab
 
   ☐ Write tests?
 

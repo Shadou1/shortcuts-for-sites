@@ -3,11 +3,32 @@ import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
   ({ pathnameStartsWith } = result)
 })
 
-let whenElementMutatesQuery
-import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
-  ({ whenElementMutatesQuery } = result)
-})
+export function navigateToLiveChannels(mutations, observer) {
+  const liveChannelsAnchor = document.querySelector('a[data-a-target="browse-type-tab-live-channels"]')
+  if (!liveChannelsAnchor) return
 
+  observer?.disconnect()
+  liveChannelsAnchor.click()
+}
+
+export function navigateToVideos(mutations, observer) {
+  const videosAnchor = document.querySelector('a[tabname="videos"]')
+  if (!videosAnchor) return
+
+  observer.disconnect()
+  videosAnchor.click()
+}
+
+export function navigateToSchedule(mutations, observer) {
+  const scheduleAnchor = document.querySelector('a[tabname="schedule"]')
+  if (!scheduleAnchor) return
+
+  observer.disconnect()
+  scheduleAnchor.click()
+  scheduleAnchor.focus()
+}
+
+// These are now obsolete since focus next/previous first/last relevant shortcuts are available
 export function focusFirstChannel(mutations, observer) {
   if (!pathnameStartsWith('/directory')) return
 
@@ -68,38 +89,4 @@ export function focusFirstCategory(mutations, observer) {
   observer?.disconnect()
   categoryAnchor.focus()
   return categoryAnchor
-}
-
-export function navigateToLiveChannels(mutations, observer) {
-
-  const liveChannelsAnchor = document.querySelector('a[data-a-target="browse-type-tab-live-channels"]')
-  if (!liveChannelsAnchor) return
-
-  observer?.disconnect()
-  liveChannelsAnchor.click()
-
-  // Sometimes it does not mutate and callback will execute wrongly
-  const isFocused = focusFirstVideoOnQueryType('browse')()
-  if (!isFocused) {
-    whenElementMutatesQuery('main', focusFirstVideoOnQueryType('browse'))
-  }
-}
-
-export function navigateToVideos(mutations, observer) {
-  const videosAnchor = document.querySelector('a[tabname="videos"]')
-  if (!videosAnchor) return
-
-  observer.disconnect()
-  videosAnchor.click()
-
-  whenElementMutatesQuery('main', focusFirstVideo)
-}
-
-export function navigateToSchedule(mutations, observer) {
-  const scheduleAnchor = document.querySelector('a[tabname="schedule"]')
-  if (!scheduleAnchor) return
-
-  observer.disconnect()
-  scheduleAnchor.click()
-  scheduleAnchor.focus()
 }

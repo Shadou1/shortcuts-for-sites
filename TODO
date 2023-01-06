@@ -24,9 +24,10 @@ Todo:
   ✔ Make init.js file load shortcuts.js files according to a matched location instead of separate init[site].js files @critical @done(22-12-18 16:38)
   ✔ For shotrcuts that can't have cached elements and have isAvailable function, elements will often be queried two times @done(22-12-21 16:01)
   ☐ Logic for mutation observers is done with too many outer scope variables and is hard to follow
-  ☐ Use Element.closest() instead of manually traversing elements' parents @high
+  ✔ Use Element.closest() instead of manually traversing elements' parents @high @done(23-01-06 21:59)
   ☐ Figure out if querying elelemnts in a 'query element -> query elements of that element -> ...' manner is slower than 1 querySelectorAll query @low
   ☐ When shortcut event clicks a tab, maybe also focus that tab
+  ☐ When shortcut focuses and element and its innerText is truncated, find a way to somehow display this text fully (maybe in a custom element)
 
   ☐ Write tests?
 
@@ -45,6 +46,7 @@ Todo:
     ☐ Show colliding hotkeys
 
     ☐ Allow user to configure scroll offset (when scrolling to an anchor for example)
+    ☐ Allow user to configure settings other than shortcut keys
 
   Youtube:
     ✘ Keep reference to queried elements, but also update them when page content/location changes @cancelled(22-08-31 16:50)
@@ -61,6 +63,7 @@ Todo:
     ✔ Rarely, when going back to /results page from any other page, go to next/previous video shortcuts stop working properly @done(22-12-29 22:41) (fix videoAnchors query returning invisible elements)
     ☐ Pages other than /results also have video anchors in different parents (home page, subscriptions page) and if only 1 such parent is loaded (which seems to only happen on /results pages but one time it has happened on /home page) when updateVideoAnchors() is run, the mutation observer will be set up incorrectly (it will only observe this first not common parent) @critical
     ☐ Add go to focused video channel
+    ☐ Add start playing focused video (as if hovering mouse over it), make this a toggleable option
 
     ☐ Maybe include 'all_frames' into manifest.json content_scripts so that shortcuts also work in iframes(chat)
 

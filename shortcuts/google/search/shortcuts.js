@@ -1,6 +1,6 @@
-let whenElementMutates
+let whenElementMutates, findCommonParent
 import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
-  ({ whenElementMutates } = result)
+  ({ whenElementMutates, findCommonParent } = result)
   // On document_idle
   updateSearchResults()
 })
@@ -79,29 +79,12 @@ function updateSearchSuggestedIndex(toIndex) {
 
 let lastMutationTimeout
 const mutationWaitTimeMs = 100
-// Static MutationObserver, because google pages are not dynamic (redirect causes page reload)
 function setupImageMutations() {
-  const firstElementParents = []
-  let currentFirstElementParent = searchResultsAnchors[0].parentElement
-  while (currentFirstElementParent) {
-    firstElementParents.unshift(currentFirstElementParent)
-    currentFirstElementParent = currentFirstElementParent.parentElement
-  }
   // Look for the second element and not the last one like on Youtube
   // Because last element when new image results are added is incorrect before scrolling to it
-  const lastElementParents = []
-  let currentLastElementParent = searchResultsAnchors[1].parentElement
-  while (currentLastElementParent) {
-    lastElementParents.unshift(currentLastElementParent)
-    currentLastElementParent = currentLastElementParent.parentElement
-  }
+  const commonParent = findCommonParent(searchResultsAnchors[0], searchResultsAnchors[1])
 
-  let commonParent = lastElementParents[0]
-  for (let i = 1; i < lastElementParents.length; i++) {
-    if (firstElementParents[i] !== lastElementParents[i]) break
-    commonParent = lastElementParents[i]
-  }
-
+  // Static MutationObserver, because google pages are not dynamic (redirect causes page reload)
   whenElementMutates(commonParent, (_mutations, _observer) => {
     clearTimeout(lastMutationTimeout)
     lastMutationTimeout = setTimeout(() => {

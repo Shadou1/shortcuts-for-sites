@@ -1,5 +1,5 @@
 let pathnameStartsWith, pathnameEndsWith, didHrefChange
-let whenElementMutates, whenElementMutatesQuery
+let whenElementMutates, whenElementMutatesQuery, findCommonParent
 let didPageHrefChange
 // TODO use bundler to import these functions with 'import {} from'
 Promise.all([
@@ -7,7 +7,7 @@ Promise.all([
   import(browser.runtime.getURL('utils/mutationUtils.js')),
 ]).then(([locationUtils, mutationUtils]) => {
   ({ pathnameStartsWith, pathnameEndsWith, didHrefChange } = locationUtils);
-  ({ whenElementMutates, whenElementMutatesQuery } = mutationUtils)
+  ({ whenElementMutates, whenElementMutatesQuery, findCommonParent } = mutationUtils)
   didPageHrefChange = didHrefChange()
   // On document_idle
   updateVideoAnchors()
@@ -111,32 +111,14 @@ let lastMutationTimeout
 // TODO maybe this can be reduced
 const mutationWaitTimeMs = 150
 function setupVideoAnchorsMutations(isResultsPage) {
-  // Find the common parent to watch for mutations on
-  // This is the lowest common ancestor
-  const firstElementParents = []
-  let currentFirstElementParent = videoAnchorsPanels[0].parentElement
-  while (currentFirstElementParent) {
-    firstElementParents.unshift(currentFirstElementParent)
-    currentFirstElementParent = currentFirstElementParent.parentElement
-  }
-  const lastElementParents = []
-  let currentLastElementParent = videoAnchorsPanels[videoAnchors.length - 1].parentElement
-  while (currentLastElementParent) {
-    lastElementParents.unshift(currentLastElementParent)
-    currentLastElementParent = currentLastElementParent.parentElement
-  }
-
-  let commonParent = lastElementParents[0]
-  for (let i = 1; i < lastElementParents.length; i++) {
-    if (firstElementParents[i] !== lastElementParents[i]) break
-    commonParent = lastElementParents[i]
-  }
-  videoAnchorsCommonParent = commonParent
+  videoAnchorsCommonParent = findCommonParent(videoAnchorsPanels[0], videoAnchorsPanels[videoAnchors.length - 1])
 
   // On /results pages, common parent is commonParent's parent's parent
   if (isResultsPage && videoAnchorsCommonParent.classList.contains('ytd-item-section-renderer')) {
     videoAnchorsCommonParent = videoAnchorsCommonParent.parentElement.parentElement
   }
+
+  // console.log('common parent', videoAnchorsCommonParent)
 
   // If setting up new mutation observer, the last one should be disconnected
   mutationObserver?.disconnect()
@@ -206,31 +188,28 @@ function getVideoAnchors() {
   updateVideoAnchorIndexAborts = []
 
   videoAnchors = document.querySelectorAll(`ytd-page-manager > :not([hidden=""]) a:is(
-.ytd-compact-video-renderer,
-.ytd-compact-playlist-renderer,
-.ytd-grid-video-renderer,
-.ytd-grid-playlist-renderer,
-.yt-simple-endpoint.ytd-playlist-renderer,
-.yt-simple-endpoint.ytd-radio-renderer,
-.yt-simple-endpoint.ytd-compact-radio-renderer,
-#video-title,
-#video-title-link
-)`)
+    .ytd-compact-video-renderer,
+    .ytd-compact-playlist-renderer,
+    .ytd-grid-video-renderer,
+    .ytd-grid-playlist-renderer,
+    .yt-simple-endpoint.ytd-playlist-renderer,
+    .yt-simple-endpoint.ytd-radio-renderer,
+    .yt-simple-endpoint.ytd-compact-radio-renderer,
+    #video-title,
+    #video-title-link
+  )`)
   // This query still sometimes queries invisible elements
   videoAnchors = [...videoAnchors.values()].filter((videoAnchor) => videoAnchor.offsetParent)
 
   videoAnchorsPanels = []
   videoAnchors.forEach((videoAnchor) => {
-    let currentParent = videoAnchor
-    for (let i = 0; i < 10; i++) {
-      currentParent = currentParent.parentElement
-      if (
-        currentParent.id === 'dismissible' ||
-        currentParent.tagName === 'YTD-GRID-PLAYLIST-RENDERER' ||
-        currentParent.tagName === 'YTD-RADIO-RENDERER'
-      ) break
-    }
-    videoAnchorsPanels.push(currentParent)
+    const videoAnchorPanel = videoAnchor.closest(`:is(
+      #dismissible,
+      ytd-grid-playlist-renderer,
+      ytd-playlist-renderer,
+      ytd-radio-renderer
+    )`)
+    videoAnchorsPanels.push(videoAnchorPanel)
   })
 
   videoAnchors.forEach((videoAnchor, index) => {

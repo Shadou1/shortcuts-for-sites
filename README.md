@@ -137,7 +137,7 @@ Extension loads [content script](/content-scripts/init.js) into sites that it ha
 | <kbd>[</kbd> | Focus previous relevant |
 | <kbd>{</kbd> | Focus first relevant |
 | <kbd>}</kbd> | Focus last relevant |
-| <kbd>\</kbd> | Show more / all |
+| <kbd>\\</kbd> | Show more / all |
 | **Navigation** |
 | <kbd>o</kbd> | Go to home |
 | <kbd>U</kbd> (<kbd>Shift</kbd>+<kbd>u</kbd>) | Go to following |

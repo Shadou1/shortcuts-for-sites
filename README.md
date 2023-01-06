@@ -17,7 +17,7 @@ Navigating websites without touching your mouse can be difficult. Although there
 
 ## Popup
 
-![Popup preview](https://user-images.githubusercontent.com/33831256/204445402-21559bcb-7879-4de0-a006-10e476159da7.png)
+![Popup preview](https://user-images.githubusercontent.com/33831256/211046239-27a33466-e62f-4711-91f2-44d9a613e2e6.png)
 
 ## Demonstration
 

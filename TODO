@@ -3,31 +3,32 @@ Todo:
   ✘ Auto update manifest.json when new sites are added @cancelled(22-08-11 19:25)
   ✘ Check if module exists before loading it, if possible @cancelled(22-05-29 12:22)
   ✔ Do not query elements in shortcuts.js if user is on the wrong page @done(22-05-27 10:44)
+  ✔ Redraw icons as svg @done(22-08-22 18:46)
   ☐ Bundle code to be able to use export/import in content scripts
   ✘ Shortcuts that navigate to a new page should accept an optional 'Ctrl' key to instead open the page in a new tab @cancelled(22-08-30 19:14)
   ☐ Add runtime.onInstalled (install and update)
-  ☐ Logic in Google Search 'searchResultIndex' and Youtube 'videoAnchorIndex' is similar
+  ☐ Force browser to draw focus outline when shortcut focuses something as if it was tabbed to with 'tab' @low (can it be done?)
+  ✔ Come up with better structure for shortcuts @done(22-12-17 16:08)
+  ✔ Make init.js file load shortcuts.js files according to a matched location instead of separate init[site].js files @critical @done(22-12-18 16:38)
+  ✔ For shotrcuts that can't have cached elements and have isAvailable function, elements will often be queried two times @done(22-12-21 16:01)
+  ✔ Use Element.closest() instead of manually traversing elements' parents @high @done(23-01-06 21:59)
+  ☐ Figure out if querying elements in a 'query element -> query elements of that element -> ...' manner is slower than 1 querySelectorAll query @low
+  ☐ When shortcut event clicks a tab, maybe also focus that tab (add an option)
+  ☐ When shortcut focuses an element and its innerText is truncated, find a way to somehow display this text fully (maybe in a custom element)
 
   ✔ Shortcuts with Ctrl, Alt collide with regular keys in object keys @done(22-08-30 19:14)
   ☐ Add being able to use shortcuts when active element is accepting input
   ☐ Correctly handle shortcut keys which are more that 1 character in length ('Escape')
-
   ☐ Shortcuts will only work in english keyboard locale
 
-  ✔ Redraw icons as svg @done(22-08-22 18:46)
-
   ✔ When shortcut navigates to new page, figure out how to query not yet rendered elements (await for element to appear / mutation observer) @done(22-08-30 19:15)
-  ☐ Force browser to draw focus outline when shortcut focuses something as if it was tabbed to with 'tab' @low (can it be done?)
   ☐ Mutation observers will stay in background if callback didn't disconnect (happens if it didn't find the queried element) @high
-
-  ✔ Come up with better structure for shortcuts @done(22-12-17 16:08)
-  ✔ Make init.js file load shortcuts.js files according to a matched location instead of separate init[site].js files @critical @done(22-12-18 16:38)
-  ✔ For shotrcuts that can't have cached elements and have isAvailable function, elements will often be queried two times @done(22-12-21 16:01)
   ☐ Logic for mutation observers is done with too many outer scope variables and is hard to follow
-  ✔ Use Element.closest() instead of manually traversing elements' parents @high @done(23-01-06 21:59)
-  ☐ Figure out if querying elelemnts in a 'query element -> query elements of that element -> ...' manner is slower than 1 querySelectorAll query @low
-  ☐ When shortcut event clicks a tab, maybe also focus that tab
-  ☐ When shortcut focuses and element and its innerText is truncated, find a way to somehow display this text fully (maybe in a custom element)
+
+  ✔ Ask user for additional permissions for Google domains, instead of requesting all of them in manifest.json @critical @done(23-01-09 11:44)
+  ☐ Rewrite README.md
+  ☐ Logic in Google Search 'searchResultIndex' and Youtube 'videoAnchorIndex' is similar
+  ☐ Extension can import() resources without exposing them in web_accessible_resources, figure out if it's safe to omit them
 
   ☐ Write tests?
 
@@ -43,10 +44,12 @@ Todo:
   Options:
     ✔ Extension options page @done(22-12-17 15:18)
     ☐ Show if shortcut key is uppercase (Shift+key)
-    ☐ Show colliding hotkeys
+    ✔ Show colliding keys @done(23-01-10 05:40)
 
+    ✔ Allow user to configure settings other than shortcut keys @done(23-01-10 05:40)
     ☐ Allow user to configure scroll offset (when scrolling to an anchor for example)
-    ☐ Allow user to configure settings other than shortcut keys
+    ☐ Add aria-selected styles to tabs
+    ☐ Split options.js into separate files
 
   Youtube:
     ✘ Keep reference to queried elements, but also update them when page content/location changes @cancelled(22-08-31 16:50)

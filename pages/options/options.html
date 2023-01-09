@@ -13,15 +13,55 @@
   <main>
     <header>
       <h1>Shortcuts Settings</h1>
-      <button id="save-settings-button" aria-label="save-settings">Save</button>
     </header>
-    <menu role="tablist" aria-label="site-shortcuts">
+
+    <menu id="menu-options" role="tablist" aria-label="options">
+      <button id="save-settings-button" aria-label="save settings">Save settings 💾</button>
+      <li>
+        <button id="tab-settings" role="tab" aria-controls="panel-settings" class="browser-style" aria-selected="true" tabindex="0">Settings</button>
+      </li>
+      <li>
+        <button id="tab-site-shortcuts" role="tab" aria-controls="panel-site-shortcuts" class="browser-style" aria-selected="false" tabindex="-1">Shortcuts</button>
+      </li>
     </menu>
+
+    <article id="panel-settings" role="tabpanel" aria-labelledby="tab-settings" tabindex="0">
+      <section>
+        <fieldset class="browser-style">
+          <legend>Domains</legend>
+          <input id="google-run-on-all-domains" type="checkbox"/>
+          <label for="google-run-on-all-domains">
+            Allow add-on to run on all Google domains
+            <span id="help-google-domains" class="tip" aria-describedby="tooltip-google-domains" tabindex="0">?</span>
+            <p id="tooltip-google-domains" class="tooltip" role="tooltip">
+              If you are using Google Search or Google Translate on domains other than <code>.com</code>,
+              enable this option.
+            </p>
+          </label>
+        </fieldset>
+        <fieldset class="browser-style">
+          <legend>Storage</legend>
+          <input id="clear-storage" type="button" value="Clear"/>
+          <label for="clear-storage">
+            Clear add-on storage
+            <span id="help-clear-storage" class="tip" aria-describedby="tooltip-clear-storage" tabindex="0">?</span>
+            <p id="tooltip-clear-storage" class="tooltip" role="tooltip">
+              This will reset all settings.
+            </p>
+          </label>
+        </fieldset>
+      </section>
+    </article>
+
+    <article id="panel-site-shortcuts" role="tabpanel" aria-labelledby="tab-site-shortcuts" tabindex="-1" hidden>
+      <menu id="menu-site-shortcuts" role="tablist" aria-label="site shortcuts">
+      </menu>
+    </article>
   </main>
 
   <template id="tab-template">
     <li>
-      <button class="browser-style" role="tab" aria-controls="panel" id="tab" aria-selected="false" tabindex="-1">Site</button>
+      <button class="browser-style" role="tab" aria-controls="panel" id="tab" aria-selected="false" tabindex="-1">Tab name</button>
     </li>
   </template>
 

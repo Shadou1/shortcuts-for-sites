@@ -1,44 +1,57 @@
+/* * {
+  box-sizing: border-box;
+} */
+
 body {
-  height: 1200px;
+  height: 1600px;
+  background-color: azure;
 }
 
 header {
-  padding: 0px 20px;
+  position: absolute;
+  padding: 10px 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   align-items: center;
+
+  display: none;
 }
 
-header > button {
+#save-settings-button {
+  position: absolute;
+  right: 0.5em;
+
   font-size: x-large;
   cursor: pointer;
-  border-radius: 10px;
+  border: none;
 }
 
 menu {
-  padding: 0px;
-  padding-left: 1em;
+  padding: 0px 0px 1em 1em;
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
 
   border-bottom: 1px solid grey;
 }
 
 menu > li {
-  margin-bottom: 10px;
+  margin-right: 10px;
   list-style-type: none;
-}
-
-main > h1 {
-  margin-left: 1em;
 }
 
 menu > li > button {
   margin: 0px;
-  margin-right: 10px;
+  height: min-content;
   font-size: large;
   border: none;
   cursor: pointer;
+}
+
+/* TODO */
+menu > li > button[aria-selected="true"] {
+  /* border-left: 1px solid grey; */
+  /* box-shadow: -1px 0px gray; */
 }
 
 fieldset {
@@ -48,6 +61,7 @@ fieldset {
 
   display: grid;
   grid-template-columns: max-content 1fr;
+  align-items: center;
   gap: 10px 20px;
 
   /* border-bottom: 1px solid gray; */
@@ -63,9 +77,53 @@ fieldset :is(label, input) {
   font-size: medium
 }
 
-fieldset input {
-  border: none;
-  border-bottom: 1px solid;
+fieldset input:is([type="checkbox"], [type="button"]) {
+  cursor: pointer;
+  border-width: 1px;
+  /* border: none; */
+  /* border-bottom: 1px solid; */
+}
+
+#panel-settings input:is([type="checkbox"], [type="button"]) {
+  min-width: 24px;
+  min-height: 24px;
+}
+
+#panel-settings label {
+  position: relative;
+}
+
+#panel-site-shortcuts input {
+  width: 100%;
+}
+
+.tip {
+  display: inline-block;
+  margin-left: 6px;
+  width: 19px;
+  height: 19px;
+  text-align: center  ;
+  background-color: rgba(150, 150, 150, 0.5);
+  border-radius: 9999px;
+  cursor: help;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 10px;
+  padding: 10px;
+  background-color: rgba(240, 255, 255, 0.9);
+  border-radius: 4px;
+  visibility: hidden;
+}
+
+[aria-describedby]:hover + [role="tooltip"],
+[aria-describedby]:focus + [role="tooltip"] {
+  visibility: visible;
+}
+
+.duplicate {
+  border-color: crimson;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -75,6 +133,10 @@ fieldset input {
   }
 
   menu {
+    border-color: azure;
+  }
+
+  menu > li > button[aria-selected="true"] {
     border-color: azure;
   }
 
@@ -89,6 +151,15 @@ fieldset input {
 
   input {
     color: white;
-    background-color: #202124;
+    background-color: rgb(32, 33, 36);
+  }
+
+  .tip {
+    background-color: rgba(100, 100, 100, 0.5);
+  }
+
+  .tooltip {
+    background-color: rgba(32, 33, 36, 0.9);
+    /* background-color: rgba(32, 33, 255, 0.9); */
   }
 }

@@ -82,3 +82,7 @@ browser.tabs.query({
   .then(handleShortcutsResponse)
   // .catch(clearPopupError)
   .catch(clearPopup)
+
+// DEBUG
+// browser.permissions.getAll().then((res) => console.log(res))
+// browser.storage.sync.get(null).then((res) => console.log(res))

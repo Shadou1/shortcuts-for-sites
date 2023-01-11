@@ -84,7 +84,7 @@ document.body.addEventListener('keydown', (event) => {
   isKeyboardFocused = true
 })
 
-const postScrollHeight = 150
+const postScrollHeight = 100
 const commentScrollHeight = 150
 document.body.addEventListener('focusin', (event) => {
   // Only work when j/k keys have been used

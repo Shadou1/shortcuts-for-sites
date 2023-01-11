@@ -258,7 +258,11 @@ document.querySelector('input#clear-storage').addEventListener('click', async (e
   document.querySelector('#panel-settings input#google-run-on-all-domains').checked = false
 
   await browser.storage.sync.clear()
-  document.querySelectorAll('#panel-site-shortcuts input').forEach((shortcutInput) => shortcutInput.value = '')
+  document.querySelectorAll('#panel-site-shortcuts input').forEach((shortcutInput) => {
+    shortcutInput.value = ''
+    // To update .duplicate classes
+    shortcutInput.dispatchEvent(new InputEvent('input'))
+  })
   e.target.value = 'Cleared ✅'
   setTimeout(() => e.target.value = 'Clear', 3000)
 })

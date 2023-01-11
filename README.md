@@ -15,6 +15,10 @@ Navigating websites without touching your mouse can be difficult. Although there
 - Press <kbd>Tab</kbd> once to force browser to draw focus outline.
 - On Reddit, without logging in shortcuts will work poorly. Also native <kbd>j</kbd>/<kbd>k</kbd> shortcuts will sometimes stop working, pressing <kbd>Tab</kbd> or reloading the page will usually get them working again.
 
+> __Note__
+>
+> If you are using Google Search or Google Translate on domains other than <code>.com</code>, enable ***allow add-on to run on all Google domains*** on add-on's options page.
+
 ## Popup
 
 ![Popup preview](https://user-images.githubusercontent.com/33831256/211046239-27a33466-e62f-4711-91f2-44d9a613e2e6.png)

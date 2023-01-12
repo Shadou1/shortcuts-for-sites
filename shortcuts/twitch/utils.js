@@ -1,7 +1,4 @@
-let pathnameStartsWith
-import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
-  ({ pathnameStartsWith } = result)
-})
+import { pathnameStartsWith } from '../../utils/locationUtils'
 
 export function navigateToLiveChannels(mutations, observer) {
   const liveChannelsAnchor = document.querySelector('a[data-a-target="browse-type-tab-live-channels"]')

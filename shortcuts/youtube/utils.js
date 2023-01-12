@@ -1,12 +1,5 @@
-let pathnameStartsWith, pathnameEndsWith
-import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
-  ({ pathnameStartsWith, pathnameEndsWith } = result)
-})
-
-let whenElementMutatesQuery
-import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
-  ({ whenElementMutatesQuery } = result)
-})
+import { pathnameStartsWith, pathnameEndsWith } from '../../utils/locationUtils'
+import { whenElementMutatesQuery } from '../../utils/mutationUtils'
 
 // Functions can be used as both callbacks for MutationObserver and as regular functions
 

@@ -1,11 +1,7 @@
-let didPagePathnameChange
-let didCommentsPageChange
-let pathnameMatches, didPathnameChange
-import(browser.runtime.getURL('utils/locationUtils.js')).then((result) => {
-  ({ pathnameMatches, didPathnameChange } = result)
-  didPagePathnameChange = didPathnameChange()
-  didCommentsPageChange = didPathnameChange()
-})
+import { pathnameMatches, didPathnameChange } from '../../utils/locationUtils'
+
+const didPagePathnameChange = didPathnameChange()
+const didCommentsPageChange = didPathnameChange()
 
 export const shortcuts = new Map()
 

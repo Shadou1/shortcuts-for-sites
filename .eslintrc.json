@@ -1,6 +1,7 @@
 {
   "env": {
     "browser": true,
+    "node": true,
     "webextensions": true,
     "es2021": true
   },
@@ -12,6 +13,9 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
+  "ignorePatterns": [
+    "dist/*"
+  ],
   "rules": {
     "no-unused-vars": [
       "error",

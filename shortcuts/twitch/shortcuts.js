@@ -1,28 +1,21 @@
-let pathnameStartsWith, pathnameEndsWith, didHrefChange
-let whenElementMutates, whenElementMutatesQuery
-let didPageHrefChange
-// TODO use bundler to import these functions with 'import {} from'
-Promise.all([
-  import(browser.runtime.getURL('utils/locationUtils.js')),
-  import(browser.runtime.getURL('utils/mutationUtils.js')),
-]).then(([locationUtils, mutationUtils]) => {
-  ({ pathnameStartsWith, pathnameEndsWith, didHrefChange } = locationUtils);
-  ({ whenElementMutates, whenElementMutatesQuery } = mutationUtils)
-  didPageHrefChange = didHrefChange()
-  // Relevant anchors won't be loaded when this function is called
-  // updateRelevantAnchors()
-})
+import {
+  pathnameStartsWith,
+  pathnameEndsWith,
+  didHrefChange,
+} from '../../utils/locationUtils'
 
-let navigateToLiveChannels,
+import {
+  whenElementMutates,
+  whenElementMutatesQuery,
+} from '../../utils/mutationUtils'
+
+import {
+  navigateToLiveChannels,
   navigateToVideos,
-  navigateToSchedule
-import(browser.runtime.getURL('shortcuts/twitch/utils.js')).then((result) => {
-  ({
-    navigateToLiveChannels,
-    navigateToVideos,
-    navigateToSchedule,
-  } = result)
-})
+  navigateToSchedule,
+} from './utils'
+
+const didPageHrefChange = didHrefChange()
 
 export const shortcuts = new Map()
 

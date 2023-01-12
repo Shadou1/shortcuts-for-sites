@@ -1,3 +1,7 @@
+import { siteMatches } from '../shortcuts/siteMatches'
+
+console.log('running init')
+
 let isShortcutsAvailable = false
 
 const _shortcutsForSites = {
@@ -63,12 +67,14 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Import matching shortcuts
 async function importShortcuts() {
-  const { siteMatches } = await import(browser.runtime.getURL('shortcuts/siteMatches.js'))
-
   for (const [site, { hostnameMatch, path, hasNativeShortcuts }] of Object.entries(siteMatches)) {
     if (!window.location.hostname.match(hostnameMatch)) continue
 
-    const { shortcuts } = await import(browser.runtime.getURL(path))
+    const { shortcuts } = await import(
+      /* webpackMode: "eager" */
+      /* webpackInclude: /shortcuts\.js$/ */
+      `/shortcuts/${path}`
+    )
     shortcutsForSites.site = site
     shortcutsForSites.shortcuts = shortcuts
     shortcutsForSites.hasNativeShortcuts = hasNativeShortcuts

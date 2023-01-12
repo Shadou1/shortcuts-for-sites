@@ -1,9 +1,4 @@
-let whenElementMutates, findCommonParent
-import(browser.runtime.getURL('utils/mutationUtils.js')).then((result) => {
-  ({ whenElementMutates, findCommonParent } = result)
-  // On document_idle
-  updateSearchResults()
-})
+import { whenElementMutates, findCommonParent } from '../../../utils/mutationUtils'
 
 export const shortcuts = new Map()
 
@@ -189,6 +184,9 @@ function updateSearchResults() {
 
   return searchResultsAnchorsLength
 }
+
+// On document_idle
+updateSearchResults()
 
 const searchResultScrollLength = 250
 

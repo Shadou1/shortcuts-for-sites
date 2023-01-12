@@ -1,6 +1,8 @@
 /* eslint-disable no-case-declarations */
+import { extraGoogleDomains } from '../utils/extraDomains'
 
-let extraGoogleDomains
+console.log('background is running')
+
 let registeredGoogleDomainsContentScript
 browser.runtime.onMessage.addListener(async (message, sender) => {
 
@@ -42,7 +44,6 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 (async () => {
   // On add-on load
   // Google Domains
-  ({ extraGoogleDomains } = await import(browser.runtime.getURL('utils/extraDomains.js')))
   if (registeredGoogleDomainsContentScript) return
   const isAllowed = await browser.permissions.contains({
     origins: extraGoogleDomains

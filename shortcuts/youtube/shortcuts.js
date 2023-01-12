@@ -1,36 +1,26 @@
-let pathnameStartsWith, pathnameEndsWith, didHrefChange
-let whenElementMutates, whenElementMutatesQuery, findCommonParent
-let didPageHrefChange
-// TODO use bundler to import these functions with 'import {} from'
-Promise.all([
-  import(browser.runtime.getURL('utils/locationUtils.js')),
-  import(browser.runtime.getURL('utils/mutationUtils.js')),
-]).then(([locationUtils, mutationUtils]) => {
-  ({ pathnameStartsWith, pathnameEndsWith, didHrefChange } = locationUtils);
-  ({ whenElementMutates, whenElementMutatesQuery, findCommonParent } = mutationUtils)
-  didPageHrefChange = didHrefChange()
-  // On document_idle
-  updateVideoAnchors()
-})
+import {
+  pathnameStartsWith,
+  pathnameEndsWith,
+  didHrefChange
+} from '../../utils/locationUtils'
 
-let goToVideosTab,
+import {
+  whenElementMutates,
+  whenElementMutatesQuery,
+  findCommonParent
+} from '../../utils/mutationUtils'
+
+import {
   goToPlaylistsTab,
   focusFirstPlaylist,
   goToHome,
   goToSubscriptions,
+  goToVideosTab,
   expandAndFocusFirstSubscription,
   focusFirstSubscription
-import(browser.runtime.getURL('shortcuts/youtube/utils.js')).then((result) => {
-  ({
-    goToVideosTab,
-    goToPlaylistsTab,
-    focusFirstPlaylist,
-    goToHome,
-    goToSubscriptions,
-    expandAndFocusFirstSubscription,
-    focusFirstSubscription
-  } = result)
-})
+} from './utils'
+
+const didPageHrefChange = didHrefChange()
 
 export const shortcuts = new Map()
 
@@ -241,6 +231,12 @@ function updateVideoAnchors() {
 
   return videoAnchorsLength
 }
+
+// On document_idle
+// Rarely, on document_idle not all anchors are loaded yet (for pages other than /results)
+// So just let user update video anchors when they use a corresponding shortcut
+// This way tabbing to anchors and then using a shortcut will reset anchor index to 0,
+// updateVideoAnchors()
 
 // This needs to account for fixed headers, sometimes there are more than 1 fixed header (on the home page there are video categories header)
 // TODO make this value dynamic

@@ -1,3 +1,6 @@
+import { siteMatches } from '../../shortcuts/siteMatches'
+import { extraGoogleDomains } from '../../utils/extraDomains'
+
 const saveButton = document.querySelector('#save-settings-button')
 
 // These are not saved in browser.storage.sync
@@ -5,8 +8,6 @@ const specialSettings = [
   'google-run-on-all-domains',
   'clear-storage'
 ]
-
-let extraGoogleDomains
 
 // TODO rewrite this
 async function loadSettings() {
@@ -98,7 +99,11 @@ async function populateSiteShortcuts(panelSiteShortcuts, pathToShortcuts, tabId)
   siteShortcutsPanelsForms.push(form)
 
   const shortcutsStorage = await browser.storage.sync.get(tabId)
-  const { shortcuts } = await import(browser.runtime.getURL(pathToShortcuts))
+  const { shortcuts } = await import(
+    /* webpackMode: "eager" */
+    /* webpackInclude: /shortcuts\.js$/ */
+    `/shortcuts/${pathToShortcuts}`
+  )
 
   const inputs = []
   let lastCategory = null
@@ -137,7 +142,6 @@ async function populateSiteShortcuts(panelSiteShortcuts, pathToShortcuts, tabId)
 async function populateAllSiteShortcuts() {
   const panelSiteShortcuts = document.querySelector('#panel-site-shortcuts')
   const menuSiteShortcuts = document.querySelector('menu#menu-site-shortcuts')
-  const { siteMatches } = await import(browser.runtime.getURL('shortcuts/siteMatches.js'))
   for (const [site, { path }] of Object.entries(siteMatches)) {
     const tabId = site
 
@@ -217,7 +221,6 @@ function addTabsAccessability(tablist) {
 }
 
 (async () => {
-  ({ extraGoogleDomains } = await import(browser.runtime.getURL('utils/extraDomains.js')))
   await loadSettings()
   await populateAllSiteShortcuts()
   selectFirstSiteShortcutsTab()

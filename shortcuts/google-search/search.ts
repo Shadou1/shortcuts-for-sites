@@ -1,91 +1,29 @@
-import { whenElementMutates, findCommonParent } from '../../../utils/mutationUtils'
+import { whenElementMutates, findCommonParent } from '../../utils/mutationUtils'
+import { ShortcutsCategory } from '../Shortcuts'
 
-export const shortcuts = new Map()
+const category = new ShortcutsCategory('Search', 'Navigate search results')
+export default category
 
-let allResultsAnchor = document.querySelector('a[href*="source=lmns"]:not([href*="tbm"]), a[href*="source=lnms"]:not([href*="tbm"])')
-let imageAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=isch"]')
-let videoAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=vid"]')
-let newsAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=nws"]')
+// Get results and setup updating indexes on tabbing
 
-shortcuts.set('goToAll', {
-  category: 'Navigation',
-  defaultKey: 'a',
-  description: 'Go to all search results',
-  event: () => {
-    allResultsAnchor?.click()
-  }
-})
-
-shortcuts.set('goToImages', {
-  category: 'Navigation',
-  defaultKey: 'i',
-  description: 'Go to images',
-  event: () => {
-    if (!imageAnchor) imageAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=isch"]')
-    if (!imageAnchor.offsetParent) return
-    imageAnchor?.click()
-  }
-})
-
-shortcuts.set('goToVideos', {
-  category: 'Navigation',
-  defaultKey: 'v',
-  description: 'Go to videos',
-  event: () => {
-    if (!videoAnchor) videoAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=vid"]')
-    if (!videoAnchor.offsetParent) return
-    videoAnchor?.click()
-  }
-})
-
-shortcuts.set('goToNews', {
-  category: 'Navigation',
-  defaultKey: 'n',
-  description: 'Go to news',
-  event: () => {
-    if (!newsAnchor) newsAnchor = document.querySelector(':is(#top_nav, div[data-tn="0"]) a[href*="tbm=nws"]')
-    if (!newsAnchor.offsetParent) return
-    newsAnchor?.click()
-  }
-})
-
-let searchResultsDivs = []
-let searchResultsDivsAdditional = []
-let searchResultsAnchors = []
+let searchResultsAnchors: HTMLAnchorElement[] = []
 let searchResultIndex = -1
 
-let searchSuggestedAnchors = []
+let searchSuggestedAnchors: HTMLAnchorElement[] = []
 let searchSuggestedIndex = -1
 
-let updateSearchResultIndexAborts = []
-let updateSearchSuggestedIndexAborts = []
-
-function updateSearchResultIndex(toIndex) {
+let updateSearchResultIndexAborts: AbortController[] = []
+function updateSearchResultIndex(toIndex: number) {
   return function () {
     searchResultIndex = toIndex
   }
 }
 
-function updateSearchSuggestedIndex(toIndex) {
+let updateSearchSuggestedIndexAborts: AbortController[] = []
+function updateSearchSuggestedIndex(toIndex: number) {
   return function () {
     searchSuggestedIndex = toIndex
   }
-}
-
-let lastMutationTimeout
-const mutationWaitTimeMs = 100
-function setupImageMutations() {
-  // Look for the second element and not the last one like on Youtube
-  // Because last element when new image results are added is incorrect before scrolling to it
-  const commonParent = findCommonParent(searchResultsAnchors[0], searchResultsAnchors[1])
-
-  // Static MutationObserver, because google pages are not dynamic (redirect causes page reload)
-  whenElementMutates(commonParent, (_mutations, _observer) => {
-    clearTimeout(lastMutationTimeout)
-    lastMutationTimeout = setTimeout(() => {
-      getSearchResults()
-    }, mutationWaitTimeMs)
-  }, { childList: true })
 }
 
 function getSearchResults() {
@@ -96,6 +34,9 @@ function getSearchResults() {
 
   const urlSearchParams = new URLSearchParams(window.location.search)
   const queryType = urlSearchParams.get('tbm')
+
+  let searchResultsDivs: NodeListOf<HTMLElement>
+  let searchResultsDivsAdditional: NodeListOf<HTMLElement> | null = null
 
   // Populate search results
   // all search, news, videos
@@ -114,13 +55,18 @@ function getSearchResults() {
         break
     }
 
-    for (let i = 0; i < searchResultsDivsAdditional.length; i++) {
-      const resultAnchor = searchResultsDivsAdditional[i].querySelector('a')
-      if (resultAnchor?.offsetParent) searchResultsAnchors.push(resultAnchor)
+    // Populate search results
+    searchResultsAnchors = []
+
+    if (searchResultsDivsAdditional) {
+      for (const additionalSearchResult of searchResultsDivsAdditional) {
+        const resultAnchor = additionalSearchResult.querySelector('a')
+        if (resultAnchor?.offsetParent) searchResultsAnchors.push(resultAnchor)
+
+      }
     }
 
-    // Populate search results
-    let workingDivs
+    let workingDivs: NodeListOf<HTMLElement>
     if (searchResultsDivs.length === 1) {
       // Special all search page (like movie page)
       workingDivs = searchResultsDivs[0].querySelectorAll(':is([aria-hidden="false"], :not([aria-hidden="hidden"])) [role="tabpanel"] #kp-wp-tab-overview > div')
@@ -128,14 +74,14 @@ function getSearchResults() {
       workingDivs = searchResultsDivs
     }
 
-    for (let i = 0; i < workingDivs.length; i++) {
-      const resultAnchor = workingDivs[i].querySelector('a')
+    for (const workingDiv of workingDivs) {
+      const resultAnchor = workingDiv.querySelector('a')
       if (resultAnchor?.offsetParent) searchResultsAnchors.push(resultAnchor)
     }
 
     // Populate search suggested
     searchSuggestedAnchors = []
-    const searchSuggestedAnchorsAll = document.querySelectorAll('a[data-xbu="true"]')
+    const searchSuggestedAnchorsAll = document.querySelectorAll<HTMLAnchorElement>('a[data-xbu="true"]')
     searchSuggestedAnchorsAll.forEach((suggestedAnchor) => {
       if (suggestedAnchor.offsetParent) {
         searchSuggestedAnchors.push(suggestedAnchor)
@@ -144,12 +90,13 @@ function getSearchResults() {
 
   } else if (queryType === 'isch') {
     // Populate image results
-    searchResultsAnchors = document.querySelectorAll('#islmp[role="main"] a[tabindex="0"]')
+    searchResultsAnchors = [...document.querySelectorAll<HTMLAnchorElement>('#islmp[role="main"] a[tabindex="0"]')]
 
     // Populate suggested image searches
-    searchSuggestedAnchors = document.querySelectorAll('scrolling-carousel a[href*="tbm=isch"]')
+    searchSuggestedAnchors = [...document.querySelectorAll<HTMLAnchorElement>('scrolling-carousel a[href*="tbm=isch"]')]
   }
 
+  // Setup updating indexes on tabbing
   searchResultsAnchors.forEach((searchResult, index) => {
     const abortController = new AbortController()
     searchResult.addEventListener('focus', updateSearchResultIndex(index), { signal: abortController.signal })
@@ -163,6 +110,24 @@ function getSearchResults() {
   })
 
   return searchResultsAnchors
+}
+
+// Setup mutations on images page
+
+let lastMutationTimeout: ReturnType<typeof setTimeout>
+const mutationWaitTimeMs = 100
+function setupImageMutations() {
+  // Look for the second element and not the last one like on Youtube
+  // Because last element when new image results are added is incorrect before scrolling to it
+  const commonParent = findCommonParent(searchResultsAnchors[0], searchResultsAnchors[1])
+
+  // Static MutationObserver, because google pages are not dynamic (redirect causes page reload)
+  whenElementMutates(commonParent, (_mutations, _observer) => {
+    clearTimeout(lastMutationTimeout)
+    lastMutationTimeout = setTimeout(() => {
+      getSearchResults()
+    }, mutationWaitTimeMs)
+  }, { childList: true })
 }
 
 let isMutationsSetup = false
@@ -190,13 +155,12 @@ updateSearchResults()
 
 const searchResultScrollLength = 250
 
-shortcuts.set('nextSearchResult', {
-  category: 'Search',
+category.shortcuts.set('nextSearchResult', {
   defaultKey: 'j',
   description: 'Focus next search result / image',
   isAvailable: () => updateSearchResults(),
   event: () => {
-    let lastIndex = searchResultIndex
+    const lastIndex = searchResultIndex
     searchResultIndex = Math.min(searchResultIndex + 1, searchResultsAnchors.length - 1)
     if (searchResultIndex === lastIndex) return
 
@@ -208,13 +172,12 @@ shortcuts.set('nextSearchResult', {
   }
 })
 
-shortcuts.set('previousSearchResult', {
-  category: 'Search',
+category.shortcuts.set('previousSearchResult', {
   defaultKey: 'k',
   description: 'Focus previous search result / image',
   isAvailable: () => updateSearchResults(),
   event: () => {
-    let lastIndex = searchResultIndex
+    const lastIndex = searchResultIndex
     searchResultIndex = Math.max(searchResultIndex - 1, 0)
     if (searchResultIndex === lastIndex) return
 
@@ -226,8 +189,7 @@ shortcuts.set('previousSearchResult', {
   }
 })
 
-shortcuts.set('firstSearchResult', {
-  category: 'Search',
+category.shortcuts.set('firstSearchResult', {
   defaultKey: 'K',
   description: 'Focus first search result / image',
   isAvailable: () => updateSearchResults(),
@@ -243,8 +205,7 @@ shortcuts.set('firstSearchResult', {
   }
 })
 
-shortcuts.set('lastSearchResult', {
-  category: 'Search',
+category.shortcuts.set('lastSearchResult', {
   defaultKey: 'J',
   description: 'Focus last search result / image',
   isAvailable: () => updateSearchResults(),
@@ -260,11 +221,10 @@ shortcuts.set('lastSearchResult', {
   }
 })
 
-const nextPageAnchor = document.querySelector('a#pnnext')
-const previousPageAnchor = document.querySelector('a#pnprev')
+const nextPageAnchor = document.querySelector<HTMLAnchorElement>('a#pnnext')
+const previousPageAnchor = document.querySelector<HTMLAnchorElement>('a#pnprev')
 
-shortcuts.set('nextSearchPage', {
-  category: 'Search',
+category.shortcuts.set('nextSearchPage', {
   defaultKey: ']',
   description: 'Go to next search page',
   isAvailable: () => nextPageAnchor,
@@ -273,8 +233,7 @@ shortcuts.set('nextSearchPage', {
   }
 })
 
-shortcuts.set('previousSearchPage', {
-  category: 'Search',
+category.shortcuts.set('previousSearchPage', {
   defaultKey: '[',
   description: 'Go to previous search page',
   isAvailable: () => previousPageAnchor,
@@ -283,8 +242,7 @@ shortcuts.set('previousSearchPage', {
   }
 })
 
-shortcuts.set('nextSuggestedSearch', {
-  category: 'Search',
+category.shortcuts.set('nextSuggestedSearch', {
   defaultKey: 'o',
   description: 'Focus next suggested search',
   isAvailable: () => updateSearchResults(),

@@ -8,19 +8,19 @@ export default {
 
   entry: {
     'init': {
-      import: './content-scripts/init.js',
+      import: './content-scripts/init.ts',
       filename: './content-scripts/init.js',
     },
     'background': {
-      import: './background-scripts/background.js',
+      import: './background-scripts/background.ts',
       filename: './background-scripts/background.js'
     },
     'browser-action': {
-      import: './pages/browser-action/default.js',
+      import: './pages/browser-action/default.ts',
       filename: './pages/browser-action/default.js',
     },
     'options': {
-      import: './pages/options/options.js',
+      import: './pages/options/options.ts',
       filename: './pages/options/options.js',
     },
   },
@@ -32,11 +32,11 @@ export default {
 
   module: {
     rules: [
-      // {
-      //   test: /\.tsx?$/,
-      //   use: 'ts-loader',
-      //   exclude: /node_modules/,
-      // },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
     ],
   },
 
@@ -53,6 +53,10 @@ export default {
       firefoxProfile: 'Sha Dou'
     }),
   ],
+
+  experiments: {
+    topLevelAwait: true
+  },
 
   resolve: {
     extensions: ['.ts', '.js'],

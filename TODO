@@ -15,6 +15,7 @@ Todo:
   ☐ Figure out if querying elements in a 'query element -> query elements of that element -> ...' manner is slower than 1 querySelectorAll query @low
   ☐ When shortcut event clicks a tab, maybe also focus that tab (add an option)
   ☐ When shortcut focuses an element and its innerText is truncated, find a way to somehow display this text fully (maybe in a custom element)
+  ☐ Using isAvailable function to check if some elements are not null will not tell typescript about those elements, so have to use non-null assertion
 
   ✔ Shortcuts with Ctrl, Alt collide with regular keys in object keys @done(22-08-30 19:14)
   ☐ Add being able to use shortcuts when active element is accepting input
@@ -49,7 +50,7 @@ Todo:
     ✔ Allow user to configure settings other than shortcut keys @done(23-01-10 05:40)
     ☐ Allow user to configure scroll offset (when scrolling to an anchor for example)
     ☐ Add aria-selected styles to tabs
-    ☐ Split options.js into separate files
+    ✔ Split options.js into separate files @done(23-01-16 12:38)
 
   Youtube:
     ✘ Keep reference to queried elements, but also update them when page content/location changes @cancelled(22-08-31 16:50)

@@ -1,17 +1,18 @@
-export function whenElementMutatesQuery(targetQuery, callback, options = { childList: true, subtree: true }) {
+export function whenElementMutatesQuery(targetQuery: string, callback: MutationCallback, options: MutationObserverInit = { childList: true, subtree: true }) {
   const content = document.querySelector(targetQuery)
+  if (!content) return
   const observer = new MutationObserver(callback)
   observer.observe(content, options)
   return observer
 }
 
-export function whenElementMutates(element, callback, options = { childList: true, subtree: true }) {
+export function whenElementMutates(element: HTMLElement, callback: MutationCallback, options: MutationObserverInit = { childList: true, subtree: true }) {
   const observer = new MutationObserver(callback)
   observer.observe(element, options)
   return observer
 }
 
-export function findCommonParent(element1, element2) {
+export function findCommonParent(element1: HTMLElement, element2: HTMLElement) {
   // Find the lowest common ancestor
   const element1Parents = []
   let element1CurrentParent = element1.parentElement

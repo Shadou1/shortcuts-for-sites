@@ -1,43 +1,43 @@
 import { pathnameStartsWith } from '../../utils/locationUtils'
 
-export function navigateToLiveChannels(mutations, observer) {
-  const liveChannelsAnchor = document.querySelector('a[data-a-target="browse-type-tab-live-channels"]')
+export function navigateToLiveChannels(mutations?: MutationRecord[], observer?: MutationObserver) {
+  const liveChannelsAnchor = document.querySelector<HTMLElement>('a[data-a-target="browse-type-tab-live-channels"]')
   if (!liveChannelsAnchor) return
 
   observer?.disconnect()
   liveChannelsAnchor.click()
 }
 
-export function navigateToVideos(mutations, observer) {
-  const videosAnchor = document.querySelector('a[tabname="videos"]')
+export function navigateToVideos(mutations?: MutationRecord[], observer?: MutationObserver) {
+  const videosAnchor = document.querySelector<HTMLElement>('a[tabname="videos"]')
   if (!videosAnchor) return
 
-  observer.disconnect()
+  observer?.disconnect()
   videosAnchor.click()
 }
 
-export function navigateToSchedule(mutations, observer) {
-  const scheduleAnchor = document.querySelector('a[tabname="schedule"]')
+export function navigateToSchedule(mutations?: MutationRecord[], observer?: MutationObserver) {
+  const scheduleAnchor = document.querySelector<HTMLElement>('a[tabname="schedule"]')
   if (!scheduleAnchor) return
 
-  observer.disconnect()
+  observer?.disconnect()
   scheduleAnchor.click()
   scheduleAnchor.focus()
 }
 
 // These are now obsolete since focus next/previous first/last relevant shortcuts are available
-export function focusFirstChannel(mutations, observer) {
+export function focusFirstChannel(mutations?: MutationRecord[], observer?: MutationObserver) {
   if (!pathnameStartsWith('/directory')) return
 
-  const channelAnchor = document.querySelector('a[data-a-target="preview-card-channel-link"]')
+  const channelAnchor = document.querySelector<HTMLElement>('a[data-a-target="preview-card-channel-link"]')
   if (!channelAnchor) return
 
   observer?.disconnect()
   channelAnchor.focus()
 }
 
-export function focusFirstVideo(mutations, observer) {
-  const firstVideo = document.querySelector(`:is(
+export function focusFirstVideo(mutations?: MutationRecord[], observer?: MutationObserver) {
+  const firstVideo = document.querySelector<HTMLElement>(`:is(
 [data-test-selector="preview-card-carousel-child-container"] a,
 #offline-channel-main-content article a,
 #front-page-main-content a[data-a-target="preview-card-channel-link"],
@@ -49,9 +49,9 @@ export function focusFirstVideo(mutations, observer) {
   firstVideo.focus()
 }
 
-export function focusFirstVideoOnQueryType(type) {
-  return function (mutations, observer) {
-    let firstVideo
+export function focusFirstVideoOnQueryType(type: string) {
+  return function (mutations?: MutationRecord[], observer?: MutationObserver) {
+    let firstVideo: HTMLElement | null = null
     switch (type) {
       case 'channel video':
         firstVideo = document.querySelector('[data-test-selector="preview-card-carousel-child-container"] a')
@@ -79,8 +79,8 @@ export function focusFirstVideoOnQueryType(type) {
   }
 }
 
-export function focusFirstCategory(mutations, observer) {
-  const categoryAnchor = document.querySelector('#browse-root-main-content [data-target="directory-first-item"] a[data-a-target="card-0"]')
+export function focusFirstCategory(mutations?: MutationRecord[], observer?: MutationObserver) {
+  const categoryAnchor = document.querySelector<HTMLElement>('#browse-root-main-content [data-target="directory-first-item"] a[data-a-target="card-0"]')
   if (!categoryAnchor) return
 
   observer?.disconnect()

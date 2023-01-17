@@ -47,7 +47,7 @@ export default {
       patterns: [
         { from: './manifest.json', to: '.' },
         { from: './pages/*/*.(html|css)', to: '.' },
-        { from: './icons/*', to: '.' },
+        { from: './icons/browser-action-*', to: '.' },
         { from: './LICENSE', to: '.' },
       ],
     }),

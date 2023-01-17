@@ -48,7 +48,7 @@ menu > li > button {
   cursor: pointer;
 }
 
-/* TODO */
+/* TODO tab selected styles */
 menu > li > button[aria-selected="true"] {
   /* border-left: 1px solid grey; */
   /* box-shadow: -1px 0px gray; */

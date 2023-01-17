@@ -59,26 +59,6 @@
     }
   ],
 
-  "web_accessible_resources": [
-    "shortcuts/siteMatches.js",
-
-    "shortcuts/google/search/shortcuts.js",
-
-    "shortcuts/google/translate/shortcuts.js",
-
-    "shortcuts/youtube/shortcuts.js",
-    "shortcuts/youtube/utils.js",
-
-    "shortcuts/twitch/shortcuts.js",
-    "shortcuts/twitch/utils.js",
-
-    "shortcuts/reddit/shortcuts.js",
-
-    "utils/locationUtils.js",
-    "utils/mutationUtils.js",
-    "utils/extraDomains.js"
-  ],
-
   "optional_permissions": [
     "https://www.google.ad/search*",
     "https://www.google.ae/search*",

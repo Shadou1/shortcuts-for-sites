@@ -19,7 +19,6 @@ category.shortcuts.set('goToOfflineChannel', {
   }
 })
 
-// TODO when window.location.search is not null, make it go back to just /videos
 let videosAnchor: HTMLAnchorElement | null
 category.shortcuts.set('goToChannelVideos', {
   defaultKey: 'v',
@@ -32,7 +31,7 @@ category.shortcuts.set('goToChannelVideos', {
   },
   event: () => {
     if (videosAnchor) {
-      if (pathnameEndsWith('/videos')) return
+      if (pathnameEndsWith('/videos') && !window.location.search) return
       videosAnchor.click()
     } else {
       channelAnchor!.click()
@@ -65,5 +64,3 @@ category.shortcuts.set('goToChannelSchedule', {
     }
   }
 })
-
-// TODO add filter by shortcuts

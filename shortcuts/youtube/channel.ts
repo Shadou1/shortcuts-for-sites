@@ -13,12 +13,16 @@ export default category
 category.shortcuts.set('goToChannelHome', {
   defaultKey: 'h',
   description: 'Go to channel home',
-  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
+  isAvailable: () => {
+    if (pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user')) return true
+    // NOTE this will cause a false positive if youtube uses #tabsContainer anywhere besides channel page
+    if (document.querySelector('#tabsContainer')) return true
+  },
   event: () => {
     if (pathnameStartsWith('/watch')) {
       const channelLink = document.querySelector<HTMLAnchorElement>('a.ytd-video-owner-renderer')!
       channelLink.click()
-    } else {
+    } else if (!pathnameEndsWith('/featured')) {
       // if (!pathnameEndsWith('/videos', '/shorts', '/streams', '/playlists', '/community', '/channels', '/about'))
       const homeTab = document.querySelector<HTMLAnchorElement>('#tabsContainer tp-yt-paper-tab:nth-of-type(1)')!
       homeTab.click()
@@ -29,7 +33,10 @@ category.shortcuts.set('goToChannelHome', {
 category.shortcuts.set('goToChannelVideos', {
   defaultKey: 'v',
   description: 'Go to channel videos',
-  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
+  isAvailable: () => {
+    if (pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user')) return true
+    if (document.querySelector('#tabsContainer')) return true
+  },
   event: () => {
     if (pathnameStartsWith('/watch')) {
       const channelLink = document.querySelector<HTMLAnchorElement>('a.ytd-video-owner-renderer')!
@@ -47,7 +54,10 @@ category.shortcuts.set('goToChannelVideos', {
 category.shortcuts.set('goToChannelPlaylists', {
   defaultKey: 'p',
   description: 'Go to channel playlists',
-  isAvailable: () => pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user'),
+  isAvailable: () => {
+    if (pathnameStartsWith('/watch', '/@', '/channel', '/c', '/user')) return true
+    if (document.querySelector('#tabsContainer')) return true
+  },
   event: () => {
     if (pathnameStartsWith('/watch')) {
       const channelLink = document.querySelector<HTMLElement>('a.ytd-video-owner-renderer')!

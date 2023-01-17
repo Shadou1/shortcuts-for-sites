@@ -49,7 +49,7 @@ export function goToPlaylistsTab(mutations?: MutationRecord[], observer?: Mutati
 
   // TODO refactor if possible
   // TODO it still sometimes plays video in background
-  setTimeout(() => playlistsTab.click(), 100)
+  setTimeout(() => playlistsTab.click(), 150)
 }
 
 // These are now obsolete since focus next/previous first/last video shortcuts are available

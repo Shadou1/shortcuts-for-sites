@@ -3,8 +3,10 @@ import { fileURLToPath } from 'url'
 import WebExtPlugin from 'web-ext-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
 
+const rootDir = dirname(fileURLToPath(import.meta.url))
+
 export default {
-  context: dirname(fileURLToPath(import.meta.url)),
+  context: rootDir,
 
   entry: {
     'init': {
@@ -26,7 +28,7 @@ export default {
   },
 
   output: {
-    path: dirname(fileURLToPath(import.meta.url)) + '/dist',
+    path: rootDir + '/dist',
     clean: true
   },
 
@@ -46,11 +48,14 @@ export default {
         { from: './manifest.json', to: '.' },
         { from: './pages/*/*.(html|css)', to: '.' },
         { from: './icons/*', to: '.' },
+        { from: './LICENSE', to: '.' },
       ],
     }),
     new WebExtPlugin({
-      sourceDir: dirname(fileURLToPath(import.meta.url)) + '/dist',
-      firefoxProfile: 'Sha Dou'
+      sourceDir: rootDir + '/dist',
+      artifactsDir: rootDir + '/web-ext-artifacts',
+      buildPackage: true,
+      overwriteDest: true,
     }),
   ],
 
@@ -62,5 +67,5 @@ export default {
     extensions: ['.ts', '.js'],
   },
 
-  mode: 'none'
+  mode: 'production'
 }

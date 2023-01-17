@@ -57,3 +57,17 @@ category.shortcuts.set('goToLiveChannels', {
     }
   }
 })
+
+let twSelectButton: HTMLButtonElement | null
+category.shortcuts.set('selectFilterBy', {
+  defaultKey: 'i',
+  description: 'Filter/sort by',
+  isAvailable: () => {
+    twSelectButton = twSelectButton?.offsetParent ? twSelectButton : document.querySelector<HTMLButtonElement>('.tw-select-button')
+    return twSelectButton?.offsetParent
+  },
+  event: () => {
+    twSelectButton!.click()
+    twSelectButton!.focus()
+  }
+})

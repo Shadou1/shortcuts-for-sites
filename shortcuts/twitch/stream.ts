@@ -41,14 +41,16 @@ category.shortcuts.set('openVideoQualitySettings', {
   }
 })
 
-// TODO make it also go to currenly selected relevant anchor stream category
 let streamGameAnchor: HTMLElement | null
 category.shortcuts.set('goToStreamCategory', {
   defaultKey: 'C',
   description: 'Go to stream category',
   isAvailable: () => {
+    if (document.activeElement?.getAttribute('data-test-selector') === 'TitleAndChannel') {
+      streamGameAnchor = document.activeElement.nextElementSibling?.querySelector('[data-test-selector="GameLink"]') as HTMLElement | null
+      return streamGameAnchor?.offsetParent
+    }
     if (window.location.pathname === '/') return false
-    if (pathnameStartsWith('/directory/game')) return true
     streamGameAnchor = document.querySelector<HTMLElement>('a[data-a-target="stream-game-link"]')
     return streamGameAnchor?.offsetParent
   },

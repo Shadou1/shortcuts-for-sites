@@ -95,7 +95,7 @@ Todo:
     ☐ Maybe add checks for ?.offsetParent before requerying elements (won't work if elements are still incorrectly visible)
     ✔ Add go to next/previous relevant anchor @done(23-01-05 01:34)
     ☐ Make showMoreViewAll shortcut use stored elements instead of querying every time
-    ☐ Add go to focused relevant anchor channel and category (for streams)
+    ✔ Add go to focused relevant anchor category (for streams) @done(23-01-17 15:03)
 
   Reddit:
     ✔ Add Reddit shortcuts @done(22-12-10 23:55)

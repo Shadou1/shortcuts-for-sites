@@ -29,7 +29,7 @@ https://youtu.be/9MR6KKRwTP0
 
 ## How it works
 
-Extension loads [content script](/content-scripts/init.js) into sites that it has shortcuts for (defined in [manifest.json](manifest.json)). Content script listens for [keydown](/content-scripts/init.js#L88) events and executes corresponding [shortcut](shortcuts/) events. Shortcut events define what should happen when the user presses the shortcut's key. These events do a wide range of things: focusing and clicking elements, going to next/previous elements, opening menus (settings menus), navigating to different site sections, controlling video players, and more. Sometimes there is functionality besides shourtcut events for the site, like scrolling a page when an element is focused.
+Extension loads [content script](/content-scripts/init.js) into sites that it has shortcuts for (defined in [manifest.json](manifest.json)). Content script listens for [keydown](/content-scripts/init.js#L88) events and executes corresponding [shortcut](shortcuts/) events. Shortcut events define what should happen when the user presses the shortcut's key. These events do a wide range of things: focusing and clicking elements, going to next/previous elements, opening menus (settings menus), navigating to different site sections, controlling video players, and more. Sometimes there is functionality besides shourtcut events for the site, like [scrolling a page when an element is focused](/shortcuts/reddit/utilsActivePost.ts#L81).
 
 > __Note__
 >
@@ -49,7 +49,7 @@ Extension loads [content script](/content-scripts/init.js) into sites that it ha
 
 | Shortcut | Description |
 | -------- | ----------- |
-| **Navigation** |
+| **Search modes** |
 | <kbd>a</kbd> | Go to all search results |
 | <kbd>i</kbd> | Go to images |
 | <kbd>v</kbd> | Go to videos |
@@ -90,38 +90,29 @@ Extension loads [content script](/content-scripts/init.js) into sites that it ha
 <br>
 
 <details>
-<summary>Youtube</summary>
+<summary>Reddit</summary>
 
 | Shortcut | Description |
 | -------- | ----------- |
-| **General** |
-| <kbd>e</kbd> | Expand/Collapse guide sidebar |
-| <kbd>o</kbd> | Go to Home |
-| <kbd>u</kbd> | Go to Subscriptions |
-| <kbd>U</kbd> (<kbd>Shift</kbd>+<kbd>u</kbd>) | Focus subscribed channels |
-| **Videos** |
-| <kbd>]</kbd> | Focus next video |
-| <kbd>[</kbd> | Focus previous video |
-| <kbd>{</kbd> | Focus first video |
-| <kbd>}</kbd> | Focus last video |
-| **Video player** |
-| <kbd>s</kbd> | Open settings |
-| <kbd>q</kbd> | Open quality settings |
-| <kbd>;</kbd> | Focus video player / show progress bar |
-| <kbd>d</kbd> | Scroll to description/video |
-| <kbd>n</kbd> | Comment |
-| **Channel** |
-| <kbd>h</kbd> | Go to channel home |
-| <kbd>v</kbd> | Go to channel videos |
-| <kbd>p</kbd> | Go to channel playlists |
-| <kbd>H</kbd> (<kbd>Shift</kbd>+<kbd>h</kbd>) | Go to channel (new tab) |
-| **Playlist** |
-| <kbd>,</kbd> | Focus first video in playlist |
-| <kbd>.</kbd> | Focus last video in playlist |
-| **Premiere/Stream** |
-| <kbd>E</kbd> (<kbd>Shift</kbd>+<kbd>e</kbd>) | Hide/Show chat |
-| <kbd>b</kbd> | Chat |
-| <kbd>S</kbd> (<kbd>Shift</kbd>+<kbd>s</kbd>) | Skip ahead to live broadcast |
+| **Navigation** |
+| <kbd>o</kbd> | Go to home |
+| <kbd>u</kbd> | Go to popular |
+| **Post** |
+| <kbd>i</kbd> | Go to post's subreddit |
+| <kbd>I</kbd> (<kbd>Shift</kbd>+<kbd>i</kbd>) | Go to post's subreddit (new tab) |
+| **Posts filters** |
+| <kbd>1</kbd> | Hot posts |
+| <kbd>2</kbd> | New posts |
+| <kbd>3</kbd> | Top posts |
+| <kbd>4</kbd> | Rising posts |
+| <kbd>t</kbd> | Choose time period |
+| **Video** |
+| <kbd>;</kbd> | Pause/resume |
+| <kbd>[</kbd> | Rewind |
+| <kbd>]</kbd> | Fast forward |
+| <kbd>m</kbd> | Mute |
+| <kbd>+</kbd> | Volume up |
+| <kbd>-</kbd> | Volume down |
 
 </details>
 
@@ -147,6 +138,7 @@ Extension loads [content script](/content-scripts/init.js) into sites that it ha
 | <kbd>U</kbd> (<kbd>Shift</kbd>+<kbd>u</kbd>) | Go to following |
 | <kbd>b</kbd> | Browse categories |
 | <kbd>B</kbd> (<kbd>Shift</kbd>+<kbd>b</kbd>) | Browse live channels |
+| <kbd>i</kbd> | Filter/sort by |
 | **Stream** |
 | <kbd>s</kbd> | Open settings |
 | <kbd>q</kbd> | Open quality settings |
@@ -168,28 +160,37 @@ Extension loads [content script](/content-scripts/init.js) into sites that it ha
 <br>
 
 <details>
-<summary>Reddit</summary>
+<summary>Youtube</summary>
 
 | Shortcut | Description |
 | -------- | ----------- |
-| **General** |
-| <kbd>o</kbd> | Go to home |
-| <kbd>u</kbd> | Go to popular |
-| **Post** |
-| <kbd>i</kbd> | Go to post's subreddit |
-| <kbd>I</kbd> (<kbd>Shift</kbd>+<kbd>i</kbd>) | Go to post's subreddit (new tab) |
-| **Posts filters** |
-| <kbd>1</kbd> | Hot posts |
-| <kbd>2</kbd> | New posts |
-| <kbd>3</kbd> | Top posts |
-| <kbd>4</kbd> | Rising posts |
-| <kbd>t</kbd> | Choose time period |
-| **Video** |
-| <kbd>;</kbd> | Pause/resume |
-| <kbd>[</kbd> | Rewind |
-| <kbd>]</kbd> | Fast forward |
-| <kbd>m</kbd> | Mute |
-| <kbd>+</kbd> | Volume up |
-| <kbd>-</kbd> | Volume down |
+| **Navigation** |
+| <kbd>e</kbd> | Expand/Collapse guide sidebar |
+| <kbd>o</kbd> | Go to Home |
+| <kbd>u</kbd> | Go to Subscriptions |
+| <kbd>U</kbd> (<kbd>Shift</kbd>+<kbd>u</kbd>) | Focus subscribed channels |
+| **Videos** |
+| <kbd>]</kbd> | Focus next video |
+| <kbd>[</kbd> | Focus previous video |
+| <kbd>{</kbd> | Focus first video |
+| <kbd>}</kbd> | Focus last video |
+| **Video Player** |
+| <kbd>s</kbd> | Open settings |
+| <kbd>q</kbd> | Open quality settings |
+| <kbd>;</kbd> | Focus video player / show progress bar |
+| <kbd>d</kbd> | Scroll to description/video |
+| <kbd>n</kbd> | Comment |
+| **Channel** |
+| <kbd>h</kbd> | Go to channel home |
+| <kbd>v</kbd> | Go to channel videos |
+| <kbd>p</kbd> | Go to channel playlists |
+| <kbd>H</kbd> (<kbd>Shift</kbd>+<kbd>h</kbd>) | Go to channel (new tab) |
+| **Playlist** |
+| <kbd>,</kbd> | Focus first video in playlist |
+| <kbd>.</kbd> | Focus last video in playlist |
+| **Premiere/Stream** |
+| <kbd>E</kbd> (<kbd>Shift</kbd>+<kbd>e</kbd>) | Hide/Show chat |
+| <kbd>b</kbd> | Chat |
+| <kbd>S</kbd> (<kbd>Shift</kbd>+<kbd>s</kbd>) | Skip ahead to live broadcast |
 
 </details>

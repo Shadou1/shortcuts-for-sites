@@ -32,7 +32,8 @@ async function loadSettings() {
 const saveButton = document.querySelector<HTMLButtonElement>('#save-settings-button')!
 async function saveSettings() {
   // Settings
-  const newSettings: Record<string, unknown> = {}
+  const storage = await browser.storage.sync.get('settings')
+  const savedSettings = storage['settings'] as Record<string, unknown> | undefined ?? {}
   const settingsInputs = document.querySelectorAll<HTMLInputElement>('#panel-settings input')
   for (const settingInput of settingsInputs) {
     if (settingInput.id === 'clear-storage') continue
@@ -42,12 +43,12 @@ async function saveSettings() {
     } else {
       switch (settingInput.type) {
         case 'checkbox':
-          newSettings[settingInput.id] = settingInput.checked
+          savedSettings[settingInput.id] = settingInput.checked
           break
       }
     }
   }
-  await browser.storage.sync.set({ 'settings': newSettings })
+  await browser.storage.sync.set({ 'settings': savedSettings })
 
   // Shortcuts
   await saveShortcuts()

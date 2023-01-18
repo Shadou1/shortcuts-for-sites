@@ -4,13 +4,38 @@ body {
   overflow-x: hidden;
 }
 
+body.minimal-view {
+  width: 420px;
+  min-height: 400px;
+  overflow-x: hidden;
+}
+
 main {
   width: 500px;
 }
 
-.native-shortcuts-hint {
+.minimal-view main {
+  width: 400px;
+}
+
+#additional-info {
   position: absolute;
-  right: 16px;
+  right: 0px;
+  margin: 8px 16px 0px 0px;
+}
+
+#native-shortcuts-hint {
+  margin: 0px;
+  margin-top: 8px;
+}
+
+#minimal-view-div {
+  width: fit-content;
+  margin-left: auto;
+}
+
+#is-minimal-view {
+  margin-left: 0px;
 }
 
 main > h1 {
@@ -24,12 +49,29 @@ section {
   flex-direction: column;
 }
 
+.minimal-view section {
+  padding: 4px 8px;
+}
+
 section > h2 {
   /* margin-top: 0; */
   padding-left: 1em;
 }
 
-section > div {
+.minimal-view section > h2 {
+  margin: 8px 0px 0px 0px;
+  font-size: large;
+}
+
+article > section:first-child > h2 {
+  margin-top: 36px;
+}
+
+article > section:last-child {
+  margin-bottom: 16px;
+}
+
+section > .row {
   padding: 0px 8px;
   /* border: 1px solid; */
   border-bottom: 1px solid gray;
@@ -39,17 +81,30 @@ section > div {
   align-items: baseline;
 }
 
-section > div > p {
+.minimal-view section > .row {
+  border-bottom: none;
+}
+
+section > .row > p {
   font-size: medium;
   white-space: nowrap;
 }
 
-section > div > p:last-child {
+.minimal-view section > .row > p {
+  margin: 6px 0px;
+  font-size: small;
+}
+
+section > .row > p:last-child {
   margin: 0px;
   flex-basis: 100px;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+}
+
+.minimal-view section > .row > p:last-child {
+  flex-basis: 80px;
 }
 
 .key {
@@ -59,6 +114,13 @@ section > div > p:last-child {
   text-align: center;
   border: 2px solid gray;
   border-radius: 4px;
+}
+
+.minimal-view section .key {
+  min-width: 22px;
+  padding: 2px 4px;
+  border-width: 1px;
+  border-radius: 2px;
 }
 
 .active-key {
@@ -71,7 +133,7 @@ section > div > p:last-child {
     background-color: #202124;
   }
 
-  section > div {
+  section > .row {
     border-color: azure;
   }
 
@@ -79,4 +141,8 @@ section > div > p:last-child {
     border-color: seagreen;
   }
 
+  input {
+    color: white;
+    background-color: #202124;
+  }
 }

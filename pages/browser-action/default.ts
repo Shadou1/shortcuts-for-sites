@@ -1,7 +1,10 @@
 import Shortcuts from '../../shortcuts/Shortcuts'
 
+// const main = document.querySelector<HTMLElement>('main')!
 const popupHeading = document.querySelector<HTMLHeadingElement>('main > h1')!
-const nativeShortcutsHint = document.querySelector<HTMLElement>('.native-shortcuts-hint')!
+const nativeShortcutsHint = document.querySelector<HTMLElement>('#native-shortcuts-hint')!
+const minimalView = document.querySelector<HTMLElement>('#minimal-view-div')!
+const isMinimalView = document.querySelector<HTMLInputElement>('#is-minimal-view')!
 const shortcutsArticle = document.querySelector<HTMLElement>('article')!
 const sectionTemplate = document.querySelector<HTMLTemplateElement>('#shortcuts-section')!
 const rowTemplate = document.querySelector<HTMLTemplateElement>('#shortcut-row')!
@@ -9,6 +12,8 @@ const rowTemplate = document.querySelector<HTMLTemplateElement>('#shortcut-row')
 function clearPopup() {
   popupHeading.textContent = 'No Available Shortcuts'
   popupHeading.hidden = false
+  nativeShortcutsHint.hidden = true
+  minimalView.hidden = true
   shortcutsArticle.replaceChildren()
 }
 
@@ -47,10 +52,10 @@ function fillPopupWithShortcuts(shortcuts: Shortcuts, shortcutsByKeyAvailable: M
 function handleShortcutsResponse(response: { shortcuts: Shortcuts, shortcutsByKeyAvailable: Map<string, boolean> } | undefined) {
   if (!response) {
     clearPopup()
-    // popupHeading.hidden = false
     return
   }
   nativeShortcutsHint.hidden = !response.shortcuts.siteHasNativeShortcuts
+  minimalView.hidden = false
   fillPopupWithShortcuts(response.shortcuts, response.shortcutsByKeyAvailable)
 }
 
@@ -60,6 +65,8 @@ browser.tabs.onActivated.addListener((tab) => {
     .then(handleShortcutsResponse)
     .catch(clearPopup)
 })
+
+// On popup open
 
 // query shortcuts for the active tab
 browser.tabs.query({
@@ -84,6 +91,20 @@ browser.tabs.query({
   // .catch(clearPopupError)
   .catch(clearPopup)
 
+
+const storage = await browser.storage.sync.get('settings')
+const savedSettings = storage['settings'] as Record<string, unknown> | undefined ?? {}
+savedSettings['is-popup-minimal-view'] = savedSettings['is-popup-minimal-view'] ?? false
+const isMinimalViewSetting = savedSettings['is-popup-minimal-view'] as boolean
+isMinimalView.checked = isMinimalViewSetting
+document.body.classList.toggle('minimal-view', isMinimalViewSetting)
+
+isMinimalView.addEventListener('click', () => {
+  savedSettings['is-popup-minimal-view'] = isMinimalView.checked
+  void browser.storage.sync.set({ 'settings': savedSettings })
+  document.body.classList.toggle('minimal-view', isMinimalView.checked)
+})
+
 // DEBUG
-// void browser.permissions.getAll().then((res) => console.log(res))
-// void browser.storage.sync.get(undefined).then((res) => console.log(res))
+void browser.permissions.getAll().then((res) => console.log(res))
+void browser.storage.sync.get(undefined).then((res) => console.log(res))

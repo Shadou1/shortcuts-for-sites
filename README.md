@@ -2,9 +2,15 @@
 
 WebExtension that adds keyboard shortcuts for easier navigation on popular websites.
 
+Available for [Firefox](https://addons.mozilla.org/en-US/firefox/addon/shortcuts-for-sites/).
+
 ## Description
 
-Navigating websites without touching your mouse can be difficult. Although there are features like ***find***, ***quick find***, and ***quick find within link-text only*** (<kbd>Ctrl</kbd>+<kbd>f</kbd>, <kbd>/</kbd>, and <kbd>'</kbd> shortcuts in firefox) which can be used to focus needed elements, sometimes using <kbd>Tab</kbd> is unavoidable. Moreover, typing out search strings every time can become old. With this in mind, I implemented a number of shortcuts for different websites which should make navigating them with a keyboard more comfortable.
+This extension adds various keyboard shortcuts to some popular websites. You will be able to browse these websites with just your keyboard without relying too much on the <kbd>Tab</kbd> key.
+
+Other methods of navigating websites with keyboard (besides using the <kbd>Tab</kbd> key) include using browser features like **find**, **quick find**, and **quick find within link-text only** (<kbd>Ctrl</kbd>+<kbd>f</kbd>, <kbd>/</kbd>, and <kbd>'</kbd> shortcuts in Firefox). These will move focus to the found element, without you having to <kbd>Tab</kbd> manually to it. But sometimes using <kbd>Tab</kbd> is unavoidable, and searching for elements every time can become old.
+
+Some websites also have native shortcuts (usually displayed by pressing the <kbd>?</kbd> key). This extension complements those shortcuts. For example, on Reddit (new Reddit) there are <kbd>j</kbd>/<kbd>k</kbd> shortcuts to go to the next/previous post/comment. This extension also makes these shortcuts scroll the post to the middle of the page and focus the post link.
 
 ## Useful tips
 
@@ -14,10 +20,11 @@ Navigating websites without touching your mouse can be difficult. Although there
 - You can rebind shortcuts on extension's options page (preferences page).
 - Press <kbd>Tab</kbd> once to force browser to draw focus outline.
 - On Reddit, without logging in shortcuts will work poorly. Also native <kbd>j</kbd>/<kbd>k</kbd> shortcuts will sometimes stop working, pressing <kbd>Tab</kbd> or reloading the page will usually get them working again.
+- Check out your browser's keyboard shortcuts ([Firefox](https://support.mozilla.org/en-US/kb/keyboard-shortcuts-perform-firefox-tasks-quickly)).
 
 > __Note__
 >
-> If you are using Google Search or Google Translate on domains other than <code>.com</code>, enable ***allow add-on to run on all Google domains*** on add-on's options page.
+> If you are using Google Search or Google Translate on domains other than <code>.com</code>, enable **allow add-on to run on all Google domains** on add-on's options page.
 
 ## Popup
 
@@ -34,6 +41,25 @@ Extension loads [content script](/content-scripts/init.js) into sites that it ha
 > __Note__
 >
 > Because sites can update their structure, be it html or javascript, shortcuts might break or stop working. If they did break, it means that I haven't updated the extension yet. Submit a new issue if shortcuts have been broken for some time.
+
+## Building
+
+Requirements:
+- Node.js 18 or later
+
+In root directory, run:
+```
+npm install
+npm run build
+```
+
+Compiled code is in **dist** folder, zipped version is in **web-ext-artifacts** folder.
+
+## Running
+
+In Firefox:
+- Go to [about:debugging](about:debugging), select **This Firefox**, click **Load Temporary Add-on**, choose **manifest.json** file in the **dist** folder.
+- Or just run ```npm run watch```.
 
 ## Issues
 

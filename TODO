@@ -27,9 +27,9 @@ Todo:
   ☐ Logic for mutation observers is done with too many outer scope variables and is hard to follow
 
   ✔ Ask user for additional permissions for Google domains, instead of requesting all of them in manifest.json @critical @done(23-01-09 11:44)
-  ☐ Rewrite README.md
+  ✔ Rewrite README.md @done(23-01-18 15:17)
   ☐ Logic in Google Search 'searchResultIndex' and Youtube 'videoAnchorIndex' is similar
-  ☐ Extension can import() resources without exposing them in web_accessible_resources, figure out if it's safe to omit them
+  ✔ Extension can import() resources without exposing them in web_accessible_resources, figure out if it's safe to omit them @done(23-01-18 15:17)
 
   ☐ Write tests?
 

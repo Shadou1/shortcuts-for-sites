@@ -2,10 +2,10 @@ import { ShortcutsCategory } from '../Shortcuts'
 import { pathnameMatches } from '../../utils/locationUtils'
 import {
   activeVideo,
-  activeVideoInComments,
+  commentsPageVideo,
   activeVideoPlayer,
-  activeVideoPlayerInComments,
-  updateVideoInComments
+  commentsPageVideoPlayer,
+  updateCommentsPage
 } from './utilsActivePost'
 
 const category = new ShortcutsCategory('Video', 'Video')
@@ -16,7 +16,8 @@ category.shortcuts.set('videoPauseResume', {
   description: 'Pause/resume',
   isAvailable: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      return updateVideoInComments()
+      updateCommentsPage()
+      return commentsPageVideoPlayer?.offsetParent && commentsPageVideo?.offsetParent
     } else {
       return activeVideoPlayer?.offsetParent
     }
@@ -24,15 +25,15 @@ category.shortcuts.set('videoPauseResume', {
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
 
-      if (activeVideoInComments!.readyState === 0) {
-        const playButton = activeVideoPlayerInComments!.shadowRoot!.querySelector<HTMLElement>('vds-play-button icon-play')
+      if (commentsPageVideo!.readyState === 0) {
+        const playButton = commentsPageVideoPlayer!.shadowRoot!.querySelector<HTMLElement>('vds-play-button icon-play')
         playButton?.click()
-        activeVideoInComments!.addEventListener('canplay', () => void activeVideoInComments!.play(), { once: true })
+        commentsPageVideo!.addEventListener('canplay', () => void commentsPageVideo!.play(), { once: true })
         return
       }
 
-      if (activeVideoInComments!.paused) void activeVideoInComments!.play()
-      else activeVideoInComments!.pause()
+      if (commentsPageVideo!.paused) void commentsPageVideo!.play()
+      else commentsPageVideo!.pause()
 
     } else {
       if (activeVideo!.paused) void activeVideo!.play()
@@ -46,14 +47,15 @@ category.shortcuts.set('videoRewind', {
   description: 'Rewind',
   isAvailable: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      return updateVideoInComments()
+      updateCommentsPage()
+      return commentsPageVideoPlayer?.offsetParent && commentsPageVideo?.offsetParent
     } else {
       return activeVideoPlayer?.offsetParent
     }
   },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      activeVideoInComments!.fastSeek(activeVideoInComments!.currentTime - 5)
+      commentsPageVideo!.fastSeek(commentsPageVideo!.currentTime - 5)
     } else {
       activeVideo!.fastSeek(activeVideo!.currentTime - 5)
     }
@@ -65,14 +67,15 @@ category.shortcuts.set('videoForward', {
   description: 'Fast forward',
   isAvailable: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      return updateVideoInComments()
+      updateCommentsPage()
+      return commentsPageVideoPlayer?.offsetParent && commentsPageVideo?.offsetParent
     } else {
       return activeVideoPlayer?.offsetParent
     }
   },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      activeVideoInComments!.fastSeek(activeVideoInComments!.currentTime + 5)
+      commentsPageVideo!.fastSeek(commentsPageVideo!.currentTime + 5)
     } else {
       activeVideo!.fastSeek(activeVideo!.currentTime + 5)
     }
@@ -92,14 +95,15 @@ category.shortcuts.set('videoMute', {
   description: 'Mute',
   isAvailable: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      return updateVideoInComments()
+      updateCommentsPage()
+      return commentsPageVideoPlayer?.offsetParent && commentsPageVideo?.offsetParent
     } else {
       return activeVideoPlayer?.offsetParent
     }
   },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      activeVideoInComments!.muted = !activeVideoInComments!.muted
+      commentsPageVideo!.muted = !commentsPageVideo!.muted
     } else {
       activeVideo!.muted = !activeVideo!.muted
     }
@@ -111,14 +115,15 @@ category.shortcuts.set('videoVolumeUp', {
   description: 'Volume up',
   isAvailable: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      return updateVideoInComments()
+      updateCommentsPage()
+      return commentsPageVideoPlayer?.offsetParent && commentsPageVideo?.offsetParent
     } else {
       return activeVideoPlayer?.offsetParent
     }
   },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      activeVideoInComments!.volume = Math.max(0, Math.min(1, activeVideoInComments!.volume + 0.05))
+      commentsPageVideo!.volume = Math.max(0, Math.min(1, commentsPageVideo!.volume + 0.05))
     } else {
       activeVideo!.volume = Math.max(0, Math.min(1, activeVideo!.volume + 0.05))
     }
@@ -130,14 +135,15 @@ category.shortcuts.set('videoVolumeDown', {
   description: 'Volume down',
   isAvailable: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      return updateVideoInComments()
+      updateCommentsPage()
+      return commentsPageVideoPlayer?.offsetParent && commentsPageVideo?.offsetParent
     } else {
       return activeVideoPlayer?.offsetParent
     }
   },
   event: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      activeVideoInComments!.volume = Math.max(0, Math.min(1, activeVideoInComments!.volume - 0.05))
+      commentsPageVideo!.volume = Math.max(0, Math.min(1, commentsPageVideo!.volume - 0.05))
     } else {
       activeVideo!.volume = Math.max(0, Math.min(1, activeVideo!.volume - 0.05))
     }

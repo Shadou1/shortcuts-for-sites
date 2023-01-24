@@ -1,4 +1,3 @@
-import { pathnameStartsWith } from '../../utils/locationUtils'
 import { ShortcutsCategory } from '../Shortcuts'
 
 const category = new ShortcutsCategory('Stream', 'Stream')

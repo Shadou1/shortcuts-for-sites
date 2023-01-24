@@ -79,8 +79,11 @@ category.shortcuts.set('goToChannelNewTab', {
   isAvailable: () => pathnameStartsWith('/watch'),
   event: () => {
     const channelLink = document.querySelector<HTMLAnchorElement>('a.ytd-video-owner-renderer')!
-    // TODO figure out why new tab opens with white background when using window.open
-    // middle clicking on channel link opens new page with user's preferred color scheme
-    window.open(channelLink.href, '_blank')
+
+    // hack to preserve user's color scheme
+    const tempAnchor = document.createElement('a')
+    tempAnchor.setAttribute('target', '_blank')
+    tempAnchor.href = channelLink.href
+    tempAnchor.click()
   }
 })

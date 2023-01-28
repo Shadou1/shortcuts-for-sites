@@ -15,7 +15,7 @@ module.exports = {
   ],
 
   extends: [
-    'eslint:recommended',
+    // 'eslint:recommended',
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:@typescript-eslint/strict",
@@ -32,13 +32,13 @@ module.exports = {
   plugins: ['@typescript-eslint'],
 
   rules: {
-    'no-unused-vars': [
-      'error',
-      {
-        argsIgnorePattern: '^_',
-        destructuredArrayIgnorePattern: '^_'
-      }
-    ],
+    // 'no-unused-vars': [
+    //   'error',
+    //   {
+    //     argsIgnorePattern: '^_',
+    //     destructuredArrayIgnorePattern: '^_'
+    //   }
+    // ],
     '@typescript-eslint/no-unused-vars': [
       'error',
       {

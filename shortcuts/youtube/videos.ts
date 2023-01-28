@@ -40,10 +40,10 @@ function setupVideoAnchorsMutations(isResultsPage: boolean) {
     if (!videoAnchors[0]?.offsetParent) return
     // If mutation didn't add any new nodes, don't count it
     let didAddNodes = false
-    outer: for (const mutation of mutations) {
+    for (const mutation of mutations) {
       if (mutation.addedNodes.length) {
         didAddNodes = true
-        break outer
+        break
       }
     }
     if (!didAddNodes) return
@@ -125,7 +125,6 @@ function getVideoAnchors() {
   })
 
   scrollToAndFocusCurrentVideoAnchor = () => {
-    videoAnchorsPanels[videoAnchorIndex]
     const rect = videoAnchorsPanels[videoAnchorIndex].getBoundingClientRect()
     window.scrollBy(0, rect.top - videoAnchorPanelScrollHeight)
     videoAnchors[videoAnchorIndex].focus()

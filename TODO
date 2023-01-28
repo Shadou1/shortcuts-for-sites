@@ -25,6 +25,7 @@ Todo:
   ✔ When shortcut navigates to new page, figure out how to query not yet rendered elements (await for element to appear / mutation observer) @done(22-08-30 19:15)
   ☐ Mutation observers will stay in background if callback didn't disconnect (happens if it didn't find the queried element) @high
   ☐ Logic for mutation observers is done with too many outer scope variables and is hard to follow
+  ☐ Write generic setupMutationObserver function
 
   ✔ Ask user for additional permissions for Google domains, instead of requesting all of them in manifest.json @critical @done(23-01-09 11:44)
   ✔ Rewrite README.md @done(23-01-18 15:17)
@@ -97,6 +98,7 @@ Todo:
     ✔ Add go to next/previous relevant anchor @done(23-01-05 01:34)
     ☐ Make showMoreViewAll shortcut use stored elements instead of querying every time
     ✔ Add go to focused relevant anchor category (for streams) @done(23-01-17 15:03)
+    ☐ Sometimes first press of a shortcut wont work
 
   Reddit:
     ✔ Add Reddit shortcuts @done(22-12-10 23:55)

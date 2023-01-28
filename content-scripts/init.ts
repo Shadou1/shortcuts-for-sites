@@ -61,33 +61,22 @@ browser.runtime.onMessage.addListener((message: Record<string, unknown>, sender,
 })
 
 // Handle shortcuts
-
-let isLastInputEvent = false
-document.addEventListener('input', (_ev) => {
-  isLastInputEvent = true
-})
-
-let lastTimeout: ReturnType<typeof setTimeout>
 document.addEventListener('keydown', (ev) => {
+  const shortcutConf = shortcutsByKey.get(ev.key)
+  if (!shortcutConf) return
 
-  clearTimeout(lastTimeout)
-  // Execute event listener after a timeout to ensure that it is not firing together with an input event
-  lastTimeout = setTimeout(() => {
+  const target = ev.target as HTMLElement
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLSelectElement ||
+    target instanceof HTMLTextAreaElement ||
+    target.isContentEditable
+  ) return
 
-    if (isLastInputEvent) {
-      isLastInputEvent = false
-      return
-    }
+  if (shortcutConf.isAvailable && !shortcutConf.isAvailable()) return
 
-    const shortcutConf = shortcutsByKey.get(ev.key)
-    if (!shortcutConf) return
-    if (shortcutConf.isAvailable && !shortcutConf.isAvailable()) return
-
-    // if (ev.shiftKey) shortcutConf.eventShift?.(ev)
-    if (ev.ctrlKey) shortcutConf.eventCtrl?.()
-    else if (ev.altKey) shortcutConf.eventAlt?.()
-    else shortcutConf.event()
-
-  }, 10)
-
+  // if (ev.shiftKey) shortcutConf.eventShift?.(ev)
+  if (ev.ctrlKey) shortcutConf.eventCtrl?.(ev)
+  else if (ev.altKey) shortcutConf.eventAlt?.(ev)
+  else shortcutConf.event(ev)
 })

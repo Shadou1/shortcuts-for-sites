@@ -26,7 +26,6 @@ export let commentsPageVideo: HTMLVideoElement | null
 
 export function updateCommentsPage() {
   if (didCommentsPageChange()) {
-    console.log('page changed running')
     commentsPagePost = document.querySelector('[data-test-id="post-content"]')!
 
     commentsPageSubredditLink = document.querySelector('a > span[title]')?.parentElement as HTMLAnchorElement | null
@@ -101,15 +100,16 @@ export function updateScrollContainerInComments() {
 
 let isKeyboardNavigated = false
 document.body.addEventListener('keydown', (event) => {
-  if (event.key !== 'j' && event.key !== 'k') return
+  if (event.key !== 'j' && event.key !== 'k' && event.key !== 'J' && event.key !== 'K') return
   isKeyboardNavigated = true
 })
 
 let activeComment: HTMLElement | null
 const postScrollHeight = 100
 const commentScrollHeight = 150
+// TODO this logic should probably be in posts.ts
 document.body.addEventListener('focusin', (event) => {
-  // Only work when j/k keys have been used
+  // Only work when j/k J/K keys have been used
   if (!isKeyboardNavigated) return
   isKeyboardNavigated = false
 

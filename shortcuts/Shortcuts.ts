@@ -3,9 +3,9 @@ export interface Shortcut {
   key?: string
   description: string
   isAvailable?: () => unknown
-  event: () => void
-  eventCtrl?: () => void
-  eventAlt?: () => void
+  event: (event: Event) => void
+  eventCtrl?: (event: Event) => void
+  eventAlt?: (event: Event) => void
 }
 
 export class ShortcutsCategory {

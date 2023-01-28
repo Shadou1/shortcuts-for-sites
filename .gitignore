@@ -4,6 +4,7 @@ dist/
 
 assets/
 icons-old/
+useful/
 shortcuts/youtube/markup.js
 
 .jsconfig.json

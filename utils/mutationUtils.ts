@@ -34,3 +34,49 @@ export function findCommonParent(element1: HTMLElement, element2: HTMLElement) {
   }
   return commonParent
 }
+
+export function getSetupMutations(
+  getElements: () => HTMLElement[],
+  options: {
+    mutationWaitTimeMs?: number,
+    mutationObserverOptions?: MutationObserverInit,
+    /**
+     * @returns whether the mutation observer callback should return before executing
+     */
+    beforeMutation?: (mutations: MutationRecord[], observer: MutationObserver) => boolean
+    disconnectAfterMutation?: boolean
+  } = {},
+) {
+  options.mutationWaitTimeMs = options.mutationWaitTimeMs ?? 200
+  options.mutationObserverOptions = options.mutationObserverOptions ?? { childList: true }
+  options.disconnectAfterMutation = options.disconnectAfterMutation ?? false
+
+  let mutationObserver: MutationObserver | null
+  let mutationTimeout: ReturnType<typeof setTimeout>
+
+  function setupMutations(commonParent: HTMLElement) {
+    mutationObserver?.disconnect()
+    mutationObserver = whenElementMutates(commonParent, (mutations, observer) => {
+
+      if (options.beforeMutation?.(mutations, observer)) return
+
+      let didAddNodes = false
+      for (const mutation of mutations) {
+        if (mutation.addedNodes.length) {
+          didAddNodes = true
+          break
+        }
+      }
+      if (!didAddNodes) return
+
+      clearTimeout(mutationTimeout)
+      mutationTimeout = setTimeout(() => {
+        getElements()
+        if (options.disconnectAfterMutation) observer.disconnect()
+      }, options.mutationWaitTimeMs)
+
+    }, options.mutationObserverOptions)
+  }
+
+  return setupMutations
+}

@@ -1,35 +1,27 @@
+import { getSetupUpdateIndexOnFocus } from '../../utils/focusUtils'
+import { getChangeIndex } from '../../utils/indexUtils'
 import { didHrefChange, pathnameMatches } from '../../utils/locationUtils'
-import { findCommonParent, whenElementMutates } from '../../utils/mutationUtils'
+import { findCommonParent, getSetupMutations } from '../../utils/mutationUtils'
 import { ShortcutsCategory } from '../Shortcuts'
 
-const didPageHrefChange = didHrefChange()
+const didHrefChangePosts = didHrefChange()
+const didHrefChangeComments = didHrefChange()
 
 const category = new ShortcutsCategory('Posts', 'Posts')
 export default category
 
-// TODO post container is not actually focusable
-// let updatePostIndexAborts: AbortController[] = []
-// function updatePostIndex(toIndex: number) {
-//   return function () {
-//     postIndex = toIndex
-//   }
-// }
-
 let postContainers: HTMLElement[] = []
 let postIndex = -1
+let changePostIndex: ReturnType<typeof getChangeIndex>
+const setupUpdatePostIndexOnFocus = getSetupUpdateIndexOnFocus((index) => postIndex = index)
+
 function getPostContainers() {
   console.log('getting posts')
-  // updatePostIndexAborts.forEach((abortController) => abortController.abort())
-  // updatePostIndexAborts = []
-
   postContainers = [...document.querySelectorAll<HTMLElement>('[data-testid="post-container"]')]
-
-  // postContainers.forEach((postContainer, index) => {
-  //   const abortController = new AbortController()
-  //   postContainer.addEventListener('focus', updatePostIndex(index), { signal: abortController.signal })
-  //   updatePostIndexAborts.push(abortController)
-  // })
-
+  changePostIndex = getChangeIndex(postContainers)
+  // post container is not actually focusable
+  const postLinks = postContainers.map((postContainer) => postContainer.querySelector<HTMLElement>('a[data-click-id="body"]')!)
+  setupUpdatePostIndexOnFocus(postLinks)
   return postContainers
 }
 
@@ -44,76 +36,29 @@ function focusCurrentPost() {
 
 let commentDivs: HTMLElement[] = []
 let commentIndex = -1
+let changeCommentIndex: ReturnType<typeof getChangeIndex>
+
 function getCommentDivs() {
   console.log('getting comments')
   commentDivs = [...document.querySelectorAll<HTMLElement>('[style*="padding-left"')]
+  changeCommentIndex = getChangeIndex(commentDivs, { skip: (el) => !el.offsetParent })
   return commentDivs
 }
 
 function focusCurrentComment() {
   const currentCommentDiv = commentDivs[commentIndex]
-  console.log(currentCommentDiv)
-  // if (!currentCommentDiv.offsetParent) {
-  //   const visibleParent = currentCommentDiv.closest('[style]')
-  //   visibleParent?.scrollIntoView()
-  // }
   currentCommentDiv.focus()
+  // TODO add focus collapse comment button
 }
 
-let mutationObserverPosts: MutationObserver | null
-let lastMutationTimeoutPosts: ReturnType<typeof setTimeout>
-const mutationPostsWaitTimeMs = 300
-function setupPostMutations() {
-  const postContainersCommonParent = findCommonParent(postContainers[0], postContainers[1])
+const setupPostMutations = getSetupMutations(getPostContainers, {
+  mutationWaitTimeMs: 300,
+})
 
-  mutationObserverPosts?.disconnect()
-  mutationObserverPosts = whenElementMutates(postContainersCommonParent, (mutations, _observer) => {
-
-    let didAddNodes = false
-    for (const mutation of mutations) {
-      if (mutation.addedNodes.length) {
-        didAddNodes = true
-        break
-      }
-    }
-    if (!didAddNodes) return
-
-    clearTimeout(lastMutationTimeoutPosts)
-    lastMutationTimeoutPosts = setTimeout(() => {
-      getPostContainers()
-    }, mutationPostsWaitTimeMs)
-
-  }, { childList: true })
-}
-
-let mutationObserverComments: MutationObserver | null
-let lastMutationTimeoutComments: ReturnType<typeof setTimeout>
-const mutationCommentsWaitTimeMs = 200
-function setupCommentMutations() {
-  const commentDivsCommonParent = findCommonParent(commentDivs[0], commentDivs[1])
-
-  mutationObserverComments?.disconnect()
-  mutationObserverComments = whenElementMutates(commentDivsCommonParent, (mutations, _observer) => {
-
-    let didAddNodes = false
-    for (const mutation of mutations) {
-      if (mutation.addedNodes.length) {
-        didAddNodes = true
-        break
-      }
-    }
-    if (!didAddNodes) return
-
-    clearTimeout(lastMutationTimeoutComments)
-    lastMutationTimeoutComments = setTimeout(() => {
-      getCommentDivs()
-    }, mutationCommentsWaitTimeMs)
-
-  }, { childList: true })
-}
+const setupCommentMutations = getSetupMutations(getCommentDivs)
 
 function updatePostContainers() {
-  const didPathChange = didPageHrefChange()
+  const didPathChange = didHrefChangePosts()
   const lastPostContainersLength = postContainers.length
   const containsPostContainer = document.contains(postContainers[0])
   if (!didPathChange && lastPostContainersLength > 1 && containsPostContainer) return postContainers.length
@@ -122,12 +67,13 @@ function updatePostContainers() {
   const postContainersLength = getPostContainers().length
   if (postContainersLength < 2) return postContainersLength
 
-  setupPostMutations()
+  const postContainersCommonParent = findCommonParent(postContainers[0], postContainers[1])
+  setupPostMutations(postContainersCommonParent)
   return postContainersLength
 }
 
 function updateCommentDivs() {
-  const didPathChange = didPageHrefChange()
+  const didPathChange = didHrefChangeComments()
   const lastCommentDivsLength = commentDivs.length
   const containesCommentDiv = document.contains(commentDivs[0])
   if (!didPathChange && lastCommentDivsLength > 1 && containesCommentDiv) return commentDivs.length
@@ -136,60 +82,49 @@ function updateCommentDivs() {
   const commentDivsLength = getCommentDivs().length
   if (commentDivsLength < 2) return commentDivsLength
 
-  setupCommentMutations()
+  const commentDivsCommonParent = findCommonParent(commentDivs[0], commentDivs[1])
+  setupCommentMutations(commentDivsCommonParent)
   return commentDivsLength
 }
 
+function isPostsNavigationAvailable() {
+  if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+    return updateCommentDivs()
+  } else {
+    return updatePostContainers()
+  }
+}
+
+function focusPostOrComment(event: Event, which: 'next' | 'previous' | 'first' | 'last') {
+  event.preventDefault()
+  if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+    const prevIndex = commentIndex
+    commentIndex = changeCommentIndex(which, commentIndex)
+    if (commentIndex === prevIndex) return
+    focusCurrentComment()
+  } else {
+    const prevIndex = postIndex
+    postIndex = changePostIndex(which, postIndex)
+    if (postIndex === prevIndex) return
+    focusCurrentPost()
+  }
+}
 // TODO hidden comments cannot be scrolled to
 category.shortcuts.set('focusNextPost', {
   defaultKey: 'j',
   description: 'Next post or comment',
-  isAvailable: () => {
-    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      return updateCommentDivs()
-    } else {
-      return updatePostContainers()
-    }
-  },
+  isAvailable: isPostsNavigationAvailable,
   event: (ev) => {
-    ev.preventDefault()
-    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      const prevIndex = commentIndex
-      commentIndex = Math.min(commentIndex + 1, commentDivs.length - 1)
-      if (commentIndex === prevIndex) return
-      focusCurrentComment()
-    } else {
-      const prevIndex = postIndex
-      postIndex = Math.min(postIndex + 1, postContainers.length - 1)
-      if (postIndex === prevIndex) return
-      focusCurrentPost()
-    }
+    focusPostOrComment(ev, 'next')
   }
 })
 
 category.shortcuts.set('focusPreviousPost', {
   defaultKey: 'k',
   description: 'Previous post or comment',
-  isAvailable: () => {
-    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      return updateCommentDivs()
-    } else {
-      return updatePostContainers()
-    }
-  },
+  isAvailable: isPostsNavigationAvailable,
   event: (ev) => {
-    ev.preventDefault()
-    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      const prevIndex = commentIndex
-      commentIndex = Math.max(commentIndex - 1, 0)
-      if (commentIndex === prevIndex) return
-      focusCurrentComment()
-    } else {
-      const prevIndex = postIndex
-      postIndex = Math.max(postIndex - 1, 0)
-      if (postIndex === prevIndex) return
-      focusCurrentPost()
-    }
+    focusPostOrComment(ev, 'previous')
   }
 })
 
@@ -197,47 +132,17 @@ category.shortcuts.set('focusPreviousPost', {
 category.shortcuts.set('focusFirstPost', {
   defaultKey: 'K',
   description: 'First post or comment',
-  isAvailable: () => {
-    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      return updateCommentDivs()
-    } else {
-      return updatePostContainers()
-    }
-  },
+  isAvailable: isPostsNavigationAvailable,
   event: (ev) => {
-    ev.preventDefault()
-    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      if (commentIndex === 0) return
-      commentIndex = 0
-      focusCurrentComment()
-    } else {
-      if (postIndex === 0) return
-      postIndex = 0
-      focusCurrentPost()
-    }
+    focusPostOrComment(ev, 'first')
   }
 })
 
 category.shortcuts.set('focusLastPost', {
   defaultKey: 'J',
   description: 'Last post or comment',
-  isAvailable: () => {
-    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      return updateCommentDivs()
-    } else {
-      return updatePostContainers()
-    }
-  },
+  isAvailable: isPostsNavigationAvailable,
   event: (ev) => {
-    ev.preventDefault()
-    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      if (commentIndex === commentDivs.length - 1) return
-      commentIndex = commentDivs.length - 1
-      focusCurrentComment()
-    } else {
-      if (postIndex === postContainers.length - 1) return
-      postIndex = postContainers.length - 1
-      focusCurrentPost()
-    }
+    focusPostOrComment(ev, 'last')
   }
 })

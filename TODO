@@ -25,7 +25,7 @@ Todo:
   ✔ When shortcut navigates to new page, figure out how to query not yet rendered elements (await for element to appear / mutation observer) @done(22-08-30 19:15)
   ☐ Mutation observers will stay in background if callback didn't disconnect (happens if it didn't find the queried element) @high
   ☐ Logic for mutation observers is done with too many outer scope variables and is hard to follow
-  ☐ Write generic setupMutationObserver function
+  ✔ Write generic setupMutationObserver function @done(23-01-29 09:35)
 
   ✔ Ask user for additional permissions for Google domains, instead of requesting all of them in manifest.json @critical @done(23-01-09 11:44)
   ✔ Rewrite README.md @done(23-01-18 15:17)
@@ -104,10 +104,10 @@ Todo:
     ✔ Add Reddit shortcuts @done(22-12-10 23:55)
     ✔ Make shortcuts work on comments pages @done(22-12-15 02:20)
     ☐ Add go to next/previous comment in current level
-    ☐ Go to next/previous comment shortcuts are slow
+    ✔ Go to next/previous comment shortcuts are slow @done(23-01-29 09:36)
     ✔ Add isAvailable functions @done(22-12-21 19:11)
     ☐ Shortcuts work poorly without logging in
-    ☐ When going to a subreddit from a post (not in new tab), scrolling with j/k will continue from the original post, which may be undesirable
+    ✔ When going to a subreddit from a post (not in new tab), scrolling with j/k will continue from the original post, which may be undesirable @done(23-01-29 09:36)
     ✔ Rewrite comment page logic to first query comments post @done(23-01-25 04:44)
 
   Fandom wiki:

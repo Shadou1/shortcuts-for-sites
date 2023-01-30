@@ -1,5 +1,7 @@
+import { getSetupUpdateIndexOnFocus } from '../../utils/focusUtils'
+import { getChangeIndex } from '../../utils/indexUtils'
 import { didHrefChange } from '../../utils/locationUtils'
-import { findCommonParent, whenElementMutates } from '../../utils/mutationUtils'
+import { findCommonParent, getSetupMutations } from '../../utils/mutationUtils'
 import { ShortcutsCategory } from '../Shortcuts'
 
 const didPageHrefChange = didHrefChange()
@@ -10,95 +12,16 @@ export default category
 let videoAnchors: HTMLAnchorElement[] = []
 let videoAnchorsPanels: HTMLElement[] = []
 let videoAnchorIndex = -1
+let changeVideoAnchorIndex: ReturnType<typeof getChangeIndex>
+
 // This needs to account for fixed headers, sometimes there are more than 1 fixed header (on the home page there are video categories header)
 // TODO make this value dynamic
 const videoAnchorPanelScrollHeight = 120
 let scrollToAndFocusCurrentVideoAnchor: () => void
 
-let videoAnchorsCommonParent: HTMLElement
-let mutationObserver: MutationObserver | null
-let mutationObserverOnResultsPage: MutationObserver | null
-let lastMutationTimeout: ReturnType<typeof setTimeout>
-
-// TODO maybe this can be reduced
-const mutationWaitTimeMs = 150
-function setupVideoAnchorsMutations(isResultsPage: boolean) {
-  videoAnchorsCommonParent = findCommonParent(videoAnchorsPanels[0], videoAnchorsPanels[videoAnchors.length - 1])
-
-  // On /results pages, common parent is commonParent's parent's parent
-  if (isResultsPage && videoAnchorsCommonParent.classList.contains('ytd-item-section-renderer')) {
-    videoAnchorsCommonParent = videoAnchorsCommonParent.parentElement!.parentElement!
-  }
-
-  // console.log('common parent', videoAnchorsCommonParent)
-
-  // If setting up new mutation observer, the last one should be disconnected
-  mutationObserver?.disconnect()
-  mutationObserver = whenElementMutates(videoAnchorsCommonParent, (mutations, _observer) => {
-    // If mutated anchors are no longer visible, return
-    // The observer will later be disconnected by updateVideoAnchors()
-    if (!videoAnchors[0]?.offsetParent) return
-    // If mutation didn't add any new nodes, don't count it
-    let didAddNodes = false
-    for (const mutation of mutations) {
-      if (mutation.addedNodes.length) {
-        didAddNodes = true
-        break
-      }
-    }
-    if (!didAddNodes) return
-
-    // Wait for mutationWaitTimeMs, there may be a series of mutations in a row
-    clearTimeout(lastMutationTimeout)
-    lastMutationTimeout = setTimeout(() => {
-      getVideoAnchors()
-      // If on results page, setup mutation observer for the newely added elements
-      if (isResultsPage) {
-        setupVideoAnchorsMutationsOnResultsPage()
-      }
-    }, mutationWaitTimeMs)
-  }, { childList: true })
-}
-
-// TODO maybe other pages also need this functionality
-let lastMutationTimeoutNewResults: ReturnType<typeof setTimeout>
-function setupVideoAnchorsMutationsOnResultsPage() {
-  // Watch for mutation on the last section renderer contents div
-  // New results will be added there, most time asynchronously
-  const lastSectionContents = videoAnchorsCommonParent.querySelector<HTMLElement>('ytd-item-section-renderer:last-of-type > #contents')!
-  // If adding a new mutation observer on results page, the last on is not needed anymore
-  mutationObserverOnResultsPage?.disconnect()
-  mutationObserverOnResultsPage = whenElementMutates(lastSectionContents, (_mutations, observer) => {
-    if (!lastSectionContents.offsetParent) {
-      // No need to watch for mutations on a now invisible element
-      // If it later becomes visible, videoAnchors will already have all the results from it
-      observer.disconnect()
-      return
-    }
-    clearTimeout(lastMutationTimeoutNewResults)
-    lastMutationTimeoutNewResults = setTimeout(() => {
-      getVideoAnchors()
-      // If this gets called, there will be no future results, so it's ok to disconnect the observer
-      // However, disconnecting the observer may lead to errors:
-      // If time between new results mutations is greater than mutationWaitTimeMs, videoAnchors will not contain the latest results
-      // This can be fixed by not disconnecting the observer
-      // There is no overehead (probably)
-      // observer.disconnect()
-    }, mutationWaitTimeMs)
-  }, { childList: true })
-}
-
-let updateVideoAnchorIndexAborts: AbortController[] = []
-function updateVideoAnchorIndex(toIndex: number) {
-  return function () {
-    videoAnchorIndex = toIndex
-  }
-}
+const setupUpdateVideoAnchorIndexOnFocus = getSetupUpdateIndexOnFocus((index) => videoAnchorIndex = index)
 
 function getVideoAnchors() {
-  updateVideoAnchorIndexAborts.forEach((abortController) => abortController.abort())
-  updateVideoAnchorIndexAborts = []
-
   videoAnchors = [...document.querySelectorAll<HTMLAnchorElement>(`ytd-page-manager > :not([hidden=""]) a:is(
     .ytd-compact-video-renderer,
     .ytd-compact-playlist-renderer,
@@ -130,14 +53,37 @@ function getVideoAnchors() {
     videoAnchors[videoAnchorIndex].focus()
   }
 
-  videoAnchors.forEach((videoAnchor, index) => {
-    const abortController = new AbortController()
-    videoAnchor.addEventListener('focus', updateVideoAnchorIndex(index), { signal: abortController.signal })
-    updateVideoAnchorIndexAborts.push(abortController)
-  })
+  changeVideoAnchorIndex = getChangeIndex(videoAnchors)
+
+  setupUpdateVideoAnchorIndexOnFocus(videoAnchors)
 
   return videoAnchors
 }
+
+let videoAnchorsCommonParent: HTMLElement
+let isResultsPage: boolean
+
+const [setupVideoAnchorsMutationsOnResultsPage] = getSetupMutations(getVideoAnchors, {
+  mutationWaitTimeMs: 150,
+  beforeMutation: (commonParent, _mutations, observer) => {
+    if (!commonParent.offsetParent) {
+      observer.disconnect()
+      return true
+    }
+    return false
+  }
+})
+
+const [setupVideoAnchorsMutations] = getSetupMutations(() => {
+  if (isResultsPage) {
+    const lastSectionContents = videoAnchorsCommonParent.querySelector<HTMLElement>('ytd-item-section-renderer:last-of-type > #contents')!
+    setupVideoAnchorsMutationsOnResultsPage(lastSectionContents)
+  }
+  return getVideoAnchors()
+}, {
+  mutationWaitTimeMs: 150,
+  beforeMutation: () => !videoAnchors[0]?.offsetParent,
+})
 
 function updateVideoAnchors() {
   const didPathChange = didPageHrefChange()
@@ -147,14 +93,22 @@ function updateVideoAnchors() {
   // Bellow only runs if we need to setup new mutation observer
 
   const videoAnchorsLength = getVideoAnchors().length
-  if (!videoAnchorsLength) return videoAnchorsLength
+  if (videoAnchorsLength < 2) return videoAnchorsLength
 
   videoAnchorIndex = -1
-  const isResultsPage = window.location.pathname === '/results'
-  setupVideoAnchorsMutations(isResultsPage)
+
+  isResultsPage = window.location.pathname === '/results'
+  videoAnchorsCommonParent = findCommonParent(videoAnchorsPanels[0], videoAnchorsPanels[videoAnchorsPanels.length - 1])
+  // On /results pages, common parent is commonParent's parent's parent
+  if (isResultsPage && videoAnchorsCommonParent.classList.contains('ytd-item-section-renderer')) {
+    videoAnchorsCommonParent = videoAnchorsCommonParent.parentElement!.parentElement!
+  }
+
+  setupVideoAnchorsMutations(videoAnchorsCommonParent)
   if (isResultsPage) {
     // Only for initial results, not all of them may be loaded yet
-    setupVideoAnchorsMutationsOnResultsPage()
+    const lastSectionContents = videoAnchorsCommonParent.querySelector<HTMLElement>('ytd-item-section-renderer:last-of-type > #contents')!
+    setupVideoAnchorsMutationsOnResultsPage(lastSectionContents)
   }
 
   return videoAnchorsLength
@@ -166,48 +120,45 @@ function updateVideoAnchors() {
 // This way tabbing to anchors and then using a shortcut will reset anchor index to 0,
 // updateVideoAnchors()
 
+function focusVideoAnchor(which: Parameters<typeof changeVideoAnchorIndex>[0]) {
+  const prevIndex = videoAnchorIndex
+  videoAnchorIndex = changeVideoAnchorIndex(which, videoAnchorIndex)
+  if (videoAnchorIndex === prevIndex) return
+  scrollToAndFocusCurrentVideoAnchor()
+}
+
 category.shortcuts.set('focusNextVideo', {
   defaultKey: ']',
   description: 'Focus next video',
-  isAvailable: () => updateVideoAnchors(),
+  isAvailable: updateVideoAnchors,
   event: () => {
-    const prevIndex = videoAnchorIndex
-    videoAnchorIndex = Math.min(videoAnchorIndex + 1, videoAnchors.length - 1)
-    if (videoAnchorIndex === prevIndex) return
-    scrollToAndFocusCurrentVideoAnchor()
+    focusVideoAnchor('next')
   }
 })
 
 category.shortcuts.set('focusPreviousVideo', {
   defaultKey: '[',
   description: 'Focus previous video',
-  isAvailable: () => updateVideoAnchors(),
+  isAvailable: updateVideoAnchors,
   event: () => {
-    const prevIndex = videoAnchorIndex
-    videoAnchorIndex = Math.max(videoAnchorIndex - 1, 0)
-    if (videoAnchorIndex === prevIndex) return
-    scrollToAndFocusCurrentVideoAnchor()
+    focusVideoAnchor('previous')
   }
 })
 
 category.shortcuts.set('focusFirstVideo', {
   defaultKey: '{',
   description: 'Focus first video',
-  isAvailable: () => updateVideoAnchors(),
+  isAvailable: updateVideoAnchors,
   event: () => {
-    if (videoAnchorIndex === 0) return
-    videoAnchorIndex = 0
-    scrollToAndFocusCurrentVideoAnchor()
+    focusVideoAnchor('first')
   }
 })
 
 category.shortcuts.set('focusLastVideo', {
   defaultKey: '}',
   description: 'Focus last video',
-  isAvailable: () => updateVideoAnchors(),
+  isAvailable: updateVideoAnchors,
   event: () => {
-    if (videoAnchorIndex === videoAnchors.length - 1) return
-    videoAnchorIndex = videoAnchors.length - 1
-    scrollToAndFocusCurrentVideoAnchor()
+    focusVideoAnchor('last')
   }
 })

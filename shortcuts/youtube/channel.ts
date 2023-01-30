@@ -1,7 +1,6 @@
 import { pathnameEndsWith, pathnameStartsWith } from '../../utils/locationUtils'
 import { whenElementMutatesQuery } from '../../utils/mutationUtils'
 import {
-  focusFirstPlaylist,
   goToPlaylistsTab,
   goToVideosTab
 } from './utils'
@@ -68,7 +67,6 @@ category.shortcuts.set('goToChannelPlaylists', {
       // TODO refactor :nth-last-of-type(5), this will incorrectly select another tab when channel has a 'store' tab, or doesn't have community tab
       const playlistsTab = document.querySelector<HTMLElement>('#tabsContainer tp-yt-paper-tab:nth-last-of-type(5)')!
       playlistsTab.click()
-      whenElementMutatesQuery('#content.ytd-app', focusFirstPlaylist)
     }
   }
 })

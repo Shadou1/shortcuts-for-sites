@@ -16,7 +16,6 @@ let changePostIndex: ReturnType<typeof getChangeIndex>
 const setupUpdatePostIndexOnFocus = getSetupUpdateIndexOnFocus((index) => postIndex = index)
 
 function getPostContainers() {
-  console.log('getting posts')
   postContainers = [...document.querySelectorAll<HTMLElement>('[data-testid="post-container"]')]
   changePostIndex = getChangeIndex(postContainers)
   // post container is not actually focusable
@@ -39,7 +38,6 @@ let commentIndex = -1
 let changeCommentIndex: ReturnType<typeof getChangeIndex>
 
 function getCommentDivs() {
-  console.log('getting comments')
   commentDivs = [...document.querySelectorAll<HTMLElement>('[style*="padding-left"')]
   changeCommentIndex = getChangeIndex(commentDivs, { skip: (el) => !el.offsetParent })
   return commentDivs
@@ -51,11 +49,11 @@ function focusCurrentComment() {
   // TODO add focus collapse comment button
 }
 
-const setupPostMutations = getSetupMutations(getPostContainers, {
+const [setupPostMutations] = getSetupMutations(getPostContainers, {
   mutationWaitTimeMs: 300,
 })
 
-const setupCommentMutations = getSetupMutations(getCommentDivs)
+const [setupCommentMutations] = getSetupMutations(getCommentDivs)
 
 function updatePostContainers() {
   const didPathChange = didHrefChangePosts()
@@ -109,7 +107,7 @@ function focusPostOrComment(event: Event, which: 'next' | 'previous' | 'first' |
     focusCurrentPost()
   }
 }
-// TODO hidden comments cannot be scrolled to
+
 category.shortcuts.set('focusNextPost', {
   defaultKey: 'j',
   description: 'Next post or comment',

@@ -43,22 +43,27 @@ export function getSetupMutations(
     /**
      * @returns whether the mutation observer callback should return before executing
      */
-    beforeMutation?: (mutations: MutationRecord[], observer: MutationObserver) => boolean
-    disconnectAfterMutation?: boolean
+    beforeMutation?: (commonParent: HTMLElement, mutations: MutationRecord[], observer: MutationObserver) => boolean,
+    disconnectAfterMutation?: boolean,
+    disconnectOnSetup?: boolean,
+    setupMultipleObservers?: boolean,
   } = {},
 ) {
   options.mutationWaitTimeMs = options.mutationWaitTimeMs ?? 200
   options.mutationObserverOptions = options.mutationObserverOptions ?? { childList: true }
   options.disconnectAfterMutation = options.disconnectAfterMutation ?? false
+  options.disconnectOnSetup = options.disconnectOnSetup ?? true
+  options.setupMultipleObservers = options.setupMultipleObservers ?? false
 
-  let mutationObserver: MutationObserver | null
+  let mutationObserver: MutationObserver | MutationObserver[] | null
   let mutationTimeout: ReturnType<typeof setTimeout>
 
-  function setupMutations(commonParent: HTMLElement) {
-    mutationObserver?.disconnect()
-    mutationObserver = whenElementMutates(commonParent, (mutations, observer) => {
+  if (options.setupMultipleObservers) mutationObserver = []
 
-      if (options.beforeMutation?.(mutations, observer)) return
+  function setupMutationObserver(commonParent: HTMLElement) {
+    return whenElementMutates(commonParent, (mutations, observer) => {
+
+      if (options.beforeMutation?.(commonParent, mutations, observer)) return
 
       let didAddNodes = false
       for (const mutation of mutations) {
@@ -78,5 +83,21 @@ export function getSetupMutations(
     }, options.mutationObserverOptions)
   }
 
-  return setupMutations
+  function setupMutations(commonParent: HTMLElement) {
+    if (Array.isArray(mutationObserver)) {
+      const currentObserver = setupMutationObserver(commonParent)
+      mutationObserver.push(currentObserver)
+    } else {
+      if (options.disconnectOnSetup) mutationObserver?.disconnect()
+      mutationObserver = setupMutationObserver(commonParent)
+    }
+  }
+
+  function disconnectObservers() {
+    if (!Array.isArray(mutationObserver)) return
+    mutationObserver.forEach((observer) => observer.disconnect())
+    mutationObserver = []
+  }
+
+  return [setupMutations, disconnectObservers] as const
 }

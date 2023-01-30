@@ -1,5 +1,7 @@
+import { getSetupUpdateIndexOnFocus } from '../../utils/focusUtils'
+import { getChangeIndex } from '../../utils/indexUtils'
 import { didHrefChange } from '../../utils/locationUtils'
-import { whenElementMutates } from '../../utils/mutationUtils'
+import { getSetupMutations } from '../../utils/mutationUtils'
 import { ShortcutsCategory } from '../Shortcuts'
 
 const didPageHrefChange = didHrefChange()
@@ -10,24 +12,18 @@ export default category
 let relevantAnchors: HTMLAnchorElement[] = []
 let showMoreRelevantButtons: HTMLButtonElement[] = []
 let relevantAnchorIndex = -1
+let changeRelevantAnchorIndex: ReturnType<typeof getChangeIndex>
+
 const relevantAnchorScrollHeight = 120
 const relevantAnchorScrollHeightHomePageAdjustment = 100
-let isOnHomePage: HTMLElement | null // Scroll height on channel pages must be adjusted
 let scrollToAndFocusCurrentRelevantAnchor: () => void
-let updateRelevantAnchorsAborts: AbortController[] = []
-function updateRelevantAnchorIndex(toIndex: number) {
-  return function () {
-    relevantAnchorIndex = toIndex
-  }
-}
+
+const setupUpdateRelevantAnchorIndexOnFocus = getSetupUpdateIndexOnFocus((index) => relevantAnchorIndex = index)
 
 // TODO add channel anchors to a list of relevant anchors
 // Should get streams, videos, clips, categories
 function getRelevantAnchors() {
-  updateRelevantAnchorsAborts.forEach((abortController) => abortController.abort())
-  updateRelevantAnchorsAborts = []
-
-  const twTowersAndShowMoreButtons = document.querySelectorAll(':is([data-test-selector="view-all"], .tw-tower, .show-more__move-up button)')
+  const twTowersAndShowMoreButtons = document.querySelectorAll(':is([data-test-selector="view-all"], .tw-tower, .show-more__move-up :is(button, a))')
 
   showMoreRelevantButtons = []
   const relevantAnchorsParents: HTMLElement[] = []
@@ -39,8 +35,8 @@ function getRelevantAnchors() {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (twTowersAndShowMoreButtons[i - 1]?.tagName === 'H5') {
       showMoreButton = twTowersAndShowMoreButtons[i - 1] as HTMLButtonElement
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    } else if (twTowersAndShowMoreButtons[i + 1]?.tagName === 'BUTTON') {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    } else if (twTowersAndShowMoreButtons[i + 1]?.tagName === 'BUTTON' || twTowersAndShowMoreButtons[i + 1]?.tagName === 'A') {
       showMoreButton = twTowersAndShowMoreButtons[i + 1] as HTMLButtonElement
     }
     // Page will not have new showMore buttons when towers mutate
@@ -65,17 +61,16 @@ function getRelevantAnchors() {
 
   const rootScrollContentElement = relevantAnchorsParents[0]?.closest('.simplebar-scroll-content')
   scrollToAndFocusCurrentRelevantAnchor = () => {
+    const isOnHomePage = document.querySelector<HTMLElement>('.home-header-sticky')
     const scrollHeight = isOnHomePage ? relevantAnchorScrollHeight + relevantAnchorScrollHeightHomePageAdjustment : relevantAnchorScrollHeight
     const rect = relevantAnchorsParents[relevantAnchorIndex].getBoundingClientRect()
     rootScrollContentElement?.scrollBy(0, rect.top - scrollHeight)
     relevantAnchors[relevantAnchorIndex].focus()
   }
 
-  relevantAnchors.forEach((relevantAnchor, index) => {
-    const abortController = new AbortController()
-    relevantAnchor.addEventListener('focus', updateRelevantAnchorIndex(index), { signal: abortController.signal })
-    updateRelevantAnchorsAborts.push(abortController)
-  })
+  changeRelevantAnchorIndex = getChangeIndex(relevantAnchors)
+
+  setupUpdateRelevantAnchorIndexOnFocus(relevantAnchors)
 
   return relevantAnchors
 }
@@ -85,36 +80,11 @@ function getRelevantAnchors() {
 //   [class*="TowerPlaceholder"]
 // )`)
 
-let mutationObservers: MutationObserver[] = []
-let lastMutationTimeout: ReturnType<typeof setTimeout>
-const mutationWaitTimeMs = 100
-function setupRelevantAnchorsMutations() {
-  // .tw-tower elements have all the relevant anchors and anchors that can become visible later
-  const twTowers = document.querySelectorAll<HTMLElement>('.tw-tower')
-
-  mutationObservers.forEach((observer) => observer.disconnect())
-  mutationObservers = []
-  twTowers.forEach((tower) => {
-    const mutationObserver = whenElementMutates(tower, (mutations, _observer) => {
-      if (!tower.offsetParent) return
-
-      let didAddNodes = false
-      outer: for (const mutation of mutations) {
-        if (mutation.addedNodes.length) {
-          didAddNodes = true
-          break outer
-        }
-      }
-      if (!didAddNodes) return
-
-      clearTimeout(lastMutationTimeout)
-      lastMutationTimeout = setTimeout(() => {
-        getRelevantAnchors()
-      }, mutationWaitTimeMs)
-    }, { childList: true })
-    mutationObservers.push(mutationObserver)
-  })
-}
+const [setupRelevantAnchorsMutations, disconnectRelevantAnchorsObservers] = getSetupMutations(getRelevantAnchors, {
+  mutationWaitTimeMs: 100,
+  beforeMutation: (commonParent) => !commonParent.offsetParent,
+  setupMultipleObservers: true
+})
 
 function updateRelevantAnchors() {
   const didPathChange = didPageHrefChange()
@@ -124,59 +94,59 @@ function updateRelevantAnchors() {
   // Bellow only runs if we need to setup new mutation observer
 
   const relevantAnchorsLength = getRelevantAnchors().length
-  if (!relevantAnchorsLength) return relevantAnchorsLength
-
-  isOnHomePage = document.querySelector<HTMLElement>('.home-header-sticky')
+  if (relevantAnchorsLength < 2) return relevantAnchorsLength
 
   relevantAnchorIndex = -1
-  setupRelevantAnchorsMutations()
+  disconnectRelevantAnchorsObservers()
+  // .tw-tower elements have all the relevant anchors and anchors that can become visible later
+  const twTowers = document.querySelectorAll<HTMLElement>('.tw-tower')
+  twTowers.forEach((tower) => {
+    setupRelevantAnchorsMutations(tower)
+  })
 
   return relevantAnchorsLength
+}
+
+function focusRelevantAnchor(which: Parameters<typeof changeRelevantAnchorIndex>[0]) {
+  const prevIndex = relevantAnchorIndex
+  relevantAnchorIndex = changeRelevantAnchorIndex(which, relevantAnchorIndex)
+  if (relevantAnchorIndex === prevIndex) return
+  scrollToAndFocusCurrentRelevantAnchor()
 }
 
 category.shortcuts.set('focusNextRelevant', {
   defaultKey: ']',
   description: 'Focus next relevant',
-  isAvailable: () => updateRelevantAnchors(),
+  isAvailable: updateRelevantAnchors,
   event: () => {
-    const prevIndex = relevantAnchorIndex
-    relevantAnchorIndex = Math.min(relevantAnchorIndex + 1, relevantAnchors.length - 1)
-    if (relevantAnchorIndex === prevIndex) return
-    scrollToAndFocusCurrentRelevantAnchor()
+    focusRelevantAnchor('next')
   }
 })
 
 category.shortcuts.set('focusPreviousRelevant', {
   defaultKey: '[',
   description: 'Focus previous relevant',
-  isAvailable: () => updateRelevantAnchors(),
+  isAvailable: updateRelevantAnchors,
   event: () => {
-    const prevIndex = relevantAnchorIndex
-    relevantAnchorIndex = Math.max(relevantAnchorIndex - 1, 0)
-    if (relevantAnchorIndex === prevIndex) return
-    scrollToAndFocusCurrentRelevantAnchor()
+    focusRelevantAnchor('previous')
   }
 })
 
 category.shortcuts.set('focusFirstRelevant', {
   defaultKey: '{',
   description: 'Focus first relevant',
-  isAvailable: () => updateRelevantAnchors(),
+  isAvailable: updateRelevantAnchors,
   event: () => {
-    if (relevantAnchorIndex === 0) return
-    relevantAnchorIndex = 0
-    scrollToAndFocusCurrentRelevantAnchor()
+    focusRelevantAnchor('first')
   }
 })
 
 category.shortcuts.set('focusLastRelevant', {
   defaultKey: '}',
   description: 'Focus last relevant',
-  isAvailable: () => updateRelevantAnchors(),
+  isAvailable: updateRelevantAnchors,
   event: () => {
-    if (relevantAnchorIndex === relevantAnchors.length - 1) return
-    relevantAnchorIndex = relevantAnchors.length - 1
-    scrollToAndFocusCurrentRelevantAnchor()
+    focusRelevantAnchor('last')
   }
 })
 

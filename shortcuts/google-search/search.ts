@@ -1,37 +1,24 @@
-import { whenElementMutates, findCommonParent } from '../../utils/mutationUtils'
+import { getSetupUpdateIndexOnFocus } from '../../utils/focusUtils'
+import { getChangeIndex } from '../../utils/indexUtils'
+import { findCommonParent, getSetupMutations } from '../../utils/mutationUtils'
 import { ShortcutsCategory } from '../Shortcuts'
 
 const category = new ShortcutsCategory('Search', 'Navigate search results')
 export default category
 
 // Get results and setup updating indexes on tabbing
-
 let searchResultsAnchors: HTMLAnchorElement[] = []
 let searchResultIndex = -1
+let changeSearchResultIndex: ReturnType<typeof getChangeIndex>
 
 let searchSuggestedAnchors: HTMLAnchorElement[] = []
 let searchSuggestedIndex = -1
+// let changeSearchSuggestedIndex: ReturnType<typeof getChangeIndex>
 
-let updateSearchResultIndexAborts: AbortController[] = []
-function updateSearchResultIndex(toIndex: number) {
-  return function () {
-    searchResultIndex = toIndex
-  }
-}
-
-let updateSearchSuggestedIndexAborts: AbortController[] = []
-function updateSearchSuggestedIndex(toIndex: number) {
-  return function () {
-    searchSuggestedIndex = toIndex
-  }
-}
+const setupUpdateSearchResultIndexOnFocus = getSetupUpdateIndexOnFocus((index) => searchResultIndex = index)
+const setupUpdateSearchSuggestedIndexOnFocus = getSetupUpdateIndexOnFocus((index) => searchSuggestedIndex = index)
 
 function getSearchResults() {
-  updateSearchResultIndexAborts.forEach((abortController) => abortController.abort())
-  updateSearchSuggestedIndexAborts.forEach((abortController) => abortController.abort())
-  updateSearchResultIndexAborts = []
-  updateSearchSuggestedIndexAborts = []
-
   const urlSearchParams = new URLSearchParams(window.location.search)
   const queryType = urlSearchParams.get('tbm')
 
@@ -96,47 +83,29 @@ function getSearchResults() {
     searchSuggestedAnchors = [...document.querySelectorAll<HTMLAnchorElement>('scrolling-carousel a[href*="tbm=isch"]')]
   }
 
-  // Setup updating indexes on tabbing
-  searchResultsAnchors.forEach((searchResult, index) => {
-    const abortController = new AbortController()
-    searchResult.addEventListener('focus', updateSearchResultIndex(index), { signal: abortController.signal })
-    updateSearchResultIndexAborts.push(abortController)
-  })
+  // Setup change indexes
+  changeSearchResultIndex = getChangeIndex(searchResultsAnchors)
+  // changeSearchSuggestedIndex = getChangeIndex(searchSuggestedAnchors)
 
-  searchSuggestedAnchors.forEach((suggestedResult, index) => {
-    const abortController = new AbortController()
-    suggestedResult.addEventListener('focus', updateSearchSuggestedIndex(index), { signal: abortController.signal })
-    updateSearchSuggestedIndexAborts.push(abortController)
-  })
+  // Setup updating indexes on tabbing
+  setupUpdateSearchResultIndexOnFocus(searchResultsAnchors)
+  setupUpdateSearchSuggestedIndexOnFocus(searchSuggestedAnchors)
 
   return searchResultsAnchors
 }
 
 // Setup mutations on images page
-
-let lastMutationTimeout: ReturnType<typeof setTimeout>
-const mutationWaitTimeMs = 100
-function setupImageMutations() {
-  // Look for the second element and not the last one like on Youtube
-  // Because last element when new image results are added is incorrect before scrolling to it
-  const commonParent = findCommonParent(searchResultsAnchors[0], searchResultsAnchors[1])
-
-  // Static MutationObserver, because google pages are not dynamic (redirect causes page reload)
-  whenElementMutates(commonParent, (_mutations, _observer) => {
-    clearTimeout(lastMutationTimeout)
-    lastMutationTimeout = setTimeout(() => {
-      getSearchResults()
-    }, mutationWaitTimeMs)
-  }, { childList: true })
-}
+const [setupImageMutations] = getSetupMutations(getSearchResults, {
+  mutationWaitTimeMs: 100
+})
 
 let isMutationsSetup = false
 function updateSearchResults() {
   if (isMutationsSetup) return searchResultsAnchors.length
 
   const searchResultsAnchorsLength = getSearchResults().length
+  if (searchResultsAnchorsLength < 2) return searchResultsAnchorsLength
 
-  if (!searchResultsAnchorsLength) return searchResultsAnchorsLength
   // Bellow code will only run once
   isMutationsSetup = true
 
@@ -144,7 +113,8 @@ function updateSearchResults() {
   const queryType = urlSearchParams.get('tbm')
   if (queryType === 'isch') {
     // Need to look for mutations on infinitely scrollable image search pages
-    setupImageMutations()
+    const imagesCommonParent = findCommonParent(searchResultsAnchors[0], searchResultsAnchors[1])
+    setupImageMutations(imagesCommonParent)
   }
 
   return searchResultsAnchorsLength
@@ -154,70 +124,51 @@ function updateSearchResults() {
 updateSearchResults()
 
 const searchResultScrollLength = 250
+function focusSearchResult(which: Parameters<typeof changeSearchResultIndex>[0]) {
+  const lastIndex = searchResultIndex
+  searchResultIndex = changeSearchResultIndex(which, searchResultIndex)
+  if (searchResultIndex === lastIndex) return
+
+  const currentSearchAnchor = searchResultsAnchors[searchResultIndex]
+  const currentSearchAnchorRect = currentSearchAnchor.getBoundingClientRect()
+  const scrollLength = Math.min(searchResultScrollLength, window.innerHeight / 2.5)
+  window.scrollBy(0, currentSearchAnchorRect.top - scrollLength)
+  currentSearchAnchor.focus()
+}
 
 category.shortcuts.set('nextSearchResult', {
   defaultKey: 'j',
   description: 'Focus next search result / image',
-  isAvailable: () => updateSearchResults(),
+  isAvailable: updateSearchResults,
   event: () => {
-    const lastIndex = searchResultIndex
-    searchResultIndex = Math.min(searchResultIndex + 1, searchResultsAnchors.length - 1)
-    if (searchResultIndex === lastIndex) return
-
-    const currentSearchAnchor = searchResultsAnchors[searchResultIndex]
-    const currentSearchAnchorRect = currentSearchAnchor.getBoundingClientRect()
-    const scrollLength = Math.min(searchResultScrollLength, window.innerHeight / 2.5)
-    window.scrollBy(0, currentSearchAnchorRect.top - scrollLength)
-    currentSearchAnchor.focus()
+    focusSearchResult('next')
   }
 })
 
 category.shortcuts.set('previousSearchResult', {
   defaultKey: 'k',
   description: 'Focus previous search result / image',
-  isAvailable: () => updateSearchResults(),
+  isAvailable: updateSearchResults,
   event: () => {
-    const lastIndex = searchResultIndex
-    searchResultIndex = Math.max(searchResultIndex - 1, 0)
-    if (searchResultIndex === lastIndex) return
-
-    const currentSearchAnchor = searchResultsAnchors[searchResultIndex]
-    const currentSearchAnchorRect = currentSearchAnchor.getBoundingClientRect()
-    const scrollLength = Math.min(searchResultScrollLength, window.innerHeight / 2.5)
-    window.scrollBy(0, currentSearchAnchorRect.top - scrollLength)
-    currentSearchAnchor.focus()
+    focusSearchResult('previous')
   }
 })
 
 category.shortcuts.set('firstSearchResult', {
   defaultKey: 'K',
   description: 'Focus first search result / image',
-  isAvailable: () => updateSearchResults(),
+  isAvailable: updateSearchResults,
   event: () => {
-    if (searchResultIndex === 0) return
-    searchResultIndex = 0
-
-    const currentSearchAnchor = searchResultsAnchors[searchResultIndex]
-    const currentSearchAnchorRect = currentSearchAnchor.getBoundingClientRect()
-    const scrollLength = Math.min(searchResultScrollLength, window.innerHeight / 2.5)
-    window.scrollBy(0, currentSearchAnchorRect.top - scrollLength)
-    currentSearchAnchor.focus()
+    focusSearchResult('first')
   }
 })
 
 category.shortcuts.set('lastSearchResult', {
   defaultKey: 'J',
   description: 'Focus last search result / image',
-  isAvailable: () => updateSearchResults(),
+  isAvailable: updateSearchResults,
   event: () => {
-    if (searchResultIndex === searchResultsAnchors.length - 1) return
-    searchResultIndex = searchResultsAnchors.length - 1
-
-    const currentSearchAnchor = searchResultsAnchors[searchResultIndex]
-    const currentSearchAnchorRect = currentSearchAnchor.getBoundingClientRect()
-    const scrollLength = Math.min(searchResultScrollLength, window.innerHeight / 2.5)
-    window.scrollBy(0, currentSearchAnchorRect.top - scrollLength)
-    currentSearchAnchor.focus()
+    focusSearchResult('last')
   }
 })
 
@@ -245,7 +196,7 @@ category.shortcuts.set('previousSearchPage', {
 category.shortcuts.set('nextSuggestedSearch', {
   defaultKey: 'o',
   description: 'Focus next suggested search',
-  isAvailable: () => updateSearchResults(),
+  isAvailable: updateSearchResults,
   event: () => {
     searchSuggestedIndex = (searchSuggestedIndex + 1) % searchSuggestedAnchors.length
     const currentSuggestedAnchor = searchSuggestedAnchors[searchSuggestedIndex]

@@ -1,3 +1,4 @@
+import styles from './style.module.css'
 import { didPathnameChange } from '../../utils/locationUtils'
 
 const didCommentsPageChange = didPathnameChange()
@@ -14,7 +15,7 @@ export let activeVideoPlayer: HTMLElement | null
 export let activeVideo: HTMLVideoElement | null
 
 // Comments page
-let commentsPagePost: HTMLElement | null
+export let commentsPagePost: HTMLElement | null
 
 export let commentsPageSubredditLink: HTMLAnchorElement | null
 
@@ -23,6 +24,8 @@ export let commentsPageImageList: HTMLUListElement | null
 
 export let commentsPageVideoPlayer: HTMLElement | null
 export let commentsPageVideo: HTMLVideoElement | null
+
+export let activeComment: HTMLElement | null
 
 export function updateCommentsPage() {
   if (didCommentsPageChange()) {
@@ -48,46 +51,6 @@ export function updateCommentsPage() {
   commentsPageVideo = commentsPageVideo?.offsetParent ? commentsPageVideo : commentsPageVideoPlayer?.shadowRoot!.querySelector('video') as HTMLVideoElement | null
 }
 
-// outdated functions
-export function updatePostInComments() {
-  if (didCommentsPageChange()) {
-    commentsPagePost = document.querySelector('[data-test-id="post-content"]')
-  }
-  commentsPagePost = commentsPagePost?.offsetParent ? commentsPagePost : document.querySelector('[data-test-id="post-content"]')
-  return commentsPagePost
-}
-export function updateImageInComments() {
-  if (didCommentsPageChange()) {
-    commentsPageImage = document.querySelector('[data-test-id="post-content"] img.ImageBox-image')
-    commentsPageImageList = document.querySelector('[data-test-id="post-content"] ul')
-  }
-  commentsPageImage = commentsPageImage?.offsetParent ? commentsPageImage : document.querySelector('[data-test-id="post-content"] img.ImageBox-image')
-  commentsPageImageList = commentsPageImageList?.offsetParent ? commentsPageImageList : document.querySelector('[data-test-id="post-content"] ul')
-  return commentsPageImage ?? commentsPageImageList
-}
-
-export function updateVideoInComments() {
-  if (didCommentsPageChange()) {
-    commentsPageVideoPlayer = document.querySelector('[data-test-id="post-content"] shreddit-player')
-    commentsPageVideo = commentsPageVideoPlayer?.shadowRoot!.querySelector('video') as HTMLVideoElement | null
-  }
-  // If user goes to a comments page (curent tab) then back an then back to the comments page, activeVideoPlayerInComments will now refer to a hidden element (offsetParent is null)
-  // This happens because didCommentsPageChange() will return false, so need to check for ?.offsetParent
-  commentsPageVideoPlayer = commentsPageVideoPlayer?.offsetParent ? commentsPageVideoPlayer : document.querySelector('[data-test-id="post-content"] shreddit-player')
-  commentsPageVideo = commentsPageVideo?.offsetParent ? commentsPageVideo : commentsPageVideoPlayer?.shadowRoot!.querySelector('video') as HTMLVideoElement | null
-  return commentsPageVideoPlayer?.offsetParent && commentsPageVideo?.offsetParent
-}
-
-export function updateSubredditLinkInComments() {
-  if (didCommentsPageChange()) {
-    commentsPageSubredditLink = document.querySelector('a > span[title]')?.parentElement as HTMLAnchorElement | null
-  }
-  // Here if an element's offsetParent is null, it is still valid to click on it (its href is also valid)
-  commentsPageSubredditLink = commentsPageSubredditLink ?? document.querySelector('a > span[title]')?.parentElement as HTMLAnchorElement | null
-  return commentsPageSubredditLink
-}
-// end outdated functions
-
 export let scrollContainerComments: HTMLElement | null
 export function updateScrollContainerInComments() {
   if (didCommentsPageChange()) {
@@ -98,56 +61,77 @@ export function updateScrollContainerInComments() {
   return scrollContainerComments?.offsetParent
 }
 
-let isKeyboardNavigated = false
-document.body.addEventListener('keydown', (event) => {
-  if (event.key !== 'j' && event.key !== 'k' && event.key !== 'J' && event.key !== 'K') return
-  isKeyboardNavigated = true
-})
+// TODO maybe query posts data only once when getPostContainers is called
+export function getPostData(postContainer: HTMLElement) {
+  activePost = postContainer
+  activePostImage = activePost.querySelector('img.ImageBox-image')
+  activePostImageList = activePost.querySelector('ul')
+  activePostSubredditLink = activePost.querySelector('a[data-click-id="subreddit"]')
 
-let activeComment: HTMLElement | null
+  activeVideoPlayer = activePost.querySelector('shreddit-player')
+  if (!activeVideoPlayer) {
+    // Posts on home pages have videos without shadow dom
+    activeVideoPlayer = activePost.querySelector('[data-isvideoplayer="1"]')
+    activeVideo = activeVideoPlayer?.querySelector('video') as HTMLVideoElement | null
+  } else {
+    activeVideo = activeVideoPlayer.shadowRoot!.querySelector('video')
+  }
+}
+
+// TODO maybe move these to posts.ts
 const postScrollHeight = 100
+export function focusPostLink(postContainer: HTMLElement) {
+  const activePostRect = postContainer.getBoundingClientRect()
+  const scrollLength = Math.min(postScrollHeight, window.innerHeight / 2)
+  window.scrollBy(0, activePostRect.top - scrollLength)
+
+  const postLink = postContainer.querySelector<HTMLAnchorElement>('a[data-click-id="body"]')!
+  postLink.focus()
+}
+
+function clickCollapseButtonCallback() {
+  const collapseButton = activeComment?.querySelector('button')
+  setTimeout(() => collapseButton?.focus(), 0)
+}
+
 const commentScrollHeight = 150
-// TODO this logic should probably be in posts.ts
-document.body.addEventListener('focusin', (event) => {
-  // Only work when j/k J/K keys have been used
-  if (!isKeyboardNavigated) return
-  isKeyboardNavigated = false
-
-  // Focus post link when post container is focused
-  const eventTarget = event.target as HTMLElement | null
-  if (eventTarget?.getAttribute('data-testid') === 'post-container') {
-
-    activePost = document.activeElement as HTMLElement
-    activePostImage = activePost.querySelector('img.ImageBox-image')
-    activePostImageList = activePost.querySelector('ul')
-    activePostSubredditLink = activePost.querySelector('a[data-click-id="subreddit"]')
-
-    activeVideoPlayer = activePost.querySelector('shreddit-player')
-    if (!activeVideoPlayer) {
-      // Posts on home pages have videos without shadow dom
-      activeVideoPlayer = activePost.querySelector('[data-isvideoplayer="1"]')
-      activeVideo = activeVideoPlayer?.querySelector('video') as HTMLVideoElement | null
-    } else {
-      activeVideo = activeVideoPlayer.shadowRoot!.querySelector('video')
-    }
-
-    const activePostRect = activePost.getBoundingClientRect()
-    const scrollLength = Math.min(postScrollHeight, window.innerHeight / 2)
-    window.scrollBy(0, activePostRect.top - scrollLength)
-
-    const postLink = activePost.querySelector<HTMLAnchorElement>('a[data-click-id="body"]')!
-    postLink.focus()
-
-  // Scroll to focused comment
-  } else if (eventTarget?.style.paddingLeft) {
-    activeComment = document.activeElement as HTMLElement
-    const activeCommentRect = activeComment.getBoundingClientRect()
-    const scrollLength = Math.min(commentScrollHeight, window.innerHeight / 2)
-    if (updateScrollContainerInComments()) {
-      scrollContainerComments!.scrollBy(0, activeCommentRect.top - scrollLength)
-    } else {
-      window.scrollBy(0, activeCommentRect.top - scrollLength)
-    }
+let lastActiveComment: HTMLElement | null = null
+export function focusComment(commentDiv: HTMLElement) {
+  activeComment = commentDiv
+  const activeCommentRect = activeComment.getBoundingClientRect()
+  const scrollLength = Math.min(commentScrollHeight, window.innerHeight / 2)
+  if (updateScrollContainerInComments()) {
+    scrollContainerComments!.scrollBy(0, activeCommentRect.top - scrollLength)
+  } else {
+    window.scrollBy(0, activeCommentRect.top - scrollLength)
   }
 
-})
+  // NOTE problems with last comment being an A tag and .focus()
+  if (lastActiveComment === activeComment) return
+
+  const activeCommentDiv = activeComment.querySelector(':scope > .Comment:nth-child(2)')
+  if (activeCommentDiv) {
+    activeCommentDiv.classList.toggle(styles.focusedComment, true)
+    const collapseButton = activeCommentDiv.querySelector('button')
+    collapseButton?.focus()
+    collapseButton?.addEventListener('click', clickCollapseButtonCallback)
+  } else {
+    const commentLink = activeComment.querySelector<HTMLElement>(':is(a, p)')
+    commentLink?.classList.toggle(styles.focusedComment, true)
+    commentLink?.focus()
+  }
+
+  const lastActiveCommentDiv = lastActiveComment?.querySelector(':scope > .Comment:nth-child(2)')
+  if (lastActiveCommentDiv) {
+    lastActiveCommentDiv.classList.toggle(styles.focusedComment, false)
+    const collapseButton = lastActiveCommentDiv.querySelector('button')
+    collapseButton?.blur()
+    collapseButton?.removeEventListener('click', clickCollapseButtonCallback)
+  } else {
+    const commentLink = lastActiveComment?.querySelector<HTMLElement>(':is(a, p)')
+    commentLink?.classList.toggle(styles.focusedComment, false)
+    commentLink?.blur()
+  }
+
+  lastActiveComment = activeComment
+}

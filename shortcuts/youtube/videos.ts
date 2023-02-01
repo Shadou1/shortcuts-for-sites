@@ -121,9 +121,9 @@ function updateVideoAnchors() {
 // updateVideoAnchors()
 
 function focusVideoAnchor(which: Parameters<typeof changeVideoAnchorIndex>[0]) {
-  const prevIndex = videoAnchorIndex
+  // const prevIndex = videoAnchorIndex
   videoAnchorIndex = changeVideoAnchorIndex(which, videoAnchorIndex)
-  if (videoAnchorIndex === prevIndex) return
+  // if (videoAnchorIndex === prevIndex) return
   scrollToAndFocusCurrentVideoAnchor()
 }
 

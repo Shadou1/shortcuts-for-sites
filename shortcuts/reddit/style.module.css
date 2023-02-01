@@ -1,0 +1,4 @@
+.focusedComment {
+  outline: 1px solid var(--newCommunityTheme-postIcon);
+  outline-offset: 1px;
+}

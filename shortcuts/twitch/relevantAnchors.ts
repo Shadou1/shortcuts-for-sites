@@ -108,9 +108,9 @@ function updateRelevantAnchors() {
 }
 
 function focusRelevantAnchor(which: Parameters<typeof changeRelevantAnchorIndex>[0]) {
-  const prevIndex = relevantAnchorIndex
+  // const prevIndex = relevantAnchorIndex
   relevantAnchorIndex = changeRelevantAnchorIndex(which, relevantAnchorIndex)
-  if (relevantAnchorIndex === prevIndex) return
+  // if (relevantAnchorIndex === prevIndex) return
   scrollToAndFocusCurrentRelevantAnchor()
 }
 

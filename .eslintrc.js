@@ -8,8 +8,10 @@ module.exports = {
   },
 
   ignorePatterns: [
-    'dist/*',
     'node_modules/*',
+    'dist/*',
+    'dist-tsc/*',
+    '.vscode/*',
     '*.js',
     '*.mjs'
   ],

@@ -3,17 +3,21 @@ import { getChangeIndex } from '../../utils/indexUtils'
 import { didHrefChange, pathnameMatches } from '../../utils/locationUtils'
 import { findCommonParent, getSetupMutations } from '../../utils/mutationUtils'
 import { ShortcutsCategory } from '../Shortcuts'
+import { activeComment, focusComment, focusPostLink, getPostData } from './utilsActivePost'
 
 const didHrefChangePosts = didHrefChange()
 const didHrefChangeComments = didHrefChange()
 
-const category = new ShortcutsCategory('Posts', 'Posts')
+const category = new ShortcutsCategory('Posts', 'Posts and comments')
 export default category
 
 let postContainers: HTMLElement[] = []
 let postIndex = -1
 let changePostIndex: ReturnType<typeof getChangeIndex>
-const setupUpdatePostIndexOnFocus = getSetupUpdateIndexOnFocus((index) => postIndex = index)
+const setupUpdatePostIndexOnFocus = getSetupUpdateIndexOnFocus((index) => {
+  postIndex = index
+  getPostData(postContainers[postIndex])
+})
 
 function getPostContainers() {
   postContainers = [...document.querySelectorAll<HTMLElement>('[data-testid="post-container"]')]
@@ -30,7 +34,7 @@ function focusCurrentPost() {
     const visibleParent = currentPostContainer.closest('[style]')
     visibleParent?.scrollIntoView()
   }
-  currentPostContainer.focus()
+  focusPostLink(currentPostContainer)
 }
 
 let commentDivs: HTMLElement[] = []
@@ -38,15 +42,14 @@ let commentIndex = -1
 let changeCommentIndex: ReturnType<typeof getChangeIndex>
 
 function getCommentDivs() {
-  commentDivs = [...document.querySelectorAll<HTMLElement>('[style*="padding-left"')]
+  commentDivs = [...document.querySelectorAll<HTMLElement>('[style*="padding-left"]')]
   changeCommentIndex = getChangeIndex(commentDivs, { skip: (el) => !el.offsetParent })
   return commentDivs
 }
 
 function focusCurrentComment() {
   const currentCommentDiv = commentDivs[commentIndex]
-  currentCommentDiv.focus()
-  // TODO add focus collapse comment button
+  focusComment(currentCommentDiv)
 }
 
 const [setupPostMutations] = getSetupMutations(getPostContainers, {
@@ -96,14 +99,14 @@ function isPostsNavigationAvailable() {
 function focusPostOrComment(event: Event, which: 'next' | 'previous' | 'first' | 'last') {
   event.preventDefault()
   if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-    const prevIndex = commentIndex
+    // const prevIndex = commentIndex
     commentIndex = changeCommentIndex(which, commentIndex)
-    if (commentIndex === prevIndex) return
+    // if (commentIndex === prevIndex) return
     focusCurrentComment()
   } else {
-    const prevIndex = postIndex
+    // const prevIndex = postIndex
     postIndex = changePostIndex(which, postIndex)
-    if (postIndex === prevIndex) return
+    // if (postIndex === prevIndex) return
     focusCurrentPost()
   }
 }
@@ -142,5 +145,15 @@ category.shortcuts.set('focusLastPost', {
   isAvailable: isPostsNavigationAvailable,
   event: (ev) => {
     focusPostOrComment(ev, 'last')
+  }
+})
+
+category.shortcuts.set('collapseComment', {
+  defaultKey: 'Enter',
+  description: 'Collapse/expand comment',
+  isAvailable: () => activeComment?.offsetParent,
+  event: () => {
+    const moreRepliesParagraph = activeComment!.querySelector('p')
+    moreRepliesParagraph?.click()
   }
 })

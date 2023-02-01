@@ -16,6 +16,8 @@ Todo:
   ☐ When shortcut event clicks a tab, maybe also focus that tab (add an option)
   ☐ When shortcut focuses an element and its innerText is truncated, find a way to somehow display this text fully (maybe in a custom element)
   ☐ Using isAvailable function to check if some elements are not null will not tell typescript about those elements, so have to use non-null assertion
+  ✔ Make styles local to a site @done(23-01-31 10:52)
+  ✔ Remove check for index != prevIndex in focus functions, so that they are scrolled to every time @done(23-02-01 18:18)
 
   ✔ Shortcuts with Ctrl, Alt collide with regular keys in object keys @done(22-08-30 19:14)
   ☐ Add being able to use shortcuts when active element is accepting input
@@ -106,9 +108,11 @@ Todo:
     ☐ Add go to next/previous comment in current level
     ✔ Go to next/previous comment shortcuts are slow @done(23-01-29 09:36)
     ✔ Add isAvailable functions @done(22-12-21 19:11)
-    ☐ Shortcuts work poorly without logging in
+    ✘ Shortcuts work poorly without logging in @cancelled(23-02-01 20:45)
     ✔ When going to a subreddit from a post (not in new tab), scrolling with j/k will continue from the original post, which may be undesirable @done(23-01-29 09:36)
     ✔ Rewrite comment page logic to first query comments post @done(23-01-25 04:44)
+    ☐ Add comments: sort by
+    ☐ Add hot posts: sort by country
 
   Fandom wiki:
     ☐ Add fandom wiki domain level shortcuts (works on any wiki)

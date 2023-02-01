@@ -125,9 +125,9 @@ updateSearchResults()
 
 const searchResultScrollLength = 250
 function focusSearchResult(which: Parameters<typeof changeSearchResultIndex>[0]) {
-  const lastIndex = searchResultIndex
+  // const prevIndex = searchResultIndex
   searchResultIndex = changeSearchResultIndex(which, searchResultIndex)
-  if (searchResultIndex === lastIndex) return
+  // if (searchResultIndex === prevIndex) return
 
   const currentSearchAnchor = searchResultsAnchors[searchResultIndex]
   const currentSearchAnchorRect = currentSearchAnchor.getBoundingClientRect()

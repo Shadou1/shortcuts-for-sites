@@ -8,8 +8,11 @@
     "moduleResolution": "node",
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "plugins": [
+      { "name": "typescript-plugin-css-modules" }
+    ]
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "dist-tsc"]
 }

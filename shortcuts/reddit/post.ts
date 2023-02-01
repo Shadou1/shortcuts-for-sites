@@ -6,6 +6,7 @@ import {
   activePostSubredditLink,
   commentsPageImage,
   commentsPageImageList,
+  commentsPagePost,
   commentsPageSubredditLink,
   commentsPageVideoPlayer,
   scrollContainerComments,
@@ -157,7 +158,7 @@ category.shortcuts.set('focusPostOnCommentsPage', {
   isAvailable: () => {
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
       updateCommentsPage()
-      commentsPagePostFocusableElement = commentsPageImage ?? commentsPageImageList ?? commentsPageVideoPlayer
+      commentsPagePostFocusableElement = commentsPageImage ?? commentsPageImageList ?? commentsPageVideoPlayer ?? commentsPagePost?.querySelector('a') as HTMLElement | null
       return commentsPagePostFocusableElement?.offsetParent
     }
     return false

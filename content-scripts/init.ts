@@ -80,3 +80,7 @@ document.addEventListener('keydown', (ev) => {
   else if (ev.altKey) shortcutConf.eventAlt?.(ev)
   else shortcutConf.event(ev)
 })
+
+// import { constructShortcutsReadmeMarkdown } from '../utils/markdownUtils'
+// const markdown = constructShortcutsReadmeMarkdown()
+// console.log(markdown)

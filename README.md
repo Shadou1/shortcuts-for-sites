@@ -10,7 +10,7 @@ This extension adds various keyboard shortcuts to some popular websites. You wil
 
 Other methods of navigating websites with keyboard (besides using the <kbd>Tab</kbd> key) include using browser features like **find**, **quick find**, and **quick find within link-text only** (<kbd>Ctrl</kbd>+<kbd>f</kbd>, <kbd>/</kbd>, and <kbd>'</kbd> shortcuts in Firefox). These will move focus to the found element, without you having to <kbd>Tab</kbd> manually to it. But sometimes using <kbd>Tab</kbd> is unavoidable, and searching for elements every time can become old.
 
-Some websites also have native shortcuts (usually displayed by pressing the <kbd>?</kbd> key). This extension complements those shortcuts. For example, on Reddit (new Reddit) there are <kbd>j</kbd>/<kbd>k</kbd> shortcuts to go to the next/previous post/comment. This extension also makes these shortcuts scroll the post to the middle of the page and focus the post link.
+Some websites also have native shortcuts (usually displayed by pressing the <kbd>?</kbd> key). This extension complements or completely rewrites those shortcuts. For example, on Reddit (new Reddit) there are <kbd>j</kbd>/<kbd>k</kbd> shortcuts to go to the next/previous post/comment, but they work kind of poorly. This extension rewrites these shortcuts and adds other shortcuts to interact with the focused post (like **open post's subreddit** or **open post's image**).
 
 ## Useful tips
 
@@ -19,7 +19,7 @@ Some websites also have native shortcuts (usually displayed by pressing the <kbd
 - On some websites, pressing <kbd>?</kbd> will display already available shortcuts.
 - You can rebind shortcuts on extension's options page (preferences page).
 - Press <kbd>Tab</kbd> once to force browser to draw focus outline.
-- On Reddit, without logging in shortcuts will work poorly. Also native <kbd>j</kbd>/<kbd>k</kbd> shortcuts will sometimes stop working, pressing <kbd>Tab</kbd> or reloading the page will usually get them working again.
+- On Reddit, without logging in shortcuts will work poorly.
 - Check out your browser's keyboard shortcuts ([Firefox](https://support.mozilla.org/en-US/kb/keyboard-shortcuts-perform-firefox-tasks-quickly)).
 
 > __Note__
@@ -36,7 +36,7 @@ https://youtu.be/9MR6KKRwTP0
 
 ## How it works
 
-Extension loads [content script](/content-scripts/init.js) into sites that it has shortcuts for (defined in [manifest.json](manifest.json)). Content script listens for [keydown](/content-scripts/init.js#L88) events and executes corresponding [shortcut](shortcuts/) events. Shortcut events define what should happen when the user presses the shortcut's key. These events do a wide range of things: focusing and clicking elements, going to next/previous elements, opening menus (settings menus), navigating to different site sections, controlling video players, and more. Sometimes there is functionality besides shourtcut events for the site, like [scrolling a page when an element is focused](/shortcuts/reddit/utilsActivePost.ts#L81).
+Extension loads [content script](/content-scripts/init.js) into sites that it has shortcuts for (defined in [manifest.json](manifest.json)). Content script listens for [keydown](/content-scripts/init.js#L88) events and executes corresponding [shortcut](shortcuts/) events. Shortcut events define what should happen when the user presses the shortcut's key. These events do a wide range of things: focusing and clicking elements, going to next/previous elements, opening menus (settings menus), navigating to different site sections, controlling video players, and more. Sometimes there is functionality besides shourtcut events for the site, like [scrolling a page when an element is focused](/shortcuts/reddit/utilsActivePost.ts#L83).
 
 > __Note__
 >
@@ -69,6 +69,7 @@ In Firefox:
 - On Reddit, shortcuts work poorly without logging in.
 
 ## Full list of available shortcuts
+
 
 <details>
 <summary>Google Search</summary>
@@ -123,15 +124,24 @@ In Firefox:
 | **Navigation** |
 | <kbd>o</kbd> | Go to home |
 | <kbd>u</kbd> | Go to popular |
+| **Posts** |
+| <kbd>j</kbd> | Next post or comment |
+| <kbd>k</kbd> | Previous post or comment |
+| <kbd>K</kbd> (<kbd>Shift</kbd>+<kbd>k</kbd>) | First post or comment |
+| <kbd>J</kbd> (<kbd>Shift</kbd>+<kbd>j</kbd>) | Last post or comment |
+| <kbd>Enter</kbd> | Collapse/expand comment |
 | **Post** |
-| <kbd>i</kbd> | Go to post's subreddit |
-| <kbd>I</kbd> (<kbd>Shift</kbd>+<kbd>i</kbd>) | Go to post's subreddit (new tab) |
+| <kbd>b</kbd> | Go to post's subreddit (new tab) |
+| <kbd>g</kbd> | Open post image (new tab) |
+| <kbd>B</kbd> (<kbd>Shift</kbd>+<kbd>b</kbd>) | Go to post's subreddit (this tab) |
+| <kbd>G</kbd> (<kbd>Shift</kbd>+<kbd>g</kbd>) | Open post image (this tab) |
+| <kbd>f</kbd> | Focus post on comments page |
 | **Posts filters** |
 | <kbd>1</kbd> | Hot posts |
 | <kbd>2</kbd> | New posts |
 | <kbd>3</kbd> | Top posts |
 | <kbd>4</kbd> | Rising posts |
-| <kbd>t</kbd> | Choose time period |
+| <kbd>t</kbd> | Filter/sort posts/comments |
 | **Video** |
 | <kbd>;</kbd> | Pause/resume |
 | <kbd>[</kbd> | Rewind |

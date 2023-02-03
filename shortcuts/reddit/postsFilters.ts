@@ -1,5 +1,5 @@
 import { ShortcutsCategory } from '../Shortcuts'
-import { didPathnameChange } from '../../utils/locationUtils'
+import { didPathnameChange, pathnameMatches } from '../../utils/locationUtils'
 
 const didPagePathnameChange = didPathnameChange()
 
@@ -64,15 +64,26 @@ category.shortcuts.set('showRisingPosts', {
   }
 })
 
-let timeSortAnchor: HTMLAnchorElement | null
-category.shortcuts.set('chooseTimePeriod', {
+let filterPostsButton: HTMLButtonElement | null
+let sortCommentsButton: HTMLButtonElement | null
+category.shortcuts.set('filterPostsComments', {
   defaultKey: 't',
-  description: 'Choose time period',
+  description: 'Filter/sort posts/comments',
   isAvailable: () => {
-    timeSortAnchor = timeSortAnchor?.offsetParent ? timeSortAnchor : document.querySelector('button#TimeSort--SortPicker')
-    return timeSortAnchor?.offsetParent
+    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+      sortCommentsButton = sortCommentsButton?.offsetParent ? sortCommentsButton : document.querySelector('button#CommentSort--SortPicker')
+      return sortCommentsButton?.offsetParent
+    } else {
+      filterPostsButton = filterPostsButton?.offsetParent ? filterPostsButton : document.querySelector('button:is(#TimeSort--SortPicker, #CountrySort--CountrySortPicker)')
+      return filterPostsButton?.offsetParent
+    }
   },
   event: () => {
-    timeSortAnchor!.click()
+    if (pathnameMatches(/^\/r\/.+?\/comments/)) {
+      sortCommentsButton!.click()
+    } else {
+      window.scrollTo(0, 0)
+      filterPostsButton!.click()
+    }
   }
 })

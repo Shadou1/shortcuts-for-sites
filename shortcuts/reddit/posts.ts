@@ -1,7 +1,7 @@
 import { getSetupUpdateIndexOnFocus } from '../../utils/focusUtils'
 import { getChangeIndex } from '../../utils/indexUtils'
 import { didHrefChange, pathnameMatches } from '../../utils/locationUtils'
-import { findCommonParent, getSetupMutations } from '../../utils/mutationUtils'
+import { findCommonParent, getSetupMutations, whenElementMutates } from '../../utils/mutationUtils'
 import { ShortcutsCategory } from '../Shortcuts'
 import { activeComment, focusComment, focusPostLink, getPostData } from './utilsActivePost'
 
@@ -31,10 +31,15 @@ function getPostContainers() {
 function focusCurrentPost() {
   const currentPostContainer = postContainers[postIndex]
   if (!currentPostContainer.offsetParent) {
+    whenElementMutates(currentPostContainer.parentElement!, (_mutations, observer) => {
+      observer.disconnect()
+      setTimeout(() => focusPostLink(postContainers[postIndex]), 0)
+    }, { attributes: true })
     const visibleParent = currentPostContainer.closest('[style]')
     visibleParent?.scrollIntoView()
+  } else {
+    focusPostLink(currentPostContainer)
   }
-  focusPostLink(currentPostContainer)
 }
 
 let commentDivs: HTMLElement[] = []
@@ -129,7 +134,6 @@ category.shortcuts.set('focusPreviousPost', {
   }
 })
 
-// TODO this will not actually focus the post, moving logic from utilsActivePost.ts to here will resolve this
 category.shortcuts.set('focusFirstPost', {
   defaultKey: 'K',
   description: 'First post or comment',

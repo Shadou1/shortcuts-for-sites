@@ -111,8 +111,8 @@ Todo:
     ✘ Shortcuts work poorly without logging in @cancelled(23-02-01 20:45)
     ✔ When going to a subreddit from a post (not in new tab), scrolling with j/k will continue from the original post, which may be undesirable @done(23-01-29 09:36)
     ✔ Rewrite comment page logic to first query comments post @done(23-01-25 04:44)
-    ☐ Add comments: sort by
-    ☐ Add hot posts: sort by country
+    ✔ Add comments: sort by @done(23-02-03 16:40)
+    ✔ Add hot posts: sort by country @done(23-02-03 16:40)
 
   Fandom wiki:
     ☐ Add fandom wiki domain level shortcuts (works on any wiki)

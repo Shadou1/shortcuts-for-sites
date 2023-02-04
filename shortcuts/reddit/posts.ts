@@ -3,7 +3,7 @@ import { getChangeIndex } from '../../utils/indexUtils'
 import { didHrefChange, pathnameMatches } from '../../utils/locationUtils'
 import { findCommonParent, getSetupMutations, whenElementMutates } from '../../utils/mutationUtils'
 import { ShortcutsCategory } from '../Shortcuts'
-import { activeComment, focusComment, focusPostLink, getPostData } from './utilsActivePost'
+import { activeComment, focusComment, getPostData } from './utilsActivePost'
 
 const didHrefChangePosts = didHrefChange()
 const didHrefChangeComments = didHrefChange()
@@ -12,6 +12,7 @@ const category = new ShortcutsCategory('Posts', 'Posts and comments')
 export default category
 
 let postContainers: HTMLElement[] = []
+let postLinks: HTMLAnchorElement[] = []
 let postIndex = -1
 let changePostIndex: ReturnType<typeof getChangeIndex>
 const setupUpdatePostIndexOnFocus = getSetupUpdateIndexOnFocus((index) => {
@@ -23,9 +24,23 @@ function getPostContainers() {
   postContainers = [...document.querySelectorAll<HTMLElement>('[data-testid="post-container"]')]
   changePostIndex = getChangeIndex(postContainers)
   // post container is not actually focusable
-  const postLinks = postContainers.map((postContainer) => postContainer.querySelector<HTMLElement>('a[data-click-id="body"]')!)
+  postLinks = postContainers.map((postContainer) => {
+    const postLink = postContainer.querySelector<HTMLAnchorElement>('a[data-click-id="body"]')
+    const searchResultLink = postContainer.querySelector('[data-testid="post-container"] [data-testid="post-title"]')?.parentElement as HTMLAnchorElement
+    return (postLink ?? searchResultLink)!
+  })
   setupUpdatePostIndexOnFocus(postLinks)
   return postContainers
+}
+
+const postScrollHeight = 100
+export function focusPostLink(postIndex: number) {
+  const postContainer = postContainers[postIndex]
+  const activePostRect = postContainer.getBoundingClientRect()
+  const scrollLength = Math.min(postScrollHeight, window.innerHeight / 2)
+  window.scrollBy(0, activePostRect.top - scrollLength)
+
+  postLinks[postIndex].focus()
 }
 
 function focusCurrentPost() {
@@ -33,12 +48,12 @@ function focusCurrentPost() {
   if (!currentPostContainer.offsetParent) {
     whenElementMutates(currentPostContainer.parentElement!, (_mutations, observer) => {
       observer.disconnect()
-      setTimeout(() => focusPostLink(postContainers[postIndex]), 0)
+      setTimeout(() => focusPostLink(postIndex), 0)
     }, { attributes: true })
     const visibleParent = currentPostContainer.closest('[style]')
     visibleParent?.scrollIntoView()
   } else {
-    focusPostLink(currentPostContainer)
+    focusPostLink(postIndex)
   }
 }
 
@@ -157,6 +172,9 @@ category.shortcuts.set('collapseComment', {
   description: 'Collapse/expand comment',
   isAvailable: () => activeComment?.offsetParent,
   event: () => {
+    // show more replies paragraph is not focusable, so the focus will be on document.body
+    // also clicking on a moreRepliesParagraph will not allow the Enter key to click on any other element
+    if (document.activeElement !== document.body) return
     const moreRepliesParagraph = activeComment!.querySelector('p')
     moreRepliesParagraph?.click()
   }

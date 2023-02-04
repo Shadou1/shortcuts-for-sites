@@ -55,6 +55,7 @@ Todo:
     ☐ Add aria-selected styles to tabs
     ✔ Split options.js into separate files @done(23-01-16 12:38)
     ☐ Unusual settings names may result in not valid query selectors
+    ☐ Add option to change how new tabs are opened (window.open() or anchor.click(), the second requires the user to allow the website to display pop-ups, but the first one will not preserve the user's color scheme, new tab will be with white background)
 
   Youtube:
     ✘ Keep reference to queried elements, but also update them when page content/location changes @cancelled(22-08-31 16:50)
@@ -113,6 +114,13 @@ Todo:
     ✔ Rewrite comment page logic to first query comments post @done(23-01-25 04:44)
     ✔ Add comments: sort by @done(23-02-03 16:40)
     ✔ Add hot posts: sort by country @done(23-02-03 16:40)
+    ✔ Make go to next/previous post work on search pages (make it focus search result link) @done(23-02-04 10:58)
+    ☐ Fix Reddit Update
+    ☐ Make open image also open external images (link)
+    ☐ Add open post link (override native shortcut)
+
+    Bugs:
+      ☐ Go to next/previous post and then 'enter' to open it opens the first post opened this way (may be a reddit itself bug)
 
   Fandom wiki:
     ☐ Add fandom wiki domain level shortcuts (works on any wiki)

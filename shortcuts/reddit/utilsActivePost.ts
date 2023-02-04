@@ -78,17 +78,6 @@ export function getPostData(postContainer: HTMLElement) {
   }
 }
 
-// TODO maybe move these to posts.ts
-const postScrollHeight = 100
-export function focusPostLink(postContainer: HTMLElement) {
-  const activePostRect = postContainer.getBoundingClientRect()
-  const scrollLength = Math.min(postScrollHeight, window.innerHeight / 2)
-  window.scrollBy(0, activePostRect.top - scrollLength)
-
-  const postLink = postContainer.querySelector<HTMLAnchorElement>('a[data-click-id="body"]')!
-  postLink.focus()
-}
-
 function clickCollapseButtonCallback() {
   const collapseButton = activeComment?.querySelector('button')
   setTimeout(() => collapseButton?.focus(), 0)

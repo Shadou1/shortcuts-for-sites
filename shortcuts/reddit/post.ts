@@ -13,6 +13,7 @@ import {
   updateCommentsPage,
   updateScrollContainerInComments,
 } from './utilsActivePost'
+import { openLinkInNewTab } from '../../utils/linkUtils'
 
 const category = new ShortcutsCategory('Post', 'Post')
 export default category
@@ -29,14 +30,13 @@ category.shortcuts.set('goToSubredditNewTab', {
     }
   },
   event: () => {
-    const tempAnchor = document.createElement('a')
-    tempAnchor.setAttribute('target', '_blank')
+    let linkHref
     if (pathnameMatches(/^\/r\/.+?\/comments/)) {
-      tempAnchor.href = commentsPageSubredditLink!.href
+      linkHref = commentsPageSubredditLink!.href
     } else {
-      tempAnchor.href = activePostSubredditLink!.href
+      linkHref = activePostSubredditLink!.href
     }
-    tempAnchor.click()
+    openLinkInNewTab(linkHref)
   },
 })
 
@@ -82,10 +82,7 @@ category.shortcuts.set('openPostImageNewTab', {
       imageSrc = imageSrc.replace(/^https:\/\/preview\.redd\.it\//, 'https://i.redd.it/')
       imageSrc = imageSrc.replace(/\?.*$/, '')
     }
-    const tempAnchor = document.createElement('a')
-    tempAnchor.setAttribute('target', '_blank')
-    tempAnchor.href = imageSrc
-    tempAnchor.click()
+    openLinkInNewTab(imageSrc)
   }
 })
 
@@ -144,6 +141,7 @@ category.shortcuts.set('openPostImage', {
       imageSrc = imageSrc.replace(/^https:\/\/preview\.redd\.it\//, 'https://i.redd.it/')
       imageSrc = imageSrc.replace(/\?.*$/, '')
     }
+    // TODO maybe extract this into openLinkInThisTab
     const tempAnchor = document.createElement('a')
     tempAnchor.href = imageSrc
     tempAnchor.click()

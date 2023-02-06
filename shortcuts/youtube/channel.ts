@@ -5,6 +5,7 @@ import {
   goToVideosTab
 } from './utils'
 import { ShortcutsCategory } from '../Shortcuts'
+import { openLinkInNewTab } from '../../utils/linkUtils'
 
 const category = new ShortcutsCategory('Channel', 'Channel')
 export default category
@@ -77,11 +78,6 @@ category.shortcuts.set('goToChannelNewTab', {
   isAvailable: () => pathnameStartsWith('/watch'),
   event: () => {
     const channelLink = document.querySelector<HTMLAnchorElement>('a.ytd-video-owner-renderer')!
-
-    // hack to preserve user's color scheme
-    const tempAnchor = document.createElement('a')
-    tempAnchor.setAttribute('target', '_blank')
-    tempAnchor.href = channelLink.href
-    tempAnchor.click()
+    openLinkInNewTab(channelLink.href)
   }
 })

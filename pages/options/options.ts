@@ -12,17 +12,23 @@ async function loadSettings() {
   // Load simple settings
   const settingsStorage = await browser.storage.sync.get('settings')
   if (!settingsStorage['settings']) return
-  Object.entries(settingsStorage['settings'] as Record<string, unknown>).forEach(([settingName, value]) => {
+  Object.entries(settingsStorage['settings'] as Record<string, unknown>).forEach(([settingName, settingValue]) => {
 
     // Ignore special settings
     if (settings.findIndex((setting) => setting.name === settingName) !== -1) return
 
-    const settingInput = document.querySelector<HTMLInputElement>(`#panel-settings input#${settingName}`)
+    const settingInput = document.querySelector<HTMLInputElement>(`#panel-settings input:is(#${settingName}, [name="${settingName}"])`)
     if (!settingInput) return
 
     switch (settingInput.type) {
       case 'checkbox':
-        settingInput.checked = value as boolean
+        settingInput.checked = settingValue as boolean
+        break
+      // TODO hande radio buttons more gracefully
+      case 'radio':
+        const toCheckRadioButton = document.querySelector<HTMLInputElement>(`#panel-settings input[name="${settingName}"][value="${settingValue as string}"]`)
+        if (!toCheckRadioButton) break
+        toCheckRadioButton.checked = true
         break
     }
 
@@ -44,6 +50,11 @@ async function saveSettings() {
       switch (settingInput.type) {
         case 'checkbox':
           savedSettings[settingInput.id] = settingInput.checked
+          break
+        // TODO hande radio buttons more gracefully
+        case 'radio':
+          const checkedRadioButton = document.querySelector<HTMLInputElement>(`#panel-settings input[name="${settingInput.name}"]:checked`)!
+          savedSettings[settingInput.name] = checkedRadioButton.value
           break
       }
     }
@@ -78,7 +89,7 @@ function addTabsAccessability(tablist: HTMLElement) {
     if (e.key === 'ArrowRight') {
       if (focusedTabIndex + 1 >= tabs.length) return
       step = 1
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     } else if (e.key === 'ArrowLeft') {
       if (focusedTabIndex - 1 < 0) return
       step = -1

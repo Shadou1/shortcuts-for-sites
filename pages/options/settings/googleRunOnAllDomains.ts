@@ -12,7 +12,7 @@ setting.handleLoad = async () => {
   settingInput.checked = allowedToRun
 }
 
-setting.handleSave = async () => {
+async function handleSave() {
   if (settingInput.checked) {
     const isAllowed = await browser.permissions.request({
       origins: extraGoogleDomains
@@ -31,6 +31,14 @@ setting.handleSave = async () => {
     })
   }
 }
+
+setting.handleSave = async () => {
+  // It doesn't count as being called from a user input handler for some reason in options.ts
+  // await handleSave()
+}
+
+// For now, handle saving when the user click on the input
+settingInput.addEventListener('click', () => void handleSave())
 
 setting.handleClear = async () => {
   await browser.permissions.remove({

@@ -50,13 +50,14 @@ Todo:
     ✔ Extension options page @done(22-12-17 15:18)
     ☐ Show if shortcut key is uppercase (Shift+key)
     ✔ Show colliding keys @done(23-01-10 05:40)
+    ☐ Default value of an option is not defined in one place
 
     ✔ Allow user to configure settings other than shortcut keys @done(23-01-10 05:40)
     ☐ Allow user to configure scroll offset (when scrolling to an anchor for example)
     ☐ Add aria-selected styles to tabs
     ✔ Split options.js into separate files @done(23-01-16 12:38)
     ☐ Unusual settings names may result in not valid query selectors
-    ☐ Add option to change how new tabs are opened (window.open() or anchor.click(), the second requires the user to allow the website to display pop-ups, but the first one will not preserve the user's color scheme, new tab will be with white background)
+    ✔ Add option to change how new tabs are opened (window.open() or anchor.click(), the second requires the user to allow the website to display pop-ups, but the first one will not preserve the user's color scheme, new tab will be with white background) @done(23-02-06 21:56)
 
   Youtube:
     ✘ Keep reference to queried elements, but also update them when page content/location changes @cancelled(22-08-31 16:50)

@@ -42,6 +42,29 @@
         </fieldset>
 
         <fieldset class="browser-style">
+          <legend>Open new tabs with</legend>
+
+          <input id="open-link-in-new-tab-with-anchor" type="radio" name="open-link-in-new-tab" value="with-anchor" checked/>
+          <label for="open-link-in-new-tab-with-anchor">
+            anchor.click()
+            <span id="help-open-link-in-new-tab-with-anchor" class="tip" aria-describedby="tooltip-open-link-in-new-tab-with-anchor" tabindex="0">?</span>
+            <p id="tooltip-open-link-in-new-tab-with-anchor" class="tooltip" role="tooltip">
+              You will need to allow sites to open pop-ups for this to work.
+            </p>
+          </label>
+
+          <input id="open-link-in-new-tab-with-window" type="radio" name="open-link-in-new-tab" value="with-window"/>
+          <label for="open-link-in-new-tab-with-window">
+            window.open()
+            <span id="help-open-link-in-new-tab-with-window" class="tip" aria-describedby="tooltip-open-link-in-new-tab-with-window" tabindex="0">?</span>
+            <p id="tooltip-open-link-in-new-tab-with-window" class="tooltip" role="tooltip">
+              New tabs will not have your theme enabled at first (will flash white), but no need to allow site to open pop-ups.
+            </p>
+          </label>
+
+        </fieldset>
+
+        <fieldset class="browser-style">
           <legend>Storage</legend>
           <input id="clear-storage" type="button" value="Clear"/>
           <label for="clear-storage">

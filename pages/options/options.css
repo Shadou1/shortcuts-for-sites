@@ -77,14 +77,14 @@ fieldset :is(label, input) {
   font-size: medium
 }
 
-fieldset input:is([type="checkbox"], [type="button"]) {
+fieldset input:is([type="checkbox"], [type="button"], [type="radio"]) {
   cursor: pointer;
   border-width: 1px;
   /* border: none; */
   /* border-bottom: 1px solid; */
 }
 
-#panel-settings input:is([type="checkbox"], [type="button"]) {
+#panel-settings input:is([type="checkbox"], [type="button"], [type="radio"]) {
   min-width: 24px;
   min-height: 24px;
 }

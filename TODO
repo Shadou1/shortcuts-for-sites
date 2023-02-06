@@ -18,6 +18,7 @@ Todo:
   ☐ Using isAvailable function to check if some elements are not null will not tell typescript about those elements, so have to use non-null assertion
   ✔ Make styles local to a site @done(23-01-31 10:52)
   ✔ Remove check for index != prevIndex in focus functions, so that they are scrolled to every time @done(23-02-01 18:18)
+  ☐ Add init funciton to Shortcuts object, use it to initialize shortcuts for the current website (any code that is run inside /shorctus/site/category.ts is always run because of bundling)
 
   ✔ Shortcuts with Ctrl, Alt collide with regular keys in object keys @done(22-08-30 19:14)
   ☐ Add being able to use shortcuts when active element is accepting input
@@ -120,7 +121,7 @@ Todo:
     ☐ Add open post link (override native shortcut)
 
     Bugs:
-      ☐ Go to next/previous post and then 'enter' to open it opens the first post opened this way (may be a reddit itself bug)
+      ✔ Go to next/previous post and then 'enter' to open it opens the first post opened this way (may be a reddit itself bug) @done(23-02-06 16:57)
 
   Fandom wiki:
     ☐ Add fandom wiki domain level shortcuts (works on any wiki)

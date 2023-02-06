@@ -131,6 +131,20 @@ function focusPostOrComment(event: Event, which: 'next' | 'previous' | 'first' |
   }
 }
 
+// Enter is a native shortcut for opening the current post, but it only works if the post
+// was focused using native j/k shortcust, and if the user focuses any other element and presses Enter
+// it will instead open the current post
+const ingoredNativeShortcuts = ['Enter']
+// For some reason, adding j/k J/K to ignoredNativeShortcuts does not stop native j/k shortcuts from working
+// even though these shortcust are registered on shortcutsFocusableDiv 'keydown' event,
+// so need to call event.preventDefault() in focusPostOrComment()
+const shortcutFocusableDiv = document.querySelector('#SHORTCUT_FOCUSABLE_DIV')
+shortcutFocusableDiv?.addEventListener('keydown', (event) => {
+  if (ingoredNativeShortcuts.includes((event as KeyboardEvent).key)) {
+    event.stopImmediatePropagation()
+  }
+}, { capture: true })
+
 category.shortcuts.set('focusNextPost', {
   defaultKey: 'j',
   description: 'Next post or comment',

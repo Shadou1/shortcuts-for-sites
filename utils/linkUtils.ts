@@ -5,14 +5,30 @@ const openLinkInNewTabSetting = (settings['settings'] as Record<string, string> 
 export function openLinkInNewTab(url: string) {
   switch (openLinkInNewTabSetting) {
     case 'with-anchor':
-      // hack to preserve user's color scheme
+      // preserves color scheme, unlike window.open(url, '_blank')
       const tempAnchor = document.createElement('a')
-      tempAnchor.setAttribute('target', '_blank')
+      tempAnchor.rel = 'noreferrer'
+      tempAnchor.target = '_blank'
       tempAnchor.href = url
       tempAnchor.click()
       break
     case 'with-window':
-      window.open(url, '_blank')
+      // looks like 'rel=noreferrer' makes window.open() preserve user's color scheme
+      window.open(url, '_blank', 'noreferrer')
+      break
+  }
+}
+
+export function openLinkInThisTab(url: string) {
+  switch (openLinkInNewTabSetting) {
+    case 'with-anchor':
+      const tempAnchor = document.createElement('a')
+      tempAnchor.rel = 'noreferrer'
+      tempAnchor.href = url
+      tempAnchor.click()
+      break
+    case 'with-window':
+      window.open(url, '_self', 'noreferrer')
       break
   }
 }

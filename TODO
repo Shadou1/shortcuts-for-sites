@@ -119,8 +119,10 @@ Todo:
     ✔ Add hot posts: sort by country @done(23-02-03 16:40)
     ✔ Make go to next/previous post work on search pages (make it focus search result link) @done(23-02-04 10:58)
     ☐ Fix Reddit Update
-    ☐ Make open image also open external images (link)
-    ☐ Add open post link (override native shortcut)
+    ✔ Make open image also open external images (link) @done(23-02-08 00:19)
+    ✔ Add open post link (override native shortcut) @done(23-02-08 00:10)
+    ☐ If post is a poll, getPostData will not return subreddit link.
+    ☐ Add open post video (may be pretty hard)
 
     Bugs:
       ✔ Go to next/previous post and then 'enter' to open it opens the first post opened this way (may be a reddit itself bug) @done(23-02-06 16:57)

@@ -8,6 +8,8 @@ let activePost: HTMLElement | null
 
 export let activePostSubredditLink: HTMLAnchorElement | null
 
+export let activePostLink: HTMLAnchorElement | null
+
 export let activePostImage: HTMLImageElement | null
 export let activePostImageList: HTMLUListElement | null
 
@@ -18,6 +20,8 @@ export let activeVideo: HTMLVideoElement | null
 export let commentsPagePost: HTMLElement | null
 
 export let commentsPageSubredditLink: HTMLAnchorElement | null
+
+export let commentsPagePostLink: HTMLAnchorElement | null
 
 export let commentsPageImage: HTMLImageElement | null
 export let commentsPageImageList: HTMLUListElement | null
@@ -33,6 +37,8 @@ export function updateCommentsPage() {
 
     commentsPageSubredditLink = document.querySelector('a > span[title]')?.parentElement as HTMLAnchorElement | null
 
+    commentsPagePostLink = commentsPagePost.querySelector('[data-testid="outbound-link"]')
+
     commentsPageImage = commentsPagePost.querySelector('img.ImageBox-image')
     commentsPageImageList = commentsPagePost.querySelector('ul')
 
@@ -43,6 +49,8 @@ export function updateCommentsPage() {
   commentsPagePost = commentsPagePost?.offsetParent ? commentsPagePost : document.querySelector('[data-test-id="post-content"]')!
 
   commentsPageSubredditLink = commentsPageSubredditLink ?? document.querySelector('a > span[title]')?.parentElement as HTMLAnchorElement | null
+
+  commentsPagePostLink = commentsPagePostLink?.offsetParent ? commentsPagePostLink : commentsPagePost.querySelector('[data-testid="outbound-link"]')
 
   commentsPageImage = commentsPageImage?.offsetParent ? commentsPageImage : commentsPagePost.querySelector('img.ImageBox-image')
   commentsPageImageList = commentsPageImageList?.offsetParent ? commentsPageImageList : commentsPagePost.querySelector('ul')
@@ -64,9 +72,13 @@ export function updateScrollContainerInComments() {
 // TODO maybe query posts data only once when getPostContainers is called
 export function getPostData(postContainer: HTMLElement) {
   activePost = postContainer
+
+  activePostSubredditLink = activePost.querySelector('a[data-click-id="subreddit"]')
+
+  activePostLink = activePost.querySelector('[data-testid="outbound-link"]')
+
   activePostImage = activePost.querySelector('img.ImageBox-image')
   activePostImageList = activePost.querySelector('ul')
-  activePostSubredditLink = activePost.querySelector('a[data-click-id="subreddit"]')
 
   activeVideoPlayer = activePost.querySelector('shreddit-player')
   if (!activeVideoPlayer) {

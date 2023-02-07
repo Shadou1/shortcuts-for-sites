@@ -12,7 +12,7 @@ const category = new ShortcutsCategory('Posts', 'Posts and comments')
 export default category
 
 let postContainers: HTMLElement[] = []
-let postLinks: HTMLAnchorElement[] = []
+let postLinks: (HTMLAnchorElement | null)[] = []
 let postIndex = -1
 let changePostIndex: ReturnType<typeof getChangeIndex>
 const setupUpdatePostIndexOnFocus = getSetupUpdateIndexOnFocus((index) => {
@@ -26,8 +26,9 @@ function getPostContainers() {
   // post container is not actually focusable
   postLinks = postContainers.map((postContainer) => {
     const postLink = postContainer.querySelector<HTMLAnchorElement>('a[data-click-id="body"]')
-    const searchResultLink = postContainer.querySelector('[data-testid="post-container"] [data-testid="post-title"]')?.parentElement as HTMLAnchorElement
-    return (postLink ?? searchResultLink)!
+    const searchResultLink = postContainer.querySelector('[data-testid="post-container"] [data-testid="post-title"]')?.parentElement as HTMLAnchorElement | null
+    const pollButton = postContainer.querySelector<HTMLAnchorElement>('button[aria-label]:not(.voteButton):not([disabled])')
+    return postLink ?? searchResultLink ?? pollButton
   })
   setupUpdatePostIndexOnFocus(postLinks)
   return postContainers
@@ -40,7 +41,7 @@ export function focusPostLink(postIndex: number) {
   const scrollLength = Math.min(postScrollHeight, window.innerHeight / 2)
   window.scrollBy(0, activePostRect.top - scrollLength)
 
-  postLinks[postIndex].focus()
+  postLinks[postIndex]?.focus()
 }
 
 function focusCurrentPost() {
@@ -116,8 +117,7 @@ function isPostsNavigationAvailable() {
   }
 }
 
-function focusPostOrComment(event: Event, which: 'next' | 'previous' | 'first' | 'last') {
-  event.preventDefault()
+function focusPostOrComment(which: 'next' | 'previous' | 'first' | 'last') {
   if (pathnameMatches(/^\/r\/.+?\/comments/)) {
     // const prevIndex = commentIndex
     commentIndex = changeCommentIndex(which, commentIndex)
@@ -135,11 +135,19 @@ category.initialize = () => {
   // Enter is a native shortcut for opening the current post, but it only works if the post
   // was focused using native j/k shortcust, and if the user focuses any other element and presses Enter
   // it will instead open the current post
-  const ingoredNativeShortcuts = ['Enter']
-  // For some reason, adding j/k J/K to ignoredNativeShortcuts does not stop native j/k shortcuts from working
-  // even though these shortcust are registered on shortcutsFocusableDiv 'keydown' event,
-  // so need to call event.preventDefault() in focusPostOrComment()
+  const ingoredNativeShortcuts = ['Enter', 'j', 'k', 'J', 'K', 'l']
   const shortcutFocusableDiv = document.querySelector('#SHORTCUT_FOCUSABLE_DIV')
+
+  // keypress event.stopImmediatePropagation() will disable j/k and other shortcuts,
+  // but after pressing the '?' key it will work once (sometimes, wtf), so safer to also call event.preventDefault()
+  // the same thing will happen with the 'Enter' key (it will work once after pressing the '?' key)
+
+  shortcutFocusableDiv?.addEventListener('keypress', (event) => {
+    if (ingoredNativeShortcuts.includes((event as KeyboardEvent).key)) {
+      event.stopImmediatePropagation()
+    }
+  }, { capture: true })
+
   shortcutFocusableDiv?.addEventListener('keydown', (event) => {
     if (ingoredNativeShortcuts.includes((event as KeyboardEvent).key)) {
       event.stopImmediatePropagation()
@@ -152,7 +160,8 @@ category.shortcuts.set('focusNextPost', {
   description: 'Next post or comment',
   isAvailable: isPostsNavigationAvailable,
   event: (ev) => {
-    focusPostOrComment(ev, 'next')
+    ev.preventDefault()
+    focusPostOrComment('next')
   }
 })
 
@@ -161,7 +170,8 @@ category.shortcuts.set('focusPreviousPost', {
   description: 'Previous post or comment',
   isAvailable: isPostsNavigationAvailable,
   event: (ev) => {
-    focusPostOrComment(ev, 'previous')
+    ev.preventDefault()
+    focusPostOrComment('previous')
   }
 })
 
@@ -170,7 +180,8 @@ category.shortcuts.set('focusFirstPost', {
   description: 'First post or comment',
   isAvailable: isPostsNavigationAvailable,
   event: (ev) => {
-    focusPostOrComment(ev, 'first')
+    ev.preventDefault()
+    focusPostOrComment('first')
   }
 })
 
@@ -179,7 +190,8 @@ category.shortcuts.set('focusLastPost', {
   description: 'Last post or comment',
   isAvailable: isPostsNavigationAvailable,
   event: (ev) => {
-    focusPostOrComment(ev, 'last')
+    ev.preventDefault()
+    focusPostOrComment('last')
   }
 })
 

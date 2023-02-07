@@ -18,7 +18,8 @@ Todo:
   ☐ Using isAvailable function to check if some elements are not null will not tell typescript about those elements, so have to use non-null assertion
   ✔ Make styles local to a site @done(23-01-31 10:52)
   ✔ Remove check for index != prevIndex in focus functions, so that they are scrolled to every time @done(23-02-01 18:18)
-  ☐ Add init funciton to Shortcuts object, use it to initialize shortcuts for the current website (any code that is run inside /shorctus/site/category.ts is always run because of bundling)
+  ✔ Add init funciton to Shortcuts object, use it to initialize shortcuts for the current website (any code that is run inside /shorctus/site/category.ts is always run because of bundling) @done(23-02-07 20:20)
+  ☐ Code from all of the shortcuts/site/category.js is always run, only way to change that seems to be using dynamic imports, so maybe it's ok @high
 
   ✔ Shortcuts with Ctrl, Alt collide with regular keys in object keys @done(22-08-30 19:14)
   ☐ Add being able to use shortcuts when active element is accepting input
@@ -32,7 +33,7 @@ Todo:
 
   ✔ Ask user for additional permissions for Google domains, instead of requesting all of them in manifest.json @critical @done(23-01-09 11:44)
   ✔ Rewrite README.md @done(23-01-18 15:17)
-  ☐ Logic in Google Search 'searchResultIndex' and Youtube 'videoAnchorIndex' is similar
+  ✔ Logic in Google Search 'searchResultIndex' and Youtube 'videoAnchorIndex' is similar @done(23-02-07 20:55)
   ✔ Extension can import() resources without exposing them in web_accessible_resources, figure out if it's safe to omit them @done(23-01-18 15:17)
 
   ☐ Write tests?

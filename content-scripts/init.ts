@@ -11,8 +11,11 @@ void browser.runtime.sendMessage({
   isShortcutsAvailable: true
 })
 
+// Initialize shortcuts
+shortcuts.categories.forEach((category) => category.initialize?.())
+
 // Get saved shortcut's keys
-async function setShortcutKeys(shortcuts: Shortcuts) {
+async function getStorageShortcutKeys(shortcuts: Shortcuts) {
   const savedShortcuts: Record<string, Record<string, string>> = await browser.storage.sync.get(shortcuts.site)
   const savedShortcutsForSite = savedShortcuts[shortcuts.site]
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -23,7 +26,7 @@ async function setShortcutKeys(shortcuts: Shortcuts) {
     })
   })
 }
-await setShortcutKeys(shortcuts)
+await getStorageShortcutKeys(shortcuts)
 
 // Get shortcuts by key
 function getShortcutsByKey(shortcutsCategories: ShortcutsCategory[]) {

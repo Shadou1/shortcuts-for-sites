@@ -120,8 +120,11 @@ function updateSearchResults() {
   return searchResultsAnchorsLength
 }
 
-// On document_idle
-updateSearchResults()
+
+category.initialize = () => {
+  // On document_idle
+  updateSearchResults()
+}
 
 const searchResultScrollLength = 250
 function focusSearchResult(which: Parameters<typeof changeSearchResultIndex>[0]) {

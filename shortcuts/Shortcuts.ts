@@ -11,6 +11,7 @@ export interface Shortcut {
 export class ShortcutsCategory {
   name: string
   description: string
+  initialize?: () => void
   shortcuts = new Map<string, Shortcut>()
   constructor(name: string, description: string) {
     this.name = name

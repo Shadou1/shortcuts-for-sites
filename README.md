@@ -16,6 +16,7 @@ Some websites also have native shortcuts (usually displayed by pressing the <kbd
 
 - Pressing <kbd>Alt</kbd>+<kbd>k</kbd> will display shortcuts for the current website.
 - $\textcolor{green}{\text{Green outline}}$ means that the shortcut is usable right now.
+- To use shortcuts that open links in new tabs (like Reddit's <kbd>g</kbd> **open post image**), you will need to allow the website to open pop-ups.
 - On some websites, pressing <kbd>?</kbd> will display already available shortcuts.
 - You can rebind shortcuts on extension's options page (preferences page).
 - Press <kbd>Tab</kbd> once to force browser to draw focus outline.
@@ -133,8 +134,10 @@ In Firefox:
 | **Post** |
 | <kbd>b</kbd> | Go to post's subreddit (new tab) |
 | <kbd>g</kbd> | Open post image (new tab) |
+| <kbd>l</kbd> | Open post link (new tab) |
 | <kbd>B</kbd> (<kbd>Shift</kbd>+<kbd>b</kbd>) | Go to post's subreddit (this tab) |
 | <kbd>G</kbd> (<kbd>Shift</kbd>+<kbd>g</kbd>) | Open post image (this tab) |
+| <kbd>L</kbd> (<kbd>Shift</kbd>+<kbd>l</kbd>) | Open post link (this tab) |
 | <kbd>f</kbd> | Focus post on comments page |
 | **Posts filters** |
 | <kbd>1</kbd> | Hot posts |

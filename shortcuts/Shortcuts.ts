@@ -2,6 +2,7 @@ export interface Shortcut {
   defaultKey: string
   key?: string
   description: string
+  ignoreInput?: boolean
   isAvailable?: () => unknown
   event: (event: Event) => void
   eventCtrl?: (event: Event) => void

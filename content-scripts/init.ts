@@ -70,10 +70,12 @@ document.addEventListener('keydown', (ev) => {
 
   const target = ev.target as HTMLElement
   if (
-    target instanceof HTMLInputElement ||
-    target instanceof HTMLSelectElement ||
-    target instanceof HTMLTextAreaElement ||
-    target.isContentEditable
+    !shortcutConf.ignoreInput && (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLSelectElement ||
+      target instanceof HTMLTextAreaElement ||
+      target.isContentEditable
+    )
   ) return
 
   if (shortcutConf.isAvailable && !shortcutConf.isAvailable()) return

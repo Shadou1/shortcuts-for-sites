@@ -138,7 +138,7 @@ category.shortcuts.set('goToSubreddit', {
     // same thing, post's subreddit link already opens in this tab when clicking on it
     // but in case they change it later
     const postLinkHref = getSubredditLinkHref()!
-    openLinkInNewTab(postLinkHref)
+    openLinkInThisTab(postLinkHref)
   },
 })
 

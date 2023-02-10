@@ -7,7 +7,10 @@ const translateFromTextarea = document.querySelector<HTMLTextAreaElement>('texta
 category.shortcuts.set('focusTranslateFromBox', {
   defaultKey: 'j',
   description: 'Focus translate-from box',
-  event: () => {
+  event: (ev) => {
+    // because 'keydown' event listener in init.ts is capturing,
+    // without ev.preventDefault() the j letter will be typed in a textarea when using this shortcut
+    ev.preventDefault()
     translateFromTextarea.focus()
     window.scrollTo({ top: 0 })
   }
@@ -16,8 +19,9 @@ category.shortcuts.set('focusTranslateFromBox', {
 category.shortcuts.set('unfocusTranslateFromBox', {
   defaultKey: 'Escape',
   description: 'Unfocus translate-from box',
+  ignoreInput: true,
   event: () => {
-    (document.activeElement as HTMLElement).blur()
+    (document.activeElement as HTMLElement | null)?.blur()
   }
 })
 
@@ -52,7 +56,9 @@ let swapLanguagesButton: HTMLButtonElement | null
 category.shortcuts.set('swapLanguages', {
   defaultKey: 'i',
   description: 'Swap languages',
-  event: () => {
+  event: (ev) => {
+    // swapping languages automatically puts the cursor in the translate-from textarea
+    ev.preventDefault()
     swapLanguagesButton = swapLanguagesButton?.offsetParent ? swapLanguagesButton : document.querySelector<HTMLButtonElement>('c-wiz[data-node-index="1;0"] c-wiz[data-node-index="3;0"] button[jslog]')
     swapLanguagesButton?.click()
   }

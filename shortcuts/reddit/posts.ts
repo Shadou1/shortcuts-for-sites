@@ -142,6 +142,7 @@ category.initialize = () => {
   // but after pressing the '?' key it will work once (sometimes, wtf), so safer to also call event.preventDefault()
   // the same thing will happen with the 'Enter' key (it will work once after pressing the '?' key)
 
+  // FIXME enter key not working in toolbar (because it depends on native 'Enter' shortcut)
   shortcutFocusableDiv?.addEventListener('keypress', (event) => {
     if (ingoredNativeShortcuts.includes((event as KeyboardEvent).key)) {
       event.stopImmediatePropagation()

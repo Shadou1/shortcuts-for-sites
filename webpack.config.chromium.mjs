@@ -28,7 +28,7 @@ export default {
   },
 
   output: {
-    path: rootDir + '/dist',
+    path: rootDir + '/dist-chromium',
     clean: true
   },
 
@@ -49,17 +49,19 @@ export default {
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: './manifest.json', to: '.' },
+        { from: 'node_modules/webextension-polyfill/dist/browser-polyfill.js', to: '.' },
+        { from: './manifest-chromium.json', to: './manifest.json', },
         { from: './pages/*/*.(html|css)', to: '.' },
-        { from: './icons/browser-action-*.svg', to: '.' },
+        { from: './icons/browser-action-*.png', to: '.' },
         { from: './LICENSE', to: '.' },
       ],
     }),
     new WebExtPlugin({
-      sourceDir: rootDir + '/dist',
-      artifactsDir: rootDir + '/web-ext-artifacts',
+      sourceDir: rootDir + '/dist-chromium',
+      artifactsDir: rootDir + '/web-ext-artifacts-chromium',
       buildPackage: true,
       overwriteDest: true,
+      target: 'chromium',
     }),
   ],
 

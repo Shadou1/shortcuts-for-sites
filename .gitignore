@@ -1,6 +1,8 @@
 node_modules/
 web-ext-artifacts/
+web-ext-artifacts-chromium/
 dist/
+dist-chromium/
 dist-tsc/
 .vscode/
 

@@ -37,7 +37,7 @@ https://youtu.be/9MR6KKRwTP0
 
 ## How it works
 
-Extension loads [content script](/content-scripts/init.js) into sites that it has shortcuts for (defined in [manifest.json](manifest.json)). Content script listens for [keydown](/content-scripts/init.js#L88) events and executes corresponding [shortcut](shortcuts/) events. Shortcut events define what should happen when the user presses the shortcut's key. These events do a wide range of things: focusing and clicking elements, going to next/previous elements, opening menus (settings menus), navigating to different site sections, controlling video players, and more. Sometimes there is functionality besides shourtcut events for the site, like [scrolling a page when an element is focused](/shortcuts/reddit/utilsActivePost.ts#L83).
+Extension loads [content script](/content-scripts/init.js) into sites that it has shortcuts for (defined in [manifest.json](manifest.json)). Content script listens for [keydown](/content-scripts/init.js#L88) events and executes corresponding [shortcut](shortcuts/) events. Shortcut events define what should happen when the user presses the shortcut's key. These events do a wide range of things: focusing and clicking elements, going to next/previous elements, opening menus (settings menus), navigating to different site sections, controlling video players, and more.
 
 > __Note__
 >
@@ -48,19 +48,31 @@ Extension loads [content script](/content-scripts/init.js) into sites that it ha
 Requirements:
 - Node.js 18 or later
 
-In root directory, run:
+In root directory run:
 ```
 npm install
+```
+
+To build for firefox:
+```
 npm run build
+```
+
+To build for chromium based browsers:
+```
+npm run build-chromium
 ```
 
 Compiled code is in **dist** folder, zipped version is in **web-ext-artifacts** folder.
 
 ## Running
 
-In Firefox:
+Firefox:
 - Go to [about:debugging](about:debugging), select **This Firefox**, click **Load Temporary Add-on**, choose **manifest.json** file in the **dist** folder.
 - Or just run ```npm run watch```.
+
+Chrome:
+- Run ```npm run watch-cromium```.
 
 ## Issues
 

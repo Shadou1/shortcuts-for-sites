@@ -7,6 +7,7 @@
     "allowJs": true,
     "moduleResolution": "node",
     "exactOptionalPropertyTypes": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "plugins": [

@@ -21,13 +21,13 @@
   ],
 
   "icons": {
-    "16": "icons/browser-action-enabled.svg",
-    "24": "icons/browser-action-enabled.svg",
-    "32": "icons/browser-action-enabled.svg",
-    "48": "icons/browser-action-enabled.svg",
-    "64": "icons/browser-action-enabled.svg",
-    "96": "icons/browser-action-enabled.svg",
-    "128": "icons/browser-action-enabled.svg"
+    "16": "icons/browser-action-enabled-16.png",
+    "24": "icons/browser-action-enabled-24.png",
+    "32": "icons/browser-action-enabled-32.png",
+    "48": "icons/browser-action-enabled-48.png",
+    "64": "icons/browser-action-enabled-64.png",
+    "96": "icons/browser-action-enabled-96.png",
+    "128": "icons/browser-action-enabled-128.png"
   },
 
   "options_ui": {
@@ -37,13 +37,22 @@
 
   "browser_action": {
     "browser_style": true,
-    "default_icon": "icons/browser-action-disabled.svg",
+    "default_icon": {
+      "16": "icons/browser-action-disabled-16.png",
+      "24": "icons/browser-action-disabled-24.png",
+      "32": "icons/browser-action-disabled-32.png",
+      "48": "icons/browser-action-disabled-48.png",
+      "64": "icons/browser-action-disabled-64.png",
+      "96": "icons/browser-action-disabled-96.png",
+      "128": "icons/browser-action-disabled-128.png"
+    },
     "default_popup": "pages/browser-action/default.html",
     "default_title": "Shortcuts for sites"
   },
 
   "background": {
     "scripts": [
+      "browser-polyfill.js",
       "background-scripts/background.js"
     ]
   },
@@ -58,6 +67,7 @@
         "https://www.reddit.com/*"
       ],
       "js": [
+        "browser-polyfill.js",
         "content-scripts/init.js"
       ]
     }

@@ -4,6 +4,7 @@
 
 body {
   height: 1600px;
+  min-width: 630px;
   background-color: azure;
 }
 

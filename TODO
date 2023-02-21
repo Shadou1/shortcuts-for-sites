@@ -46,6 +46,8 @@ Todo:
     ✔ Numeric shortcuts displayed first before character shortcuts @done(22-12-17 04:05)
     ✔ Highligh shortcuts that can be used on the current page (current location) @done(22-12-21 19:07)
     ☐ Opening browser action in slow @high (maybe it's always slow)
+    ☐ Maybe don't send a message between page's content script and a browser action at all, and just load all shortcuts in default.ts and figure out the correct ones (just like in init.ts with allShortcuts.find), will still need to send window.location.hostname
+    ☐ Without browser_style in chrome, styles are bad
 
   Options:
     ✔ Extension options page @done(22-12-17 15:18)

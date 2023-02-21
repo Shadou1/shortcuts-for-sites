@@ -1,6 +1,7 @@
-import Shortcuts, { Shortcut, ShortcutsCategory } from '../shortcuts/Shortcuts'
+import Shortcuts, { Shortcut, ShortcutsCategory, ShortcutsJSONSerializable } from '../shortcuts/Shortcuts'
 
 import allShortcuts from '../shortcuts/allShortcuts'
+import { browserName } from '../utils/browserUtils'
 
 // Get shortcuts for the current site
 const shortcuts = allShortcuts.find(({ siteHostnameMatch }) => siteHostnameMatch.test(window.location.hostname))
@@ -41,7 +42,7 @@ function getShortcutsByKey(shortcutsCategories: ShortcutsCategory[]) {
 const shortcutsByKey = getShortcutsByKey(shortcuts.categories)
 
 function getShortcutsAvailable(shortcutsByKey: Map<string, Shortcut>) {
-  const shortcutsAvailable = new Map()
+  const shortcutsAvailable = new Map<string, boolean>()
   for (const [key, shortcut] of shortcutsByKey) {
     let isAvailable = true
     if (shortcut.isAvailable && !shortcut.isAvailable()) isAvailable = false
@@ -54,10 +55,30 @@ function getShortcutsAvailable(shortcutsByKey: Map<string, Shortcut>) {
 browser.runtime.onMessage.addListener((message: Record<string, unknown>, sender, sendResponse) => {
   switch (message.type) {
     case 'getShortcuts':
+      // CROSS BROWSER SUPPORT
+      let shortcutsToSend: Shortcuts | ShortcutsJSONSerializable
+      if (browserName === 'firefox') {
+        shortcutsToSend = shortcuts
+      } else if (browserName === 'chrome') {
+        shortcutsToSend = JSON.parse(JSON.stringify(shortcuts)) as ShortcutsJSONSerializable
+        for (let i = 0; i < shortcuts.categories.length; i++) {
+          shortcutsToSend.categories[i].shortcuts = {}
+          for (const [shortcutName, shortcut] of shortcuts.categories[i].shortcuts) {
+            shortcutsToSend.categories[i].shortcuts[shortcutName] = shortcut
+          }
+        }
+      }
+      let shortcutsByKeyAvailableToSend: Map<string, boolean> | Record<string, boolean>
+      if (browserName === 'firefox') {
+        shortcutsByKeyAvailableToSend = getShortcutsAvailable(shortcutsByKey)
+      } else if (browserName === 'chrome') {
+        shortcutsByKeyAvailableToSend = Object.fromEntries(getShortcutsAvailable(shortcutsByKey))
+      }
+
       sendResponse({
         type: 'shortcuts',
-        shortcuts,
-        shortcutsByKeyAvailable: getShortcutsAvailable(shortcutsByKey),
+        shortcuts: shortcutsToSend!,
+        shortcutsByKeyAvailable: shortcutsByKeyAvailableToSend!
       })
       break
   }

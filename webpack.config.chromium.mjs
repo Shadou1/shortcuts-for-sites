@@ -41,7 +41,7 @@ export default {
       },
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },
@@ -49,9 +49,13 @@ export default {
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: 'node_modules/webextension-polyfill/dist/browser-polyfill.js', to: '.' },
-        { from: './manifest-chromium.json', to: './manifest.json', },
-        { from: './pages/*/*.(html|css)', to: '.' },
+        { from: 'node_modules/webextension-polyfill/dist/browser-polyfill.js', to: '.'},
+        { from: './manifest-chromium.json', to: './manifest.json' },
+        { from: './pages/*/*.css', to: '.' },
+        { from: './pages/*/*.html', to: '.', transform: (content) => {
+          const contentString = content.toString()
+          return contentString.replace('<!-- <script src="../../browser-polyfill.js" defer></script> -->', '<script src="../../browser-polyfill.js" defer></script>')
+        }  },
         { from: './icons/browser-action-*.png', to: '.' },
         { from: './LICENSE', to: '.' },
       ],

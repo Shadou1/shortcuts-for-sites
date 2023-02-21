@@ -1,4 +1,5 @@
-import Shortcuts from '../../shortcuts/Shortcuts'
+import Shortcuts, { Shortcut, ShortcutsJSONSerializable } from '../../shortcuts/Shortcuts'
+import { browserName } from '../../utils/browserUtils'
 
 // const main = document.querySelector<HTMLElement>('main')!
 const popupHeading = document.querySelector<HTMLHeadingElement>('main > h1')!
@@ -24,7 +25,8 @@ function clearlPopupError() {
   shortcutsArticle.replaceChildren()
 }
 
-function fillPopupWithShortcuts(shortcuts: Shortcuts, shortcutsByKeyAvailable: Map<string, boolean>) {
+// CROSS BROWSER SUPPORT
+function fillPopupWithShortcuts(shortcuts: Shortcuts | ShortcutsJSONSerializable, shortcutsByKeyAvailable: Map<string, boolean> | Record<string, boolean>) {
   popupHeading.hidden = true
   const newShortcuts = []
   for (const category of shortcuts.categories) {
@@ -32,13 +34,26 @@ function fillPopupWithShortcuts(shortcuts: Shortcuts, shortcutsByKeyAvailable: M
     categorySection.querySelector('h2')!.textContent = category.name
     newShortcuts.push(categorySection)
 
-    for (const [_shortcutName, shortcut] of category.shortcuts) {
+    let shortcutsIterator: Map<string, Shortcut> | [string, Shortcut][]
+    if (browserName === 'firefox') {
+      shortcutsIterator = category.shortcuts as Map<string, Shortcut>
+    } else if (browserName === 'chrome') {
+      shortcutsIterator = Object.entries(category.shortcuts as Record<string, Shortcut>)
+    }
+
+    for (const [_shortcutName, shortcut] of shortcutsIterator!) {
       const shortcutRow = rowTemplate.content.cloneNode(true) as HTMLElement
       shortcutRow.querySelector('.description')!.textContent = shortcut.description
       const key = shortcutRow.querySelector('.key')!
       const shortcutKey = shortcut.key ?? shortcut.defaultKey
       key.textContent = shortcutKey
-      if (!shortcutsByKeyAvailable.get(shortcutKey)) key.classList.remove('active-key')
+
+      if (browserName === 'firefox') {
+        if (!(shortcutsByKeyAvailable as Map<string, boolean>).get(shortcutKey)) key.classList.remove('active-key')
+      } else if (browserName === 'chrome') {
+        if (!(shortcutsByKeyAvailable as Record<string, boolean>)[shortcutKey]) key.classList.remove('active-key')
+      }
+
       if (shortcutKey.match(/^[A-Z]$/)) {
         shortcutRow.querySelector('.verbatum')!.textContent = `Shift+${shortcutKey.toLowerCase()}`
       }
@@ -49,7 +64,8 @@ function fillPopupWithShortcuts(shortcuts: Shortcuts, shortcutsByKeyAvailable: M
   shortcutsArticle.replaceChildren(...newShortcuts)
 }
 
-function handleShortcutsResponse(response: { shortcuts: Shortcuts, shortcutsByKeyAvailable: Map<string, boolean> } | undefined) {
+// CROSS BROWSER SUPPORT
+function handleShortcutsResponse(response: { shortcuts: Shortcuts, shortcutsByKeyAvailable: Map<string, boolean> | Record<string, boolean> } | undefined) {
   if (!response) {
     clearPopup()
     return

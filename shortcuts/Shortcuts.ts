@@ -32,3 +32,10 @@ export default class Shortcuts {
     this.categories = categories
   }
 }
+
+// CROSS BROWSER SUPPORT
+export type ShortcutCategoryJSONSerializable = Omit<ShortcutsCategory, 'shortcuts'> & {
+  shortcuts: Record<string, Shortcut>
+}
+
+export type ShortcutsJSONSerializable = Omit<Shortcuts, 'categories'> & { categories: ShortcutCategoryJSONSerializable[] }

@@ -8,7 +8,9 @@ module.exports = {
   },
   extends: ['eslint:recommended'],
   plugins: ['@typescript-eslint'],
-  sourceType: 'module',
+  parserOptions: {
+    sourceType: 'module',
+  },
 
   ignorePatterns: [
     'node_modules',
@@ -75,6 +77,9 @@ module.exports = {
     semi: [
       'error',
       'never'
+    ],
+    'no-case-declarations': [
+      'off'
     ]
   }
 }

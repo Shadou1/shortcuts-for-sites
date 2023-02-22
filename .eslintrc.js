@@ -16,6 +16,7 @@ module.exports = {
     'node_modules',
     'dist',
     'dist-tsc',
+    'dist-chromium',
     '.vscode',
   ],
 

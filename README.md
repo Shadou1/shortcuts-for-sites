@@ -2,10 +2,11 @@
 
 WebExtension that adds keyboard shortcuts for easier navigation on popular websites.
 
-Available for [Firefox](https://addons.mozilla.org/en-US/firefox/addon/shortcuts-for-sites/).
+Available for Firefox on [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/shortcuts-for-sites/).
+
+Available for Chrome ([Manual installation](#chrome-manual-installation) only).
 
 ## Description
-
 This extension adds various keyboard shortcuts to some popular websites. You will be able to browse these websites with just your keyboard without relying too much on the <kbd>Tab</kbd> key.
 
 Other methods of navigating websites with keyboard (besides using the <kbd>Tab</kbd> key) include using browser features like **find**, **quick find**, and **quick find within link-text only** (<kbd>Ctrl</kbd>+<kbd>f</kbd>, <kbd>/</kbd>, and <kbd>'</kbd> shortcuts in Firefox). These will move focus to the found element, without you having to <kbd>Tab</kbd> manually to it. But sometimes using <kbd>Tab</kbd> is unavoidable, and searching for elements every time can become old.
@@ -13,7 +14,6 @@ Other methods of navigating websites with keyboard (besides using the <kbd>Tab</
 Some websites also have native shortcuts (usually displayed by pressing the <kbd>?</kbd> key). This extension complements or completely rewrites those shortcuts. For example, on Reddit (new Reddit) there are <kbd>j</kbd>/<kbd>k</kbd> shortcuts to go to the next/previous post/comment, but they work kind of poorly. This extension rewrites these shortcuts and adds other shortcuts to interact with the focused post (like **open post's subreddit** or **open post's image**).
 
 ## Useful tips
-
 - Pressing <kbd>Alt</kbd>+<kbd>k</kbd> will display shortcuts for the current website.
 - $\textcolor{green}{\text{Green outline}}$ means that the shortcut is usable right now.
 - To use shortcuts that open links in new tabs (like Reddit's <kbd>g</kbd> **open post image**), you will need to allow the website to open pop-ups.
@@ -25,18 +25,25 @@ Some websites also have native shortcuts (usually displayed by pressing the <kbd
 
 > __Note__
 >
-> If you are using Google Search or Google Translate on domains other than <code>.com</code>, enable **allow add-on to run on all Google domains** on add-on's options page.
+> If you are using Google Search or Google Translate on domains other than **.com**, enable **allow add-on to run on all Google domains** on add-on's options page.
 
 ## Popup
-
 ![Popup preview](https://user-images.githubusercontent.com/33831256/211046239-27a33466-e62f-4711-91f2-44d9a613e2e6.png)
 
 ## Demonstration
-
 https://youtu.be/9MR6KKRwTP0
 
-## How it works
+## Chrome manual installation
+1. Go to [Add-on Releases](https://github.com/Shadou1/shortcuts-for-sites/releases).
+2. Download the latest chrome release (it should end in **.chromium.zip**).
+3. Go to [chrome://extensions](chrome://extensions) and enable **developer mode** (top right corner).
+4. Drag **.zip** file onto Chrome browser, this will install the extension.
+5. Disable **developer mode**.
+> __Note__
+>
+> Google Search and Google Translate shortcuts will only work on **.com** domains, enabling **allow add-on to run on all Google domains** won't work in Chrome.
 
+## How it works
 Extension loads [content script](/content-scripts/init.js) into sites that it has shortcuts for (defined in [manifest.json](manifest.json)). Content script listens for [keydown](/content-scripts/init.js#L88) events and executes corresponding [shortcut](shortcuts/) events. Shortcut events define what should happen when the user presses the shortcut's key. These events do a wide range of things: focusing and clicking elements, going to next/previous elements, opening menus (settings menus), navigating to different site sections, controlling video players, and more.
 
 > __Note__
@@ -45,7 +52,7 @@ Extension loads [content script](/content-scripts/init.js) into sites that it ha
 
 ## Building
 
-Requirements:
+### Requirements
 - Node.js 18 or later
 
 In root directory run:
@@ -53,37 +60,36 @@ In root directory run:
 npm install
 ```
 
-To build for firefox:
+### Building for Firefox
 ```
 npm run build
 ```
 
-To build for chromium based browsers:
+Compiled code is in **dist** folder, zipped version is in **web-ext-artifacts** folder.
+
+### Building for Chrome
 ```
 npm run build-chromium
 ```
 
-Compiled code is in **dist** folder, zipped version is in **web-ext-artifacts** folder.
+Compiled code is in **dist-chromium** folder, zipped version is in **web-ext-artifacts-chromium** folder.
 
-## Running
+## Running developer version
 
-Firefox:
+### Running in Firefox
 - Go to [about:debugging](about:debugging), select **This Firefox**, click **Load Temporary Add-on**, choose **manifest.json** file in the **dist** folder.
 - Or just run ```npm run watch```.
 
-Chrome:
+### Running in chrome
 - Run ```npm run watch-cromium```.
 
 ## Issues
-
 - Focus outline won't render on some pages if the user hasn't pressed <kbd>Tab</kbd> at least once while on a page.
 - On Twitch, <kbd>d</kbd> shortcut to scroll to stream description will work incorrectly the first time.
 - On Youtube, going to channel videos/playlists from ***/watch*** will sometimes play channel's autoplay video in background.
 - On Reddit, shortcuts work poorly without logging in.
 
 ## Full list of available shortcuts
-
-
 <details>
 <summary>Google Search</summary>
 

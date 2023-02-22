@@ -5,16 +5,7 @@
   "description": "Keyboard shortcuts for easier navigation on popular websites",
   "homepage_url": "https://github.com/Shadou1/shortcuts-for-sites",
 
-  "developer": {
-    "name": "Shadou",
-    "url": "https://github.com/Shadou1"
-  },
-
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "shortcuts-for-sites@shadou1.org"
-    }
-  },
+  "author": "Shadou",
 
   "permissions": [
     "storage"

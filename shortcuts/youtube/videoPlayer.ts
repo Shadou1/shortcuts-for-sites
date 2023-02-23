@@ -1,6 +1,7 @@
 import { pathnameStartsWith } from '../../utils/locationUtils'
 import { whenElementMutatesQuery } from '../../utils/mutationUtils'
 import { ShortcutsCategory } from '../Shortcuts'
+import { videoAnchorIndex, videoAnchorsPanels } from './videos'
 
 const category = new ShortcutsCategory('Video Player', 'Video Player')
 export default category
@@ -80,6 +81,8 @@ category.shortcuts.set('focusVideoPlayer', {
     }
   },
   event: () => {
+    // to stop autoplaying preview of focused video
+    videoAnchorsPanels[videoAnchorIndex]?.parentElement?.dispatchEvent(new MouseEvent('mouseleave'))
     if (pathnameStartsWith('/watch')) {
       moviePlayer = moviePlayer ?? document.querySelector('#movie_player')!
       // TODO refactor

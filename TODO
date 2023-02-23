@@ -76,13 +76,15 @@ Todo:
     ☐ When page mutates, go to next/previous video and other focusing shortcuts are unresponsive (normal tabbing is also unresponsive)
     ✔ Rarely, when going back to /results page from any other page, go to next/previous video shortcuts stop working properly @done(22-12-29 22:41) (fix videoAnchors query returning invisible elements)
     ☐ Pages other than /results also have video anchors in different parents (home page, subscriptions page) and if only 1 such parent is loaded (which seems to only happen on /results pages but one time it has happened on /home page) when updateVideoAnchors() is run, the mutation observer will be set up incorrectly (it will only observe this first not common parent) @critical
-    ☐ Add go to focused video channel
-    ☐ Add start playing focused video (as if hovering mouse over it), make this a toggleable option
+    ✔ Add go to focused video channel @done(23-02-23 16:11)
+    ✔ Add start playing focused video (as if hovering mouse over it), make this a toggleable option @done(23-02-23 10:24)
+    ☐ Maybe change whenElementMutatesQuery('#content.ytd-app', goToPlaylistsTab) to something more localized
 
     ☐ Maybe include 'all_frames' into manifest.json content_scripts so that shortcuts also work in iframes(chat)
 
     Bugs:
       ☐ When channel has a 'store' tab or doesn't have a 'community' tab, 'p' (go to playlists) shortcut will incorrectly select another tab @critical
+      ☐ On /results? page, popup sometimes doesn't load shortcuts
 
   Google Search:
     ✔ Should work not only on '.com' domains @critical @done(22-08-22 09:32)

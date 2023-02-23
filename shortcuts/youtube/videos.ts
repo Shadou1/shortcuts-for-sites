@@ -10,8 +10,9 @@ const category = new ShortcutsCategory('Videos', 'Videos')
 export default category
 
 let videoAnchors: HTMLAnchorElement[] = []
-let videoAnchorsPanels: HTMLElement[] = []
-let videoAnchorIndex = -1
+export let videoAnchorsPanels: HTMLElement[] = []
+export let videoAnchorIndex = -1
+let videoAnchorLastIndex = -1
 let changeVideoAnchorIndex: ReturnType<typeof getChangeIndex>
 
 // This needs to account for fixed headers, sometimes there are more than 1 fixed header (on the home page there are video categories header)
@@ -19,7 +20,17 @@ let changeVideoAnchorIndex: ReturnType<typeof getChangeIndex>
 const videoAnchorPanelScrollHeight = 120
 let scrollToAndFocusCurrentVideoAnchor: () => void
 
-const setupUpdateVideoAnchorIndexOnFocus = getSetupUpdateIndexOnFocus((index) => videoAnchorIndex = index)
+const settings = await browser.storage.sync.get('settings')
+const autoplayPreviewOnFocusSetting = (settings['settings'] as Record<string, boolean> | undefined)?.['youtube-autoplay-preview-on-focus'] ?? false
+const setupUpdateVideoAnchorIndexOnFocus = getSetupUpdateIndexOnFocus((index) => {
+  if (autoplayPreviewOnFocusSetting) {
+    // TODO this won't work for new preview version (complete preview)
+    videoAnchorsPanels[videoAnchorLastIndex]?.parentElement!.dispatchEvent(new MouseEvent('mouseleave'))
+    videoAnchorsPanels[index]?.parentElement!.dispatchEvent(new MouseEvent('mouseenter'))
+  }
+  videoAnchorLastIndex = index
+  videoAnchorIndex = index
+})
 
 function getVideoAnchors() {
   videoAnchors = [...document.querySelectorAll<HTMLAnchorElement>(`ytd-page-manager > :not([hidden=""]) a:is(

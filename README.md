@@ -44,7 +44,7 @@ https://youtu.be/9MR6KKRwTP0
 > Google Search and Google Translate shortcuts will only work on **.com** domains, enabling **allow add-on to run on all Google domains** won't work in Chrome.
 
 ## How it works
-Extension loads [content script](/content-scripts/init.js) into sites that it has shortcuts for (defined in [manifest.json](manifest.json)). Content script listens for [keydown](/content-scripts/init.js#L88) events and executes corresponding [shortcut](shortcuts/) events. Shortcut events define what should happen when the user presses the shortcut's key. These events do a wide range of things: focusing and clicking elements, going to next/previous elements, opening menus (settings menus), navigating to different site sections, controlling video players, and more.
+Extension loads [content script](/content-scripts/init.ts) into sites that it has shortcuts for (defined in [manifest.json](manifest.json#L51)). Content script listens for [keydown](/content-scripts/init.ts#L88) events and executes corresponding [shortcut](shortcuts/) events. Shortcut events define what should happen when the user presses the shortcut's key. These events do a wide range of things: focusing and clicking elements, going to next/previous elements, opening menus (settings menus), navigating to different site sections, controlling video players, and more.
 
 > __Note__
 >
@@ -77,11 +77,12 @@ Compiled code is in **dist-chromium** folder, zipped version is in **web-ext-art
 ## Running developer version
 
 ### Running in Firefox
-- Go to [about:debugging](about:debugging), select **This Firefox**, click **Load Temporary Add-on**, choose **manifest.json** file in the **dist** folder.
-- Or just run ```npm run watch```.
+- Run ```npm run watch```.
+- Or go to [about:debugging](about:debugging), select **This Firefox**, click **Load Temporary Add-on**, choose **manifest.json** file in the **dist** folder.
 
 ### Running in chrome
-- Run ```npm run watch-cromium```.
+- Run ```npm run watch-chromium```.
+- Or go to [chrome://extensions](chrome://extensions), enable **Developer mode**, click **Load unpacked** and select **dist** folder, or drag **.zip** file from **web-ext-artifacts-chromium** onto chrome browser.
 
 ## Issues
 - Focus outline won't render on some pages if the user hasn't pressed <kbd>Tab</kbd> at least once while on a page.
